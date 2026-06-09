@@ -1,1227 +1,1374 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eureka! ERP v82</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RPS Topografía & Geodesia | Cotizador Técnico Compacto 1 Página</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, increment, collection, addDoc, deleteDoc, setDoc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, collection, addDoc, deleteDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
-            authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
-            projectId: "registro-de-gastos-a21e8",
-            storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
-            messagingSenderId: "947355933583",
-            appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
+      authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
+      projectId: "registro-de-gastos-a21e8",
+      storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
+      messagingSenderId: "947355933583",
+      appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.fb = { db, doc, updateDoc, increment, collection, addDoc, deleteDoc, setDoc, getDoc, runTransaction };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.fb = { db, doc, collection, addDoc, deleteDoc, setDoc, runTransaction };
 
-        // Escuchadores en tiempo real globales
-        onSnapshot(doc(db, "config", "eureka_erp_v10"), (d) => {
-            window.nextFolio = (d.exists()) ? Number(d.data().lastFolio) : 1000;
-            if (typeof renderPreview === "function") renderPreview();
-        });
+    onSnapshot(doc(db, "config", "rps_cotizador_v1"), (d) => {
+      window.nextFolio = d.exists() ? Number(d.data().lastFolio) : 1000;
+      renderPreview();
+    });
 
-        onSnapshot(collection(db, "erp_clientes"), (s) => {
-            window.clientes = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.name || "").localeCompare(b.name || ""));
-            if (typeof updateUI === "function") updateUI();
-            if (typeof renderPreview === "function") renderPreview();
-        });
+    onSnapshot(collection(db, "rps_clientes"), (s) => {
+      window.clientes = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+      updateClientsUI();
+      renderPreview();
+    });
 
-        onSnapshot(collection(db, "erp_cotizaciones"), (s) => {
-            window.historial = s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => b.folio - a.folio);
-            if (typeof renderHistory === "function") renderHistory();
-        });
-    </script>
+    onSnapshot(collection(db, "rps_cotizaciones"), (s) => {
+      window.historial = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => Number(b.folio || 0) - Number(a.folio || 0));
+      renderHistory();
+    });
+  </script>
 
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #020617; color: #f1f5f9; margin: 0; overflow-x: hidden; }
-        .input-dark { background: #1e293b; border: 1px solid #334155; padding: 14px; border-radius: 12px; width: 100%; color: white; outline: none; font-size: 16px; box-sizing: border-box; }
-        .tab-content { display: none; width: 100%; padding: 20px; box-sizing: border-box; }
-        .tab-content.active { display: block; }
+  <style>
+    :root{
+      --ink:#1f2933; --muted:#64748b; --blue:#1e3a5f; --blue2:#0f172a; --line:#cbd5e1; --soft:#f8fafc;
+    }
+    *{ box-sizing:border-box; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+    body{ margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top left,#1e293b 0,#111827 42%,#05070a 100%); color:#f8fafc; }
+    section, div, form, nav, button, input, textarea, select{ min-width:0; }
+    .input-dark{ width:100%; max-width:100%; min-width:0; background:#16181b; border:1px solid #334155; color:#fff; border-radius:14px; padding:13px 14px; outline:none; font-size:15px; }
+    textarea.input-dark{ overflow-wrap:anywhere; white-space:pre-wrap; }
+    .input-dark:focus{ border-color:#38bdf8; box-shadow:0 0 0 3px rgba(56,189,248,.18); }
+    .tab-content{ display:none; padding:14px; width:100%; max-width:100%; overflow-x:hidden; } .tab-content.active{ display:block; }
+    .btn{ border:none; border-radius:14px; padding:14px 18px; font-weight:900; cursor:pointer; }
+    .icon-btn{ width:46px; height:46px; display:flex; align-items:center; justify-content:center; border-radius:13px; border:1px solid #334155; background:#16181b; color:white; cursor:pointer; }
 
-        .pdf-page { 
-            background: white !important; 
-            color: #1e293b !important; 
-            width: 210mm; 
-            min-height: 297mm; 
-            padding: 15mm; 
-            display: flex; 
-            flex-direction: column; 
-            box-sizing: border-box;
-            margin: 0 auto;
+    .sheet-wrap{ width:100%; max-width:100%; min-width:0; height:72vh; min-height:520px; overflow:hidden; background:#0e0f11; border:1px solid #334155; border-radius:22px; padding:0; position:relative; touch-action:none; }
+    #pdf-preview-wrapper{ position:absolute; top:0; left:0; width:fit-content; transform-origin:0 0; will-change:transform; }
+    #pdf-canvas{ margin:0 !important; zoom:1 !important; transform:none !important; }
+    .pdf-page{ width:210mm; min-height:297mm; background:#fff; color:var(--ink); margin:0 auto; padding:14mm; position:relative; overflow:hidden; box-shadow:0 25px 80px rgba(0,0,0,.35); }
+    .watermark{ position:absolute; inset:auto -15mm 18mm -15mm; height:90mm; opacity:.055; pointer-events:none; }
+    .wm-line{ position:absolute; border:2px solid #1e3a5f; border-color:#1e3a5f transparent transparent transparent; border-radius:50%; }
+    .tech-top{ display:grid; grid-template-columns:1.1fr .9fr; gap:12mm; align-items:start; border-bottom:3px solid var(--blue); padding-bottom:7mm; position:relative; z-index:1; }
+    .brand{ display:flex; gap:8mm; align-items:center; }
+    .brand img{ width:42mm; max-height:22mm; object-fit:contain; }
+    .brand h1{ margin:0; font-size:19px; letter-spacing:.2px; color:var(--blue); font-weight:900; }
+    .brand small{ display:block; color:var(--muted); font-size:9px; line-height:1.45; margin-top:2mm; }
+    .quote-box{ text-align:right; }
+    .quote-box .label{ display:inline-block; background:var(--blue); color:white; padding:3mm 6mm; font-size:9px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase; }
+    .quote-box .folio{ font-size:18px; font-weight:900; color:var(--blue); margin-top:3mm; }
+    .meta-grid{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; margin-top:7mm; position:relative; z-index:1; }
+    .panel{ border:1px solid var(--line); background:#fbfcfe; border-radius:3mm; overflow:hidden; }
+    .panel-title{ background:#eef2f7; color:var(--blue); font-size:8px; font-weight:900; padding:2.3mm 3mm; letter-spacing:.8px; text-transform:uppercase; border-bottom:1px solid var(--line); }
+    .panel-body{ padding:3mm; font-size:9.5px; line-height:1.55; }
+    .k{ color:#64748b; font-weight:800; display:inline-block; min-width:24mm; }
+    .intro{ margin:7mm 0 6mm; font-size:10.2px; line-height:1.65; text-align:justify; position:relative; z-index:1; }
+    .items-table{ width:100%; border-collapse:collapse; position:relative; z-index:1; }
+    .items-table th{ background:var(--blue); color:white; font-size:8px; text-transform:uppercase; letter-spacing:.7px; padding:3mm 2.2mm; border:1px solid var(--blue); }
+    .items-table td{ border:1px solid #cbd5e1; padding:3mm 2.2mm; font-size:9px; vertical-align:top; line-height:1.45; overflow-wrap:anywhere; word-break:normal; }
+    .items-table tbody tr:nth-child(even){ background:#f8fafc; }
+    .totals{ margin-left:auto; margin-top:5mm; width:58mm; border-collapse:collapse; position:relative; z-index:1; }
+    .totals td{ border:1px solid #cbd5e1; padding:2mm 3mm; font-size:9px; }
+    .totals .name{ background:#eef2f7; color:var(--blue); font-weight:900; text-transform:uppercase; }
+    .totals .grand .name, .totals .grand .val{ background:var(--blue); color:#fff; font-weight:900; }
+    .bottom-grid{ display:grid; grid-template-columns:1fr 1fr; gap:6mm; margin-top:8mm; position:relative; z-index:1; }
+    .bank{ background:#1f2933; color:#fff; border-radius:2mm; overflow:hidden; border:1px solid #111416; }
+    .bank .panel-title{ background:#1e3a5f; color:#fff; border:0; }
+    .bank .panel-body{ color:#f8fafc; }
+    .sign{ margin-top:9mm; text-align:center; font-size:8.5px; color:#111827; position:relative; z-index:1; }
+    .sign .line{ width:54mm; height:1px; background:#111827; margin:8mm auto 2mm; }
+    .footer{ position:absolute; bottom:8mm; left:14mm; right:14mm; border-top:2px solid var(--blue); padding-top:3mm; text-align:center; color:#475569; font-size:7.6px; z-index:1; }
+    .footer b{ display:block; color:var(--blue); font-size:8.5px; margin-bottom:1.5mm; }
+
+
+    .service-list{ display:grid; gap:4mm; position:relative; z-index:1; }
+    .service-card{ border:1px solid #cbd5e1; border-radius:3mm; overflow:hidden; background:#ffffff; }
+    .service-card-head{ display:flex; justify-content:space-between; gap:5mm; align-items:flex-start; background:#f1f5f9; border-bottom:1px solid #cbd5e1; padding:3mm 4mm; }
+    .service-card-head b{ color:var(--blue); font-size:8.8px; letter-spacing:.65px; text-transform:uppercase; }
+    .service-card-price{ text-align:right; min-width:42mm; color:#0f172a; }
+    .service-card-price strong{ display:block; font-size:12px; }
+    .service-card-price small{ display:block; font-size:7px; color:#64748b; margin-top:1mm; }
+    .service-card-body{ padding:4mm; font-size:9.1px; line-height:1.56; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .amount-summary{ margin-left:auto; margin-top:5mm; width:64mm; position:relative; z-index:1; border:1px solid #cbd5e1; border-radius:3mm; overflow:hidden; background:#ffffff; }
+    .amount-summary-row{ display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid #e2e8f0; }
+    .amount-summary-row:last-child{ border-bottom:0; }
+    .amount-summary-row span{ padding:2.3mm 3mm; font-size:8.5px; }
+    .amount-summary-row span:first-child{ background:#f1f5f9; color:var(--blue); font-weight:900; text-transform:uppercase; }
+    .amount-summary-row span:last-child{ text-align:right; color:#0f172a; font-weight:800; }
+    .amount-summary-row.total span{ background:var(--blue); color:#ffffff; font-size:10px; }
+
+    @media(max-width:1024px){
+      .tab-content{ padding:10px; }
+      .sheet-wrap{ height:70vh; min-height:460px; border-radius:18px; }
+    }
+    @media(max-width:640px){
+      .tab-content{ padding:8px; }
+      #sec-edit > div{ width:100%; max-width:100%; display:grid; grid-template-columns:minmax(0,1fr) !important; gap:14px; }
+      #sec-edit .space-y-4, #sec-edit .sheet-wrap{ width:100%; max-width:100%; min-width:0; }
+      .bg-slate-900\/80{ padding:14px !important; border-radius:20px !important; }
+      .grid{ min-width:0; }
+      .grid.grid-cols-2, .grid.grid-cols-\[1fr_1\.2fr\], .grid.grid-cols-\[80px_1fr\]{ grid-template-columns:minmax(0,1fr) !important; }
+      .input-dark{ font-size:14px; padding:12px 12px; }
+      nav button{ padding-left:6px !important; padding-right:6px !important; font-size:10px !important; }
+    }
+  
+        /* Vista preliminar compacta: espejo visual del PDF final */
+        .preview-page-compact{
+            width:100%;
+            min-height:267mm;
+            box-sizing:border-box;
+            font-family:'Inter', Arial, sans-serif;
+            color:#0f172a;
+            background:#fff;
+            position:relative;
+            padding:11mm 12mm 10mm;
+            display:flex;
+            flex-direction:column;
+            gap:5mm;
+        }
+        .preview-header-compact{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:8mm;
+        }
+        .preview-brand-compact{
+            display:flex;
+            align-items:flex-start;
+            gap:7mm;
+            min-width:0;
+        }
+        .preview-brand-compact img{
+            width:27mm;
+            max-height:13mm;
+            object-fit:contain;
+        }
+        .preview-brand-compact h1{
+            font-size:12.2pt;
+            line-height:1.1;
+            font-weight:900;
+            margin:0 0 1.5mm;
+            color:#0f172a;
+        }
+        .preview-brand-compact p{
+            font-size:6.7pt;
+            line-height:1.25;
+            margin:0;
+            color:#64748b;
+        }
+        .preview-quote-compact{
+            text-align:right;
+            min-width:46mm;
+        }
+        .preview-quote-compact div{
+            background:#14345d;
+            color:white;
+            border-radius:4px;
+            padding:3mm 4mm;
+            text-transform:uppercase;
+            font-size:6.7pt;
+            font-weight:800;
+            display:inline-block;
+        }
+        .preview-quote-compact strong{
+            display:block;
+            font-size:15.5pt;
+            margin-top:2mm;
+            color:#0f172a;
+        }
+        .preview-quote-compact span{
+            display:block;
+            font-size:7.1pt;
+            color:#64748b;
+        }
+        .preview-divider{
+            height:0;
+            border-top:0.75mm solid #14345d;
+        }
+        .preview-info-grid{
+            display:grid;
+            grid-template-columns:78mm 1fr;
+            gap:5mm;
+        }
+        .preview-info-card,
+        .preview-description,
+        .preview-service,
+        .preview-small-card,
+        .preview-total-card{
+            border:0.25mm solid #cbd5e1;
+            border-radius:5px;
+            overflow:hidden;
+            background:white;
+        }
+        .preview-section-bar{
+            height:6.8mm;
+            display:flex;
+            align-items:center;
+            padding:0 2.5mm;
+            color:white;
+            font-size:6.35pt;
+            font-weight:900;
+            text-transform:uppercase;
+            letter-spacing:.02em;
+            box-sizing:border-box;
+        }
+        .preview-section-bar.blue{ background:#14345d; }
+        .preview-section-bar.dark{ background:#1e293b; }
+        .preview-info-card h3{
+            font-size:7.3pt;
+            line-height:1.25;
+            margin:3mm 2.6mm 2mm;
+            color:#0f172a;
+        }
+        .preview-info-card p,
+        .preview-project-lines p{
+            font-size:6.3pt;
+            line-height:1.22;
+            margin:0 2.6mm 1.1mm;
+            color:#64748b;
+        }
+        .preview-project-lines{
+            padding-top:3mm;
+        }
+        .preview-project-lines b,
+        .preview-info-card b{
+            color:#64748b;
+            font-weight:800;
+        }
+        .preview-description p{
+            font-size:6.95pt;
+            line-height:1.26;
+            margin:3.2mm 4.8mm;
+            max-width:calc(100% - 9.6mm);
+            box-sizing:border-box;
+            overflow-wrap:break-word;
+            word-break:normal;
+        }
+        .preview-service-grid{
+            display:grid;
+            grid-template-columns:1fr 53mm;
+            gap:7mm;
+            padding:3.5mm 3.2mm 3.5mm;
+        }
+        .preview-scope h4{
+            font-size:6.7pt;
+            line-height:1;
+            margin:0 0 1.8mm;
+            color:#14345d;
+            text-transform:uppercase;
+            font-weight:900;
+        }
+        .preview-scope p{
+            font-size:6.85pt;
+            line-height:1.28;
+            margin:0 0 4mm;
+            color:#0f172a;
+        }
+        .preview-deliverables{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            column-gap:6mm;
+            row-gap:1mm;
+            font-size:6.85pt;
+            line-height:1.2;
+            color:#0f172a;
+        }
+        .preview-value-box{
+            background:#f8fafc;
+            border:0.25mm solid #cbd5e1;
+            border-radius:5px;
+            padding:3mm;
+            align-self:start;
+        }
+        .preview-value-box h4{
+            margin:0 0 2.5mm;
+            color:#14345d;
+            font-size:6.5pt;
+            text-transform:uppercase;
+            font-weight:900;
+        }
+        .preview-value-box div,
+        .preview-total-card div{
+            display:flex;
+            justify-content:space-between;
+            gap:3mm;
+            font-size:6.15pt;
+            color:#64748b;
+            margin-bottom:1.7mm;
+        }
+        .preview-value-box strong,
+        .preview-total-card strong{
+            color:#0f172a;
+            font-weight:800;
+            text-align:right;
+        }
+        .preview-value-box hr,
+        .preview-total-card hr{
+            border:0;
+            border-top:0.25mm solid #cbd5e1;
+            margin:1.5mm 0 2mm;
+        }
+        .preview-value-box .subtotal,
+        .preview-total-card .total{
+            font-size:7.8pt;
+            font-weight:900;
+            color:#0f172a;
+        }
+        .preview-value-box small,
+        .preview-total-card small{
+            display:block;
+            text-align:right;
+            color:#64748b;
+            font-size:5.8pt;
+            margin-top:1mm;
+        }
+        .preview-closure-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr 74mm;
+            gap:6mm;
+        }
+        .preview-small-card p{
+            font-size:5.8pt;
+            line-height:1.25;
+            color:#0f172a;
+            margin:2.7mm 3mm 0;
+        }
+        .preview-total-card div{
+            padding:0 3.2mm;
+        }
+        .preview-total-card .preview-section-bar{
+            margin-bottom:2.8mm;
+        }
+        .preview-signature{
+            text-align:center;
+            margin-top:auto;
+            color:#0f172a;
+        }
+        .preview-signature p{
+            margin:0 0 7mm;
+            font-size:6.9pt;
+        }
+        .preview-signature div{
+            width:56mm;
+            border-top:0.3mm solid #0f172a;
+            margin:0 auto 1.5mm;
+        }
+        .preview-signature strong{
+            display:block;
+            font-size:7.5pt;
+        }
+        .preview-signature span{
+            display:block;
+            font-size:6.4pt;
+            color:#64748b;
+            margin-top:1mm;
+        }
+        .preview-footer{
+            border-top:0.45mm solid #14345d;
+            padding-top:2.5mm;
+            text-align:center;
+            color:#64748b;
+            font-size:5.9pt;
+            line-height:1.2;
         }
 
-        #preliminar-container {
-            width: 100%;
-            height: 72vh;
-            min-height: 460px;
-            overflow: hidden !important;
-            padding: 0;
-            background: #020617;
-            position: relative !important;
-            -webkit-overflow-scrolling: touch;
-            touch-action: none !important;
-            border-radius: 18px;
+    
+        .preview-small-card,
+        .preview-total-card,
+        .preview-info-card,
+        .preview-description,
+        .preview-service{
+            overflow-wrap:anywhere;
+            word-break:break-word;
         }
 
-        #pdf-preview-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: fit-content;
-            transform-origin: 0 0;
-            will-change: transform;
+    
+        .preview-description{
+            overflow:hidden;
+        }
+        .preview-description p{
+            white-space:normal;
         }
 
-        #pdf-canvas {
-            zoom: 1 !important;
-            transform: none !important;
-            margin: 0 !important;
+    
+        .preview-service-grid{ display:block !important; }
+        .preview-service-full{
+            padding:3.5mm 3.5mm 3.2mm;
+        }
+        .preview-service-full h4{
+            font-size:6.7pt;
+            line-height:1;
+            margin:0 0 1.8mm;
+            color:#14345d;
+            text-transform:uppercase;
+            font-weight:900;
+        }
+        .preview-service-full p{
+            font-size:6.85pt;
+            line-height:1.26;
+            margin:0 0 3.8mm;
+            color:#0f172a;
+        }
+        .preview-closure-grid.merged{
+            grid-template-columns:55mm 61mm 1fr;
+        }
+        .preview-total-card .total{
+            font-size:9.2pt;
+            font-weight:900;
+            color:#0f172a;
         }
 
-        @media (max-width: 1024px) {
-            #preliminar-container {
-                height: 68vh;
-                min-height: 460px;
-            }
+    
+        
+        .quote-service-label{
+            display:block;
+            margin-top:1mm;
+            color:#64748b;
+            font-size:5.4pt;
+            text-transform:uppercase;
+            font-weight:800;
         }
 
-        #quick-view-modal {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #020617;
-            z-index: 99999;
-            display: none;
-            flex-direction: column;
+    </style>
+
+  <style id="palette-grafito-azul">
+    nav{ background:#0b0c0e !important; border-bottom:1px solid #334155 !important; }
+    [class*="bg-slate-900"], [class*="bg-slate-800"]{ background-color:rgba(22,24,27,.88) !important; }
+    [class*="border-slate"]{ border-color:#334155 !important; }
+    [class*="text-blue"]{ color:#38bdf8 !important; }
+    [class*="border-blue"]{ border-color:#38bdf8 !important; }
+    .btn.bg-blue-700, .btn.bg-blue-600{ background:#1e3a5f !important; color:#fff !important; }
+    .btn.bg-blue-700:hover, .btn.bg-blue-600:hover{ background:#2563eb !important; }
+    .btn.bg-emerald-500{ background:#2563eb !important; color:#ffffff !important; }
+    .btn.bg-slate-700{ background:#2b2e31 !important; border:1px solid #475569 !important; }
+  
+        /* Vista preliminar compacta: espejo visual del PDF final */
+        .preview-page-compact{
+            width:100%;
+            min-height:267mm;
+            box-sizing:border-box;
+            font-family:'Inter', Arial, sans-serif;
+            color:#0f172a;
+            background:#fff;
+            position:relative;
+            padding:11mm 12mm 10mm;
+            display:flex;
+            flex-direction:column;
+            gap:5mm;
+        }
+        .preview-header-compact{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:8mm;
+        }
+        .preview-brand-compact{
+            display:flex;
+            align-items:flex-start;
+            gap:7mm;
+            min-width:0;
+        }
+        .preview-brand-compact img{
+            width:27mm;
+            max-height:13mm;
+            object-fit:contain;
+        }
+        .preview-brand-compact h1{
+            font-size:12.2pt;
+            line-height:1.1;
+            font-weight:900;
+            margin:0 0 1.5mm;
+            color:#0f172a;
+        }
+        .preview-brand-compact p{
+            font-size:6.7pt;
+            line-height:1.25;
+            margin:0;
+            color:#64748b;
+        }
+        .preview-quote-compact{
+            text-align:right;
+            min-width:46mm;
+        }
+        .preview-quote-compact div{
+            background:#14345d;
+            color:white;
+            border-radius:4px;
+            padding:3mm 4mm;
+            text-transform:uppercase;
+            font-size:6.7pt;
+            font-weight:800;
+            display:inline-block;
+        }
+        .preview-quote-compact strong{
+            display:block;
+            font-size:15.5pt;
+            margin-top:2mm;
+            color:#0f172a;
+        }
+        .preview-quote-compact span{
+            display:block;
+            font-size:7.1pt;
+            color:#64748b;
+        }
+        .preview-divider{
+            height:0;
+            border-top:0.75mm solid #14345d;
+        }
+        .preview-info-grid{
+            display:grid;
+            grid-template-columns:78mm 1fr;
+            gap:5mm;
+        }
+        .preview-info-card,
+        .preview-description,
+        .preview-service,
+        .preview-small-card,
+        .preview-total-card{
+            border:0.25mm solid #cbd5e1;
+            border-radius:5px;
+            overflow:hidden;
+            background:white;
+        }
+        .preview-section-bar{
+            height:6.8mm;
+            display:flex;
+            align-items:center;
+            padding:0 2.5mm;
+            color:white;
+            font-size:6.35pt;
+            font-weight:900;
+            text-transform:uppercase;
+            letter-spacing:.02em;
+            box-sizing:border-box;
+        }
+        .preview-section-bar.blue{ background:#14345d; }
+        .preview-section-bar.dark{ background:#1e293b; }
+        .preview-info-card h3{
+            font-size:7.3pt;
+            line-height:1.25;
+            margin:3mm 2.6mm 2mm;
+            color:#0f172a;
+        }
+        .preview-info-card p,
+        .preview-project-lines p{
+            font-size:6.3pt;
+            line-height:1.22;
+            margin:0 2.6mm 1.1mm;
+            color:#64748b;
+        }
+        .preview-project-lines{
+            padding-top:3mm;
+        }
+        .preview-project-lines b,
+        .preview-info-card b{
+            color:#64748b;
+            font-weight:800;
+        }
+        .preview-description p{
+            font-size:6.95pt;
+            line-height:1.26;
+            margin:3.2mm 4.8mm;
+            max-width:calc(100% - 9.6mm);
+            box-sizing:border-box;
+            overflow-wrap:break-word;
+            word-break:normal;
+        }
+        .preview-service-grid{
+            display:grid;
+            grid-template-columns:1fr 53mm;
+            gap:7mm;
+            padding:3.5mm 3.2mm 3.5mm;
+        }
+        .preview-scope h4{
+            font-size:6.7pt;
+            line-height:1;
+            margin:0 0 1.8mm;
+            color:#14345d;
+            text-transform:uppercase;
+            font-weight:900;
+        }
+        .preview-scope p{
+            font-size:6.85pt;
+            line-height:1.28;
+            margin:0 0 4mm;
+            color:#0f172a;
+        }
+        .preview-deliverables{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            column-gap:6mm;
+            row-gap:1mm;
+            font-size:6.85pt;
+            line-height:1.2;
+            color:#0f172a;
+        }
+        .preview-value-box{
+            background:#f8fafc;
+            border:0.25mm solid #cbd5e1;
+            border-radius:5px;
+            padding:3mm;
+            align-self:start;
+        }
+        .preview-value-box h4{
+            margin:0 0 2.5mm;
+            color:#14345d;
+            font-size:6.5pt;
+            text-transform:uppercase;
+            font-weight:900;
+        }
+        .preview-value-box div,
+        .preview-total-card div{
+            display:flex;
+            justify-content:space-between;
+            gap:3mm;
+            font-size:6.15pt;
+            color:#64748b;
+            margin-bottom:1.7mm;
+        }
+        .preview-value-box strong,
+        .preview-total-card strong{
+            color:#0f172a;
+            font-weight:800;
+            text-align:right;
+        }
+        .preview-value-box hr,
+        .preview-total-card hr{
+            border:0;
+            border-top:0.25mm solid #cbd5e1;
+            margin:1.5mm 0 2mm;
+        }
+        .preview-value-box .subtotal,
+        .preview-total-card .total{
+            font-size:7.8pt;
+            font-weight:900;
+            color:#0f172a;
+        }
+        .preview-value-box small,
+        .preview-total-card small{
+            display:block;
+            text-align:right;
+            color:#64748b;
+            font-size:5.8pt;
+            margin-top:1mm;
+        }
+        .preview-closure-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr 74mm;
+            gap:6mm;
+        }
+        .preview-small-card p{
+            font-size:5.8pt;
+            line-height:1.25;
+            color:#0f172a;
+            margin:2.7mm 3mm 0;
+        }
+        .preview-total-card div{
+            padding:0 3.2mm;
+        }
+        .preview-total-card .preview-section-bar{
+            margin-bottom:2.8mm;
+        }
+        .preview-signature{
+            text-align:center;
+            margin-top:auto;
+            color:#0f172a;
+        }
+        .preview-signature p{
+            margin:0 0 7mm;
+            font-size:6.9pt;
+        }
+        .preview-signature div{
+            width:56mm;
+            border-top:0.3mm solid #0f172a;
+            margin:0 auto 1.5mm;
+        }
+        .preview-signature strong{
+            display:block;
+            font-size:7.5pt;
+        }
+        .preview-signature span{
+            display:block;
+            font-size:6.4pt;
+            color:#64748b;
+            margin-top:1mm;
+        }
+        .preview-footer{
+            border-top:0.45mm solid #14345d;
+            padding-top:2.5mm;
+            text-align:center;
+            color:#64748b;
+            font-size:5.9pt;
+            line-height:1.2;
         }
 
-        #qv-header {
-            background: #0f172a;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1e293b;
-            flex-shrink: 0;
+    
+        .preview-small-card,
+        .preview-total-card,
+        .preview-info-card,
+        .preview-description,
+        .preview-service{
+            overflow-wrap:anywhere;
+            word-break:break-word;
         }
 
-        #qv-body {
-            flex: 1;
-            overflow: hidden !important;
-            padding: 0 !important;
-            -webkit-overflow-scrolling: touch;
-            background: #020617;
-            position: relative !important;
-            touch-action: none !important;
+    
+        .preview-description{
+            overflow:hidden;
+        }
+        .preview-description p{
+            white-space:normal;
         }
 
-        #cloned-pdf-wrapper {
-            position: absolute !important;
-            top: 0;
-            left: 0;
-            width: fit-content;
-            margin: 0 !important;
-            transform-origin: 0 0 !important;
-            will-change: transform;
+    
+        .preview-service-grid{ display:block !important; }
+        .preview-service-full{
+            padding:3.5mm 3.5mm 3.2mm;
+        }
+        .preview-service-full h4{
+            font-size:6.7pt;
+            line-height:1;
+            margin:0 0 1.8mm;
+            color:#14345d;
+            text-transform:uppercase;
+            font-weight:900;
+        }
+        .preview-service-full p{
+            font-size:6.85pt;
+            line-height:1.26;
+            margin:0 0 3.8mm;
+            color:#0f172a;
+        }
+        .preview-closure-grid.merged{
+            grid-template-columns:55mm 61mm 1fr;
+        }
+        .preview-total-card .total{
+            font-size:9.2pt;
+            font-weight:900;
+            color:#0f172a;
         }
 
-        #cloned-pdf-wrapper .pdf-page {
-            zoom: 1 !important;
-            transform: none !important;
-            margin: 0 !important;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    
+        
+        .quote-service-label{
+            display:block;
+            margin-top:1mm;
+            color:#64748b;
+            font-size:5.4pt;
+            text-transform:uppercase;
+            font-weight:800;
         }
 
-        .icon-btn {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            background: #1e293b;
-            font-size: 20px;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
+  <nav class="flex bg-slate-950 border-b border-slate-800 sticky top-0 z-[100]">
+    <button onclick="navTo('edit')" id="m-edit" class="flex-1 p-4 font-black text-[11px] uppercase text-blue-400 border-b-2 border-blue-400">Cotizador técnico</button>
+    <button onclick="navTo('hist')" id="m-hist" class="flex-1 p-4 font-black text-[11px] uppercase text-slate-500 border-b-2 border-transparent">Historial</button>
+    <button onclick="navTo('clients')" id="m-clients" class="flex-1 p-4 font-black text-[11px] uppercase text-slate-500 border-b-2 border-transparent">Clientes</button>
+  </nav>
 
-    <nav class="flex bg-slate-950 border-b border-slate-800 sticky top-0 z-[100]">
-        <button onclick="navTo('edit')" id="m-edit" class="flex-1 p-4 font-black text-[11px] uppercase text-blue-500 border-b-2 border-blue-500">Cotizador</button>
-        <button onclick="navTo('hist')" id="m-hist" class="flex-1 p-4 font-black text-[11px] uppercase text-slate-500 border-b-2 border-transparent">Historial</button>
-        <button onclick="navTo('clients')" id="m-clients" class="flex-1 p-4 font-black text-[11px] uppercase text-slate-500 border-b-2 border-transparent">Clientes</button>
-    </nav>
+  <section id="sec-edit" class="tab-content active">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-[430px_minmax(0,1fr)] gap-6 w-full min-w-0 overflow-hidden">
+      <div class="space-y-4">
+        <div class="bg-slate-900/80 p-5 rounded-3xl border border-slate-800 space-y-3 shadow-2xl">
+          <div class="grid grid-cols-2 gap-3">
+            <input type="date" id="q-date-input" class="input-dark" oninput="renderPreview()">
+            <input type="text" id="q-ref" class="input-dark" placeholder="N° / Código interno" oninput="renderPreview()">
+          </div>
+          <div class="grid grid-cols-[1fr_1.2fr] gap-3">
+            <select id="q-currency" class="input-dark" onchange="handleCurrencyChange()">
+              <option value="CLP">Pesos chilenos (CLP)</option>
+              <option value="UF">Unidad de Fomento (UF)</option>
+            </select>
+</div>
+          
+<select id="q-client" class="input-dark" onchange="checkNewClient(this)">
+  <option value="">Seleccionar cliente</option>
+</select>
 
-    <div id="quick-view-modal">
-        <div id="qv-header">
-            <button onclick="closeQuickView()" class="text-white text-xl font-bold bg-slate-800 px-4 py-2 rounded-lg">CERRAR</button>
-            <div class="flex gap-4">
-                <button id="qv-share-btn" class="icon-btn text-emerald-400">🔗</button>
-                <button id="qv-download-btn" class="icon-btn text-blue-400">⬇️</button>
-            </div>
+          <input type="text" id="q-project" placeholder="Proyecto / referencia del servicio" class="input-dark" oninput="renderPreview()">
+          <input type="text" id="q-location" placeholder="Ubicación / comuna del proyecto" class="input-dark" oninput="renderPreview()">
+          <textarea id="q-service-desc" class="input-dark h-40 resize-none" oninput="renderPreview()" placeholder="Descripción del servicio. Ej.: Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para un terreno de 5.000 m² aprox., ubicado en..."></textarea>
         </div>
-        <div id="qv-body">
-            <div id="cloned-pdf-wrapper"></div>
+
+        <div class="bg-slate-900/80 p-5 rounded-3xl border border-slate-800 space-y-3 shadow-2xl">
+          <textarea id="i-name" placeholder="Detalle técnico del servicio..." class="input-dark h-32 resize-none"></textarea>
+          <div class="grid grid-cols-[80px_1fr] gap-3">
+            <input type="number" id="i-qty" value="1" class="input-dark text-center">
+            <input type="number" id="i-price" placeholder="Precio neto" class="input-dark">
+          </div>
+          <button onclick="addItem()" class="btn w-full bg-blue-700 hover:bg-blue-600 text-white uppercase text-xs">Agregar ítem técnico</button>
         </div>
-    </div>
 
-    <div id="sec-edit" class="tab-content active">
-        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
-            <div class="lg:w-[400px] space-y-4">
-                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700 space-y-3">
-                    <input type="date" id="q-date-input" class="input-dark">
-                    <select id="q-client" class="input-dark" onchange="checkNewClient(this)"></select>
-                    <input type="text" id="q-desc" placeholder="Referencia del proyecto..." class="input-dark" oninput="renderPreview()">
-                </div>
-
-                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4 shadow-2xl">
-                    <textarea id="i-name" placeholder="Descripción..." class="input-dark h-24 text-sm resize-none"></textarea>
-                    <div class="flex gap-3">
-                        <input type="number" id="i-qty" value="1" class="input-dark text-center w-20">
-                        <input type="number" id="i-price" placeholder="$ Precio" class="input-dark flex-1">
-                        <label for="f-img" id="img-btn" class="bg-slate-700 px-4 rounded-xl flex items-center justify-center cursor-pointer min-w-[54px]">📷</label>
-                    </div>
-                    <input type="file" id="f-img" class="hidden" accept="image/*" onchange="handleImg(this)">
-                    <div id="img-status" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-emerald-300 font-bold"></div>
-                    <button onclick="addItem()" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs uppercase">Agregar Ítem</button>
-                </div>
-
-                <div id="items-list" class="space-y-2"></div>
-                <button onclick="saveAndSend()" class="w-full bg-emerald-500 py-6 rounded-2xl font-black text-lg uppercase shadow-2xl">Guardar y Enviar PDF</button>
-            </div>
-
-            <div id="preliminar-container">
-                <div id="pdf-preview-wrapper">
-                    <div id="pdf-canvas" class="pdf-page">
-                        <div style="flex: 1;">
-                            <div style="display:flex; justify-content:space-between; align-items: flex-start; margin-bottom: 25px; border-bottom: 4px solid #0f172a; padding-bottom: 15px;">
-                                <img src="logo.png" style="height:70px; width:auto; object-fit:contain; display:block;">
-                                <div style="text-align:right;">
-                                    <h2 id="p-folio" style="font-size:18px; font-weight:900; margin:0; color:#0f172a;">COT-1000</h2>
-                                    <p style="font-size:11px; margin:3px 0 0; color:#64748b;">FECHA: <b id="p-date" style="color:#0f172a"></b></p>
-                                </div>
-                            </div>
-
-                            <div style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:30px; display:flex; justify-content:space-between;">
-                                <div style="width: 65%;">
-                                    <p style="font-size: 8px; color: #64748b; font-weight: 900; text-transform: uppercase; margin:0;">En atención a:</p>
-                                    <b id="p-client" style="font-size: 16px; text-transform: uppercase; color: #0f172a;">---</b>
-                                    <p id="p-address-val" style="font-size: 11px; margin: 5px 0 0; color: #475569;"></p>
-                                </div>
-                                <div style="width: 30%; text-align: right; border-left: 2px solid #e2e8f0; padding-left: 15px;">
-                                    <p style="font-size: 8px; color: #64748b; font-weight: 900; text-transform: uppercase; margin:0;">Contacto:</p>
-                                    <p id="p-contact-val" style="font-size: 11px; color: #0f172a; font-weight: 600;"></p>
-                                </div>
-                            </div>
-
-                            <table style="width:100%; border-collapse:collapse;">
-                                <thead>
-                                    <tr style="background:#0f172a; color:white; font-size:10px; text-transform:uppercase;">
-                                        <th style="padding:12px 8px; width:45px;">Cant</th>
-                                        <th style="padding:12px 8px; text-align:left;">Descripción</th>
-                                        <th style="padding:12px 8px; width:110px; text-align:center;">Imagen Ref.</th>
-                                        <th style="padding:12px 8px; width:90px; text-align:right;">P. Unit.</th>
-                                        <th style="padding:12px 8px; width:100px; text-align:right;">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="p-body"></tbody>
-                            </table>
-                        </div>
-
-                        <div style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 25px;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-                                <div style="width: 330px; background: #f0f9ff; border: 1px solid #bae6fd; padding: 15px; border-radius: 12px;">
-                                    <b style="font-size: 9px; color: #0369a1;">PAGO POR TRANSFERENCIA</b>
-                                    <div style="font-size: 11px; color: #0c4a6e; line-height: 1.6; margin-top: 8px;"><b>Banco Estado</b> | Vista<br><b>N°:</b> 37370574546 | <b>RUT:</b> 76.823.326-8<br><b>LABORATORIO CREATIVO EUREKA SPA</b></div>
-                                </div>
-                                <div style="width: 240px; text-align: right;">
-                                    <div style="display:flex; justify-content:space-between; font-size: 13px;"><span>Neto:</span><b id="p-sub"></b></div>
-                                    <div style="display:flex; justify-content:space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 2px solid #ddd; padding-bottom: 5px;"><span>IVA:</span><b id="p-iva"></b></div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:11px; font-weight:900; color:#3b82f6;">TOTAL</span><h2 id="p-total" style="font-size:30px; font-weight:900; color:#0f172a; margin:0;"></h2></div>
-                                </div>
-                            </div>
-
-                            <div style="border-top: 3px solid #0f172a; padding-top: 18px; font-size: 10px; color: #475569; text-align: center;">
-                                <div style="font-size: 11px; font-weight: 900; color:#0f172a; margin-bottom: 8px;">LABORATORIO CREATIVO EUREKA SPA</div>
-                                <div style="display:flex; justify-content:center; align-items:center; gap: 14px; flex-wrap: nowrap; white-space: nowrap;">
-                                    <span>📍 Manuel Rodríguez 723, Isla de Maipo</span>
-                                    <span>📧 contacto@eurekalaboratorio.cl</span>
-                                    <span>🌐 www.eurekalaboratorio.cl</span>
-                                    <span>📞 +56 9 8827 7250</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="sec-hist" class="tab-content">
-        <input type="text" id="search-hist" placeholder="🔍 Buscar..." class="input-dark mb-6" oninput="renderHistory()">
-        <div id="history-content" class="space-y-4 max-w-2xl mx-auto"></div>
-    </div>
-
-    <div id="sec-clients" class="tab-content">
-        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4 mb-8 max-w-md mx-auto">
-            <input type="text" id="c-name" placeholder="Nombre Empresa" class="input-dark">
-            <input type="text" id="c-phone" placeholder="WhatsApp" class="input-dark">
-            <input type="text" id="c-address" placeholder="Dirección" class="input-dark">
-            <button onclick="saveClient()" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs uppercase">Guardar En atención a</button>
-        </div>
-        <div id="clients-list" class="space-y-4 max-w-md mx-auto"></div>
-    </div>
-
-    <script>
-        let items = [], tempImg = null, editingId = null;
         
-        // Inicialización segura de la fecha local
-        const hoy = new Date();
-        const offset = hoy.getTimezoneOffset();
-        const localDate = new Date(hoy.getTime() - (offset * 60 * 1000));
-        document.getElementById('q-date-input').value = localDate.toISOString().split('T')[0];
-
-        window.addEventListener('load', () => {
-            initCotizadorZoom(true);
-            renderPreview();
-        });
-
-        function navTo(sec) {
-            closeQuickView();
-            ['edit', 'hist', 'clients'].forEach(s => {
-                const element = document.getElementById('sec-'+s);
-                if (element) element.classList.toggle('active', s === sec);
-                const btn = document.getElementById('m-'+s);
-                if (btn) {
-                    btn.classList.toggle('text-blue-500', s === sec);
-                    btn.classList.toggle('border-blue-500', s === sec);
-                    btn.classList.toggle('text-slate-500', s !== sec);
-                    btn.classList.toggle('border-transparent', s !== sec);
-                }
-            });
-            window.scrollTo(0,0);
-        }
-
-        const internalZoom = {};
-
-        function distTouches(touches) {
-            const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[1].clientY;
-            return Math.hypot(dx, dy);
-        }
-
-        function centerTouches(touches) {
-            return {
-                x: (touches[0].clientX + touches[1].clientX) / 2,
-                y: (touches[0].clientY + touches[1].clientY) / 2
-            };
-        }
-
-        function applyInternalZoom(contentId) {
-            const content = document.getElementById(contentId);
-            const st = internalZoom[contentId];
-            if (!content || !st) return;
-            content.style.transform = `translate3d(${st.x}px, ${st.y}px, 0) scale(${st.scale})`;
-        }
-
-        function fitInternalZoom(containerId, contentId) {
-            const container = document.getElementById(containerId);
-            const content = document.getElementById(contentId);
-            if (!container || !content) return;
-
-            const page = content.querySelector('.pdf-page') || content;
-            const cw = container.clientWidth;
-            const ch = container.clientHeight;
-            const pw = page.offsetWidth;
-            const ph = page.offsetHeight;
-
-            if (!cw || !ch || !pw || !ph) {
-                setTimeout(() => fitInternalZoom(containerId, contentId), 150);
-                return;
-            }
-
-            const pad = 16;
-            const fit = Math.min((cw - pad * 2) / pw, (ch - pad * 2) / ph);
-            const scale = Math.max(0.12, Math.min(1, fit));
-
-            internalZoom[contentId] = {
-                scale,
-                minScale: scale,
-                maxScale: 4,
-                x: (cw - pw * scale) / 2,
-                y: Math.max(8, (ch - ph * scale) / 2),
-                dragging: false,
-                startX: 0,
-                startY: 0,
-                startDist: 0,
-                startScale: scale,
-                pinchStartX: 0,
-                pinchStartY: 0,
-                pinchCenterX: 0,
-                pinchCenterY: 0
-            };
-
-            applyInternalZoom(contentId);
-        }
-
-        function setupInternalZoom(containerId, contentId) {
-            const container = document.getElementById(containerId);
-            if (!container || container.dataset.internalZoomReady === "1") return;
-
-            container.dataset.internalZoomReady = "1";
-
-            container.addEventListener('touchstart', function(e) {
-                const st = internalZoom[contentId];
-                if (!st) return;
-
-                if (e.touches.length === 1) {
-                    e.preventDefault();
-                    st.dragging = true;
-                    st.startX = e.touches[0].clientX - st.x;
-                    st.startY = e.touches[0].clientY - st.y;
-                }
-
-                if (e.touches.length === 2) {
-                    e.preventDefault();
-                    st.dragging = false;
-                    st.startDist = distTouches(e.touches);
-                    st.startScale = st.scale;
-
-                    const c = centerTouches(e.touches);
-                    st.pinchCenterX = c.x;
-                    st.pinchCenterY = c.y;
-                    st.pinchStartX = st.x;
-                    st.pinchStartY = st.y;
-                }
-            }, { passive: false });
-
-            container.addEventListener('touchmove', function(e) {
-                const st = internalZoom[contentId];
-                if (!st) return;
-                e.preventDefault();
-
-                if (e.touches.length === 1 && st.dragging) {
-                    st.x = e.touches[0].clientX - st.startX;
-                    st.y = e.touches[0].clientY - st.startY;
-                    applyInternalZoom(contentId);
-                }
-
-                if (e.touches.length === 2 && st.startDist > 0) {
-                    const newDist = distTouches(e.touches);
-                    const rawScale = st.startScale * (newDist / st.startDist);
-                    const newScale = Math.min(st.maxScale, Math.max(st.minScale, rawScale));
-                    const ratio = newScale / st.startScale;
-
-                    const c = centerTouches(e.touches);
-                    st.scale = newScale;
-                    st.x = c.x - (st.pinchCenterX - st.pinchStartX) * ratio;
-                    st.y = c.y - (st.pinchCenterY - st.pinchStartY) * ratio;
-
-                    applyInternalZoom(contentId);
-                }
-            }, { passive: false });
-
-            container.addEventListener('touchend', function(e) {
-                const st = internalZoom[contentId];
-                if (!st) return;
-                if (e.touches.length === 0) {
-                    st.dragging = false;
-                    st.startDist = 0;
-                }
-            }, { passive: false });
-
-            container.addEventListener('dblclick', function(e) {
-                const st = internalZoom[contentId];
-                if (!st) return;
-                e.preventDefault();
-
-                if (st.scale <= st.minScale + 0.03) {
-                    st.scale = Math.min(2, st.maxScale);
-                    st.x = 20;
-                    st.y = 20;
-                    applyInternalZoom(contentId);
-                } else {
-                    fitInternalZoom(containerId, contentId);
-                }
-            });
-        }
-
-        function initCotizadorZoom(force = false) {
-            setupInternalZoom('preliminar-container', 'pdf-preview-wrapper');
-            if (force || !internalZoom['pdf-preview-wrapper']) {
-                setTimeout(() => fitInternalZoom('preliminar-container', 'pdf-preview-wrapper'), 120);
-            }
-        }
-
-        function initHistorialZoom() {
-            delete internalZoom['cloned-pdf-wrapper'];
-            setupInternalZoom('qv-body', 'cloned-pdf-wrapper');
-            setTimeout(() => fitInternalZoom('qv-body', 'cloned-pdf-wrapper'), 180);
-        }
-
-        function loadLogoForPDF() {
-            return new Promise(resolve => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-
-                img.onload = () => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.naturalWidth || img.width;
-                        canvas.height = img.naturalHeight || img.height;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-
-                        resolve({
-                            data: canvas.toDataURL('image/png'),
-                            width: canvas.width,
-                            height: canvas.height
-                        });
-                    } catch(e) {
-                        resolve(null);
-                    }
-                };
-
-                img.onerror = () => resolve(null);
-                img.src = "logo.png";
-            });
-        }
-
-        function escapeHtmlSafe(value) {
-            return String(value ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function formatCLP(value) {
-            return "$" + Number(value || 0).toLocaleString('es-CL');
-        }
-
-        function buildQuotePreviewHTML(h) {
-            const quoteItems = h.items || [];
-            const neto = quoteItems.reduce((s, it) => s + Number(it.total || 0), 0);
-            const iva = Math.round(neto * 0.19);
-            const total = neto + iva;
-            const dateText = h.date ? new Date(h.date + 'T12:00:00').toLocaleDateString('es-CL') : '--/--/----';
-
-            const rows = quoteItems.map(it => `
-                <tr>
-                    <td style="padding:15px 8px; text-align:center; font-weight:700; font-size:15px;">${escapeHtmlSafe(it.qty || '')}</td>
-                    <td style="padding:15px 8px; font-size:13px; line-height:1.4;">${escapeHtmlSafe(it.name || '')}</td>
-                    <td style="padding:15px 8px; text-align:center;">${it.img ? `<img src="${it.img}" style="max-height:30mm; max-width:30mm; object-fit:contain; border-radius:6px;">` : ''}</td>
-                    <td style="padding:15px 8px; text-align:right; font-weight:800; font-size:13px;">${formatCLP(it.price)}</td>
-                    <td style="padding:15px 8px; text-align:right; font-weight:800; font-size:14px;">${formatCLP(it.total)}</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="pdf-page" style="background:white !important; color:#1e293b !important; width:210mm; min-height:297mm; padding:15mm; display:flex; flex-direction:column; box-sizing:border-box; margin:0 auto;">
-                    <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:25px; border-bottom:4px solid #0f172a; padding-bottom:15px;">
-                            <img src="logo.png" style="height:70px; width:auto; object-fit:contain; display:block;">
-                            <div style="text-align:right;">
-                                <h2 style="font-size:18px; font-weight:900; margin:0; color:#0f172a;">COT-${escapeHtmlSafe(h.folio || '')} | ${escapeHtmlSafe((h.desc || 'GENERAL').toUpperCase())}</h2>
-                                <p style="font-size:11px; margin:3px 0 0; color:#64748b;">FECHA: <b style="color:#0f172a">${dateText}</b></p>
-                            </div>
-                        </div>
-
-                        <div style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:30px; display:flex; justify-content:space-between;">
-                            <div style="width:65%;">
-                                <p style="font-size:8px; color:#64748b; font-weight:900; text-transform:uppercase; margin:0;">En atención a:</p>
-                                <b style="font-size:16px; text-transform:uppercase; color:#0f172a;">${escapeHtmlSafe(h.client || '---')}</b>
-                            </div>
-                            <div style="width:30%; text-align:right; border-left:2px solid #e2e8f0; padding-left:15px;">
-                                <p style="font-size:8px; color:#64748b; font-weight:900; text-transform:uppercase; margin:0;">Contacto:</p>
-                                <p style="font-size:11px; color:#0f172a; font-weight:600;"></p>
-                            </div>
-                        </div>
-
-                        <table style="width:100%; border-collapse:collapse;">
-                            <thead>
-                                <tr style="background:#0f172a; color:white; font-size:10px; text-transform:uppercase;">
-                                    <th style="padding:12px 8px; width:45px;">Cant</th>
-                                    <th style="padding:12px 8px; text-align:left;">Descripción</th>
-                                    <th style="padding:12px 8px; width:110px; text-align:center;">Imagen Ref.</th>
-                                    <th style="padding:12px 8px; width:90px; text-align:right;">P. Unit.</th>
-                                    <th style="padding:12px 8px; width:100px; text-align:right;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-
-                    <div style="margin-top:50px; border-top:1px solid #eee; padding-top:25px;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px;">
-                            <div style="width:330px; background:#f0f9ff; border:1px solid #bae6fd; padding:15px; border-radius:12px;">
-                                <b style="font-size:9px; color:#0369a1;">PAGO POR TRANSFERENCIA</b>
-                                <div style="font-size:11px; color:#0c4a6e; line-height:1.6; margin-top:8px;"><b>Banco Estado</b> | Vista<br><b>N°:</b> 37370574546 | <b>RUT:</b> 76.823.326-8<br><b>LABORATORIO CREATIVO EUREKA SPA</b></div>
-                            </div>
-                            <div style="width:240px; text-align:right;">
-                                <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Neto:</span><b>${formatCLP(neto)}</b></div>
-                                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; border-bottom:2px solid #ddd; padding-bottom:5px;"><span>IVA:</span><b>${formatCLP(iva)}</b></div>
-                                <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:11px; font-weight:900; color:#3b82f6;">TOTAL</span><h2 style="font-size:30px; font-weight:900; color:#0f172a; margin:0;">${formatCLP(total)}</h2></div>
-                            </div>
-                        </div>
-                        <div style="border-top:3px solid #0f172a; padding-top:18px; font-size:10px; color:#475569; text-align:center;">
-                            <div style="font-size:11px; font-weight:900; color:#0f172a; margin-bottom:8px;">LABORATORIO CREATIVO EUREKA SPA</div>
-                            <div style="display:flex; justify-content:center; align-items:center; gap:14px; flex-wrap:nowrap; white-space:nowrap;">
-                                <span>📍 Manuel Rodríguez 723, Isla de Maipo</span>
-                                <span>📧 contacto@eurekalaboratorio.cl</span>
-                                <span>🌐 www.eurekalaboratorio.cl</span>
-                                <span>📞 +56 9 8827 7250</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        function openQuickViewById(id) {
-            const h = (window.historial || []).find(x => x.id === id);
-            if(!h) return alert("No se encontró la cotización seleccionada");
-            openQuickView(h);
-        }
-
-        async function openQuickView(h) {
-            const modal = document.getElementById('quick-view-modal');
-            const wrapper = document.getElementById('cloned-pdf-wrapper');
-
-            wrapper.innerHTML = buildQuotePreviewHTML(h);
-
-            document.getElementById('qv-share-btn').onclick = () => generateAndSharePDF(h.folio, h.client, 'share', h);
-            document.getElementById('qv-download-btn').onclick = () => generateAndSharePDF(h.folio, h.client, 'save', h);
-
-            modal.style.display = "flex";
-            document.body.style.overflow = "hidden";
-            initHistorialZoom();
-        }
-
-        function closeQuickView() {
-            const modal = document.getElementById('quick-view-modal');
-            const wrapper = document.getElementById('cloned-pdf-wrapper');
-            if(!modal || !wrapper) return;
-            modal.style.display = "none";
-            wrapper.innerHTML = "";
-            wrapper.style.transform = "";
-            delete internalZoom["cloned-pdf-wrapper"];
-            document.body.style.overflow = "";
-        }
-
-        async function generateAndSharePDF(folio, clientName, mode, quoteData = null) {
-            try {
-                const JsPDFClass = window.jspdf?.jsPDF || window.jsPDF;
-
-                if(!JsPDFClass) {
-                    alert("Error generando PDF: no se cargó jsPDF. Revisa conexión a internet o CDN.");
-                    return;
-                }
-
-                const q = quoteData || {
-                    folio: folio,
-                    client: document.getElementById('q-client').value,
-                    items: [...items],
-                    date: document.getElementById('q-date-input').value,
-                    desc: document.getElementById('q-desc').value || ""
-                };
-
-                const pdf = new JsPDFClass({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                const pageW = 210;
-                const pageH = 297;
-                const m = 15;
-                const contentW = pageW - (m * 2);
-                const money = n => "$" + Number(n || 0).toLocaleString('es-CL');
-                const fmtDate = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CL') : "--/--/----";
-                const clientObj = (window.clientes || []).find(c => c.name === q.client) || {};
-                const neto = (q.items || []).reduce((s, it) => s + Number(it.total || 0), 0);
-                const iva = Math.round(neto * 0.19);
-                const total = neto + iva;
-
-                const logoPDF = await loadLogoForPDF();
-
-                let y = 15;
-
-                function addPageIfNeeded(needed) {
-                    if(y + needed > pageH - 18) {
-                        pdf.addPage();
-                        y = 15;
-                        drawHeader(true);
-                    }
-                }
-
-                function drawHeader(compact = false) {
-                    pdf.setTextColor(15, 23, 42);
-
-                    if(!compact) {
-                        if(logoPDF && logoPDF.data) {
-                            const logoW = 62;
-                            const logoH = logoW / (logoPDF.width / logoPDF.height);
-                            pdf.addImage(logoPDF.data, 'PNG', m, y, logoW, logoH);
-                        }
-
-                        pdf.setFontSize(16);
-                        pdf.setFont(undefined, 'bold');
-
-                        const descText = (q.desc || 'GENERAL').toUpperCase();
-                        pdf.text(`COT-${q.folio || folio} | ${descText}`, pageW - m, y + 7, { align: 'right' });
-
-                        pdf.setFontSize(8);
-                        pdf.setFont(undefined, 'normal');
-                        pdf.setTextColor(100, 116, 139);
-                        pdf.text(`FECHA: ${fmtDate(q.date)}`, pageW - m, y + 13, { align: 'right' });
-
-                        y += 24;
-
-                        pdf.setDrawColor(15, 23, 42);
-                        pdf.setLineWidth(1.2);
-                        pdf.line(m, y, pageW - m, y);
-                        y += 8;
-
-                        pdf.setFillColor(248, 250, 252);
-                        pdf.setDrawColor(226, 232, 240);
-                        pdf.roundedRect(m, y, contentW, 24, 3, 3, 'FD');
-
-                        pdf.setFontSize(7);
-                        pdf.setFont(undefined, 'bold');
-                        pdf.setTextColor(100, 116, 139);
-                        pdf.text("EN ATENCIÓN A:", m + 4, y + 7);
-
-                        pdf.setFontSize(11);
-                        pdf.setTextColor(15, 23, 42);
-                        pdf.text(String(q.client || "---").toUpperCase(), m + 4, y + 13, { maxWidth: 110 });
-
-                        pdf.setFontSize(8);
-                        pdf.setFont(undefined, 'normal');
-                        pdf.setTextColor(71, 85, 105);
-                        if(clientObj.address) pdf.text(String(clientObj.address), m + 4, y + 19, { maxWidth: 110 });
-
-                        pdf.setFontSize(7);
-                        pdf.setFont(undefined, 'bold');
-                        pdf.setTextColor(100, 116, 139);
-                        pdf.text("CONTACTO:", pageW - m - 52, y + 7);
-
-                        pdf.setFontSize(8);
-                        pdf.setTextColor(15, 23, 42);
-                        if(clientObj.phone) pdf.text(String(clientObj.phone), pageW - m - 52, y + 13, { maxWidth: 48 });
-
-                        y += 32;
-                    } else {
-                        pdf.setFontSize(9);
-                        pdf.setFont(undefined, 'bold');
-                        pdf.text(`COT-${q.folio || folio} / ${String(q.client || "---").toUpperCase()}`, m, y);
-                        y += 6;
-                    }
-
-                    drawTableHeader();
-                }
-
-                function drawTableHeader() {
-                    pdf.setFillColor(15, 23, 42);
-                    pdf.rect(m, y, contentW, 9, 'F');
-
-                    pdf.setFontSize(7);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.setTextColor(255, 255, 255);
-
-                    pdf.text("CANT", m + 4, y + 6);
-                    pdf.text("DESCRIPCIÓN", m + 22, y + 6);
-                    pdf.text("IMAGEN", m + 108, y + 6);
-                    pdf.text("P. UNIT.", m + 151, y + 6, { align: 'right' });
-                    pdf.text("TOTAL", pageW - m - 3, y + 6, { align: 'right' });
-
-                    y += 9;
-                }
-
-                function drawFooter() {
-                    addPageIfNeeded(55);
-
-                    if (y < pageH - 76) {
-                        y = pageH - 76;
-                    } else {
-                        y += 8;
-                    }
-
-                    pdf.setFillColor(240, 249, 255);
-                    pdf.setDrawColor(186, 230, 253);
-                    pdf.roundedRect(m, y, 90, 28, 3, 3, 'FD');
-
-                    pdf.setFontSize(7);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.setTextColor(3, 105, 161);
-                    pdf.text("PAGO POR TRANSFERENCIA", m + 4, y + 6);
-
-                    pdf.setFontSize(8);
-                    pdf.setFont(undefined, 'normal');
-                    pdf.setTextColor(12, 74, 110);
-                    pdf.text("Banco Estado | Vista", m + 4, y + 12);
-                    pdf.text("N°: 37370574546 | RUT: 76.823.326-8", m + 4, y + 18);
-                    pdf.text("LABORATORIO CREATIVO EUREKA SPA", m + 4, y + 24);
-
-                    const tx = pageW - m - 60;
-                    pdf.setFontSize(9);
-                    pdf.setTextColor(15, 23, 42);
-                    pdf.text("Neto:", tx, y + 7);
-                    pdf.text(money(neto), pageW - m, y + 7, { align: 'right' });
-                    pdf.text("IVA:", tx, y + 14);
-                    pdf.text(money(iva), pageW - m, y + 14, { align: 'right' });
-
-                    pdf.setFontSize(15);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text("TOTAL", tx, y + 25);
-                    pdf.text(money(total), pageW - m, y + 25, { align: 'right' });
-
-                    y += 38;
-
-                    pdf.setDrawColor(15, 23, 42);
-                    pdf.setLineWidth(0.8);
-                    pdf.line(m, y, pageW - m, y);
-                    y += 7;
-
-                    pdf.setFontSize(8);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.setTextColor(15, 23, 42);
-                    pdf.text("LABORATORIO CREATIVO EUREKA SPA", pageW / 2, y, { align: 'center' });
-
-                    y += 7;
-
-                    pdf.setFontSize(6.6);
-                    pdf.setFont(undefined, 'normal');
-                    pdf.setTextColor(71, 85, 105);
-
-                    pdf.setDrawColor(59, 130, 246);
-                    pdf.setFillColor(59, 130, 246);
-                    pdf.setLineWidth(0.3);
-
-                    const footerY = y;
-                    const footerStartX = 23;
-                    const itemGap = 43;
-                    const textOffset = 5;
-
-                    const locX = footerStartX;
-                    const mailX = footerStartX + itemGap + 10;
-                    const webIconX = footerStartX + (itemGap * 2) + 22;
-                    const telIconX = footerStartX + (itemGap * 3) + 26;
-
-                    pdf.circle(locX + 1.8, footerY - 0.65, 1.15, 'S');
-                    pdf.circle(locX + 1.8, footerY - 0.65, 0.32, 'F');
-                    pdf.line(locX + 1.8, footerY + 0.5, locX + 1.8, footerY + 1.3);
-                    pdf.text("Manuel Rodríguez 723, Isla de Maipo", locX + textOffset, footerY);
-
-                    pdf.rect(mailX + 0.2, footerY - 1.75, 3.2, 2.2, 'S');
-                    pdf.line(mailX + 0.2, footerY - 1.75, mailX + 1.8, footerY - 0.45);
-                    pdf.line(mailX + 3.4, footerY - 1.75, mailX + 1.8, footerY - 0.45);
-                    pdf.text("contacto@eurekalaboratorio.cl", mailX + textOffset, footerY);
-
-                    pdf.circle(webIconX + 1.8, footerY - 0.65, 1.5, 'S');
-                    pdf.line(webIconX + 0.35, footerY - 0.65, webIconX + 3.25, footerY - 0.65);
-                    pdf.line(webIconX + 1.8, footerY - 2.15, webIconX + 1.8, footerY + 0.85);
-                    pdf.text("www.eurekalaboratorio.cl", webIconX + textOffset, footerY);
-
-                    pdf.roundedRect(telIconX + 0.6, footerY - 2.15, 2.5, 3.1, 0.5, 0.5, 'S');
-                    pdf.circle(telIconX + 1.85, footerY + 0.45, 0.18, 'F');
-                    pdf.text("+56 9 8827 7250", telIconX + textOffset, footerY);
-                }
-
-                function drawItemRow(it) {
-                    const desc = String(it.name || "");
-                    const lines = pdf.splitTextToSize(desc, 78);
-                    const lineH = 4.4;
-                    const maxLinesPerPart = 38;
-                    let index = 0;
-                    let part = 0;
-
-                    while(index < lines.length || part === 0) {
-                        const remaining = lines.length - index;
-                        const take = Math.max(1, Math.min(maxLinesPerPart, remaining || 1));
-                        const partLines = lines.slice(index, index + take);
-
-                        const hasImage = part === 0 && it.img;
-                        const rowH = Math.max(12, partLines.length * lineH + 7, hasImage ? 24 : 0);
-
-                        addPageIfNeeded(rowH + 2);
-
-                        pdf.setDrawColor(226, 232, 240);
-                        pdf.setLineWidth(0.2);
-                        pdf.rect(m, y, contentW, rowH);
-
-                        pdf.setFontSize(8);
-                        pdf.setFont(undefined, 'bold');
-                        pdf.setTextColor(15, 23, 42);
-
-                        if(part === 0) {
-                            pdf.text(String(it.qty || ""), m + 7, y + 8, { align: 'center' });
-                        }
-
-                        pdf.setFontSize(8);
-                        pdf.setFont(undefined, 'normal');
-                        pdf.text(partLines, m + 22, y + 7, { maxWidth: 78 });
-
-                        if(hasImage) {
-                            try {
-                                pdf.addImage(it.img, 'JPEG', m + 107, y + 3, 24, 18);
-                            } catch(e) {}
-                        }
-
-                        if(part === 0) {
-                            pdf.setFont(undefined, 'bold');
-                            pdf.text(money(it.price || 0), m + 151, y + 8, { align: 'right' });
-                            pdf.text(money(it.total), pageW - m - 3, y + 8, { align: 'right' });
-                        }
-
-                        y += rowH;
-                        index += take;
-                        part++;
-                    }
-                }
-
-                drawHeader(false);
-                (q.items || []).forEach(drawItemRow);
-                drawFooter();
-
-                if(mode === 'share' && navigator.share) {
-                    const pdfBlob = pdf.output('blob');
-                    const file = new File([pdfBlob], `COT_${q.folio || folio}.pdf`, { type: 'application/pdf' });
-                    await navigator.share({ files: [file], title: `Cotización #${q.folio || folio}` });
-                } else {
-                    pdf.save(`COT_${q.folio || folio}.pdf`);
-                }
-
-            } catch(err) {
-                console.error(err);
-                alert("Error generando PDF: " + (err.message || err));
-            }
-        }
-
-        async function saveAndSend() {
-            const c = document.getElementById('q-client').value; 
-            if(!c || items.length === 0) return alert("Faltan datos");
-
-            let f = editingId ? window.currentFolio : window.nextFolio;
-
-            if(!editingId) {
-                await fb.runTransaction(fb.db, async (t) => {
-                    const snap = await t.get(fb.doc(fb.db, "config", "eureka_erp_v10"));
-                    f = snap.exists() ? snap.data().lastFolio : 1000;
-                    t.update(fb.doc(fb.db, "config", "eureka_erp_v10"), { lastFolio: f + 1 });
-                });
-            }
-
-            const data = { 
-                folio: f, 
-                client: c, 
-                items, 
-                date: document.getElementById('q-date-input').value, 
-                neto: items.reduce((s,i)=>s+i.total,0), 
-                desc: document.getElementById('q-desc').value 
-            };
-
-            if(editingId) await fb.setDoc(fb.doc(fb.db, "erp_cotizaciones", editingId), data);
-            else await fb.addDoc(fb.collection(fb.db, "erp_cotizaciones"), data);
-
-            await generateAndSharePDF(f, c, 'share');
-            items = []; 
-            editingId = null; 
-            renderPreview();
-        }
-
-        function renderHistory() {
-            const s = document.getElementById('search-hist').value.toLowerCase();
-            const data = window.historial || [];
-            const filtered = data.filter(h => (h.client || '').toLowerCase().includes(s) || String(h.folio || '').includes(s));
-            document.getElementById('history-content').innerHTML = filtered.map(h => `
-                <div class="bg-slate-800 p-5 rounded-2xl border-l-4 border-blue-500 shadow-xl flex justify-between items-center">
-                    <div class="truncate mr-4"><b class="text-white uppercase text-sm">${h.client}</b><br><small class="text-blue-400 font-bold">#${h.folio}</small></div>
-                    <div class="flex gap-2">
-                        <button onclick="openQuickViewById('${h.id}')" class="icon-btn">🔍</button>
-                        <button onclick="loadEdit('${h.id}')" class="icon-btn text-blue-400">✏️</button>
-                        <button onclick="if(confirm('¿Borrar?')) fb.deleteDoc(fb.doc(fb.db,'erp_cotizaciones','${h.id}'))" class="icon-btn text-red-400">🗑️</button>
-                    </div>
-                </div>`).join('');
-        }
-
-        function updateUI() {
-            const sel = document.getElementById('q-client');
-            if (!sel) return;
-            const currentVal = sel.value;
-            sel.innerHTML = '<option value="">-- CLIENTE --</option><option value="NEW">➕ NUEVO</option>';
-            (window.clientes || []).forEach(c => sel.innerHTML += `<option value="${c.name}">${c.name}</option>`);
-            sel.value = currentVal;
-            
-            const listEl = document.getElementById('clients-list');
-            if (listEl) {
-                listEl.innerHTML = (window.clientes || []).map(c => `<div class="bg-slate-800 p-5 rounded-2xl flex justify-between border border-slate-700 items-center"><b>${c.name}</b><button onclick="fb.deleteDoc(fb.doc(fb.db,'erp_clientes','${c.id}'))" class="icon-btn text-red-400">🗑️</button></div>`).join('');
-            }
-        }
-
-        function addItem() {
-            const n = document.getElementById('i-name').value.toUpperCase().trim();
-            const p = Number(document.getElementById('i-price').value);
-            const q = Number(document.getElementById('i-qty').value);
-
-            if(!n || p <= 0 || q <= 0) return alert("Completa descripción, cantidad y precio");
-
-            items.push({
-                name: n,
-                price: p,
-                qty: q,
-                total: p * q,
-                img: tempImg || null
-            });
-
-            document.getElementById('i-name').value = "";
-            document.getElementById('i-price').value = "";
-            document.getElementById('i-qty').value = "1";
-
-            tempImg = null;
-
-            const fileInput = document.getElementById('f-img');
-            const status = document.getElementById('img-status');
-            const btn = document.getElementById('img-btn');
-
-            if(fileInput) fileInput.value = "";
-            if(status) {
-                status.classList.add('hidden');
-                status.innerHTML = "";
-            }
-            if(btn) btn.innerText = "📷";
-
-            renderPreview();
-        }
-
-        function editItem(i) {
-            const it = items[i];
-            if(!it) return;
-
-            document.getElementById('i-name').value = it.name || "";
-            document.getElementById('i-price').value = it.price || "";
-            document.getElementById('i-qty').value = it.qty || 1;
-
-            tempImg = it.img || null;
-
-            const status = document.getElementById('img-status');
-            const btn = document.getElementById('img-btn');
-
-            if(tempImg && status) {
-                status.classList.remove('hidden');
-                status.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <img src="${tempImg}" style="width:42px;height:42px;object-fit:cover;border-radius:8px;">
-                        <span>Editando imagen del ítem.</span>
-                    </div>`;
-            }
-
-            if(btn && tempImg) btn.innerText = "✅";
-
-            items.splice(i,1);
-            renderPreview();
-
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        function renderPreview() {
-            const d = document.getElementById('q-date-input').value;
-            const dateEl = document.getElementById('p-date');
-            if (dateEl) {
-                dateEl.innerText = d ? new Date(d+'T12:00:00').toLocaleDateString('es-CL') : '--/--/----';
-            }
-
-            const cName = document.getElementById('q-client').value;
-            const c = (window.clientes || []).find(x => x.name === cName) || {};
-            
-            const clientEl = document.getElementById('p-client');
-            const addressEl = document.getElementById('p-address-val');
-            const contactEl = document.getElementById('p-contact-val');
-            
-            if (clientEl) clientEl.innerText = c.name || '---';
-            if (addressEl) addressEl.innerText = c.address || '';
-            if (contactEl) contactEl.innerText = c.phone || '';
-
-            const f = editingId ? window.currentFolio : (window.nextFolio || 1000);
-            const folioEl = document.getElementById('p-folio');
-            if (folioEl) {
-                folioEl.innerText = `COT-${f} | ${(document.getElementById('q-desc').value || '').toUpperCase() || 'GENERAL'}`;
-            }
-
-            const bodyEl = document.getElementById('p-body');
-            if (bodyEl) {
-                bodyEl.innerHTML = items.map(it => `
-                    <tr>
-                        <td style="padding:15px 8px; text-align:center; font-weight:700; font-size:15px;">${it.qty}</td>
-                        <td style="padding:15px 8px; font-size:13px; line-height:1.4;">${it.name}</td>
-                        <td style="padding:15px 8px; text-align:center;">${it.img ? `<img src="${it.img}" style="max-height: 30mm; max-width: 30mm; object-fit: contain; border-radius:6px;">` : ''}</td>
-                        <td style="padding:15px 8px; text-align:right; font-weight:800; font-size:13px;">$${Number(it.price || 0).toLocaleString('es-CL')}</td>
-                        <td style="padding:15px 8px; text-align:right; font-weight:800; font-size:14px;">$${Number(it.total || 0).toLocaleString('es-CL')}</td>
-                    </tr>`).join('');
-            }
-
-            const n = items.reduce((s,i) => s + i.total, 0);
-            const v = Math.round(n * 0.19);
-            
-            const subEl = document.getElementById('p-sub');
-            const ivaEl = document.getElementById('p-iva');
-            const totalEl = document.getElementById('p-total');
-            
-            if (subEl) subEl.innerText = `$${n.toLocaleString('es-CL')}`;
-            if (ivaEl) ivaEl.innerText = `$${v.toLocaleString('es-CL')}`;
-            if (totalEl) totalEl.innerText = `$${(n + v).toLocaleString('es-CL')}`;
-
-            const listEl = document.getElementById('items-list');
-            if (listEl) {
-                listEl.innerHTML = items.map((it, i) => `
-                    <div class="flex justify-between bg-slate-800 p-4 rounded-xl border border-slate-700 items-center gap-3">
-                        ${it.img ? `<img src="${it.img}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">` : ''}
-                        <span class="truncate flex-1 text-white text-xs font-bold uppercase">${it.name}</span>
-                        <div class="flex items-center gap-2">
-                            <button onclick="editItem(${i})" class="text-blue-400 text-lg px-2">✏️</button>
-                            <button onclick="items.splice(${i},1);renderPreview();" class="text-red-500 text-xl px-2">✕</button>
-                        </div>
-                    </div>`).join('');
-            }
-
-            initCotizadorZoom(false);
-        }
-
-        function loadEdit(id) { 
-            const h = window.historial.find(x => x.id === id); 
-            items = h.items || []; 
-            editingId = id; 
-            window.currentFolio = h.folio; 
-            document.getElementById('q-client').value = h.client; 
-            document.getElementById('q-date-input').value = h.date; 
-            document.getElementById('q-desc').value = h.desc || ""; 
-            navTo('edit'); 
-            renderPreview(); 
-        }
-
-        function handleImg(input) {
-            const file = input.files && input.files[0];
-            const status = document.getElementById('img-status');
-            const btn = document.getElementById('img-btn');
-
-            if(!file) return;
-
-            if(!file.type || !file.type.startsWith('image/')) {
-                alert("El archivo seleccionado no es una imagen.");
-                input.value = "";
-                return;
-            }
-
-            if(status) {
-                status.classList.remove('hidden');
-                status.innerHTML = "Cargando imagen...";
-            }
-
-            const reader = new FileReader();
-
-            reader.onload = e => {
-                const image = new Image();
-
-                image.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const maxSize = 420;
-
-                    let w = image.width;
-                    let h = image.height;
-
-                    if(w > h && w > maxSize) {
-                        h = Math.round(h * maxSize / w);
-                        w = maxSize;
-                    } else if(h > maxSize) {
-                        w = Math.round(w * maxSize / h);
-                        h = maxSize;
-                    }
-
-                    canvas.width = w;
-                    canvas.height = h;
-
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(image, 0, 0, w, h);
-
-                    tempImg = canvas.toDataURL('image/jpeg', 0.62);
-
-                    if(status) {
-                        status.innerHTML = `
-                            <div class="flex items-center gap-3">
-                                <img src="${tempImg}" style="width:42px;height:42px;object-fit:cover;border-radius:8px;">
-                                <span>Imagen lista y optimizada. Ahora presiona “Agregar Ítem”.</span>
-                            </div>`;
-                    }
-
-                    if(btn) btn.innerText = "✅";
-                };
-
-                image.onerror = () => {
-                    tempImg = null;
-                    if(status) status.innerHTML = "No se pudo cargar la imagen.";
-                    if(btn) btn.innerText = "📷";
-                };
-
-                image.src = e.target.result;
-            };
-
-            reader.onerror = () => {
-                tempImg = null;
-                if(status) status.innerHTML = "No se pudo leer la imagen.";
-                if(btn) btn.innerText = "📷";
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        async function saveClient() { 
-            const data = { 
-                name: document.getElementById('c-name').value.toUpperCase(), 
-                phone: document.getElementById('c-phone').value, 
-                address: document.getElementById('c-address').value 
-            }; 
-
-            if(data.name) await fb.addDoc(fb.collection(fb.db, "erp_clientes"), data); 
-            ['c-name', 'c-phone', 'c-address'].forEach(id => document.getElementById(id).value = ''); 
-            navTo('edit'); 
-        }
-
-        function checkNewClient(el) { 
-            if(el.value === "NEW") { 
-                navTo('clients'); 
-                el.value="";
-            } else {
-                renderPreview(); 
-            }
-        }
-
-        window.addEventListener('resize', () => {
-            setTimeout(() => initCotizadorZoom(true), 150);
-            const modal = document.getElementById('quick-view-modal');
-            if (modal && modal.style.display === "flex") {
-                setTimeout(initHistorialZoom, 150);
-            }
-        });
-    </script>
+
+        <div class="bg-slate-900/80 p-5 rounded-3xl border border-slate-800 space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <input type="text" id="q-validity" value="15 días" class="input-dark" oninput="renderPreview()">
+            <input type="text" id="q-delivery" value="Según coordinación" class="input-dark" oninput="renderPreview()">
+          </div>
+          <textarea id="q-conditions" class="input-dark h-24 resize-none" oninput="renderPreview()">50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.</textarea>
+          <textarea id="q-notes" class="input-dark h-24 resize-none" placeholder="Observaciones adicionales..." oninput="renderPreview()"></textarea>
+        </div>
+
+        <button onclick="saveAndSend()" class="btn w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 uppercase text-base shadow-2xl">Guardar y enviar PDF</button>
+        <button onclick="generateAndSharePDF(null,null,'save')" class="btn w-full bg-slate-700 hover:bg-slate-600 text-white uppercase text-xs">Descargar PDF de prueba</button>
+      </div>
+
+      <div id="preliminar-container" class="sheet-wrap">
+        <div id="pdf-preview-wrapper">
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-hist" class="tab-content">
+    <div class="max-w-2xl mx-auto space-y-4">
+      <input type="text" id="search-hist" placeholder="🔎 Buscar cotización..." class="input-dark" oninput="renderHistory()">
+      
+    </div>
+  </section>
+
+  <section id="sec-clients" class="tab-content">
+    <div class="max-w-md mx-auto bg-slate-900/80 p-5 rounded-3xl border border-slate-800 space-y-3 mb-6">
+      <input type="text" id="c-name" placeholder="Nombre / Empresa" class="input-dark">
+      <input type="text" id="c-rut" placeholder="RUT" class="input-dark">
+      <input type="text" id="c-phone" placeholder="Teléfono / WhatsApp" class="input-dark">
+      <input type="text" id="c-email" placeholder="Email" class="input-dark">
+      <input type="text" id="c-address" placeholder="Dirección" class="input-dark">
+      <button onclick="saveClient()" class="btn w-full bg-blue-700 text-white uppercase text-xs">Guardar cliente</button>
+    </div>
+    
+  </section>
+
+<script>
+  const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
+
+  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
+
+Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
+
+Incluye planificación de vuelo dron, captura aerofotogramétrica y postproceso de información técnica.
+
+Entregables:
+• Plano topográfico
+• Informe técnico
+• Nube de puntos densa
+• Ortomosaico`;
+
+  function defaultItem(){ return { name: DEFAULT_ITEM_TEXT, qty: 1, price: 0, total: 0, isDefault: true }; }
+  let items = [defaultItem()], editingId = null;
+  document.getElementById('q-date-input').valueAsDate = new Date();
+
+  const COMPANY = {
+    name: 'RPS TOPOGRAFÍA & GEODESIA',
+    legalName: 'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.',
+    rut: '77.444.231-6',
+    giro: 'Servicios topográficos y geodésicos, chequeo de deslindes',
+    address: 'Av. Jaime Guzmán 659 - A3, Isla de Maipo',
+    comuna: 'Isla de Maipo',
+    city: 'Santiago',
+    email: 'contacto@rpsgeodesia.com',
+    web: 'www.rpsgeodesia.com',
+    phone: '949207665',
+    bank: 'Banco Estado',
+    account: 'Cta Vista Banco Estado N° 36772581224',
+    holder: 'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.'
+  };
+
+  function navTo(sec){
+    ['edit','hist','clients'].forEach(s=>{
+      document.getElementById('sec-'+s).classList.toggle('active',s===sec);
+      const b=document.getElementById('m-'+s);
+      b.classList.toggle('text-blue-400',s===sec); b.classList.toggle('border-blue-400',s===sec);
+      b.classList.toggle('text-slate-500',s!==sec); b.classList.toggle('border-transparent',s!==sec);
+    });
+    scrollTo(0,0);
+  }
+
+  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+  function money(n){ return '$ ' + Number(n || 0).toLocaleString('es-CL'); }
+  function uf(n){ return 'UF ' + Number(n || 0).toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function amount(n, currency){ return currency === 'UF' ? uf(n) : money(n); }
+  function amountEquivalent(n, currency, ufValue){ return (currency === 'UF' && Number(ufValue || 0) > 0) ? money(Number(n || 0) * Number(ufValue || 0)) : ''; }
+  
+  function quoteCode(q){
+    const folioBase = (q && q.folio) ? q.folio : (window.nextFolio || 1000);
+    return (q && q.ref) ? q.ref : ('AER-' + folioBase);
+  }
+
+  function fmtDate(d){ return d ? new Date(d+'T12:00:00').toLocaleDateString('es-CL') : '--/--/----'; }
+  function handleCurrencyChange(){
+    const cur = document.getElementById('q-currency')?.value || 'CLP';
+    const priceInput = document.getElementById('i-price');
+    if (priceInput) {
+      priceInput.placeholder = cur === 'UF' ? 'Precio neto en UF' : 'Precio neto en pesos';
+    }
+    renderPreview();
+  }
+  function selectedClient(){ const n=document.getElementById('q-client').value; return (window.clientes || []).find(c=>c.name===n) || {name:n}; }
+  function currentQuote(){
+    const neto = items.reduce((s,i)=>s+Number(i.total||0),0); const iva = Math.round(neto*.19);
+    return {
+      folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
+      date: document.getElementById('q-date-input')?.value || '',
+      ref: document.getElementById('q-ref')?.value || '',
+      currency: document.getElementById('q-currency')?.value || 'CLP',
+      ufValue: 0,
+      client: document.getElementById('q-client')?.value || '',
+      project: document.getElementById('q-project')?.value || '',
+      location: document.getElementById('q-location')?.value || '',
+      serviceDesc: document.getElementById('q-service-desc')?.value || DEFAULT_SERVICE_DESC,
+      intro: '',
+      validity: document.getElementById('q-validity')?.value || '15 días',
+      delivery: document.getElementById('q-delivery')?.value || 'Según coordinación',
+      conditions: document.getElementById('q-conditions')?.value || '',
+      notes: document.getElementById('q-notes')?.value || '',
+      items: [...items], neto, iva, total: neto + iva
+    };
+  }
+
+  function renderPreview(){
+    const q = currentQuote(), c = selectedClient();
+
+    function previewAmount(n){
+      return amount(n, q.currency);
+    }
+
+    function previewEquivalent(n){
+      return amountEquivalent(n, q.currency, q.ufValue);
+    }
+
+    function parsePreviewService(txt){
+      const raw = String(txt || '').trim();
+      const parts = raw.split(/Entregables\s*:/i);
+      const scope = (parts[0] || raw).trim();
+      let deliverables = [];
+      if(parts[1]){
+        deliverables = parts[1]
+          .split(/\n|•|-/)
+          .map(x => x.replace(/\s+/g,' ').trim())
+          .filter(Boolean);
+      }
+      if(!deliverables.length){
+        deliverables = ['Plano topográfico', 'Informe técnico', 'Nube de puntos densa', 'Ortomosaico'];
+      }
+      return { scope, deliverables };
+    }
+
+    const currencyText = q.currency === 'UF'
+      ? 'Unidad de Fomento (UF)'
+      : 'Pesos chilenos (CLP)';
+
+    const serviceCards = (q.items.length ? q.items : [defaultItem()]).map((it, i) => {
+      const parsed = parsePreviewService(it.name || '');
+      const entregables = parsed.deliverables.map(d => `<span>• ${esc(d)}</span>`).join('');
+
+      return `
+        <section class="preview-service">
+          <div class="preview-section-bar dark">Servicio profesional${q.items.length > 1 ? ' ' + (i + 1) : ''}</div>
+          <div class="preview-service-full">
+            <h4>Alcance técnico</h4>
+            <p>${esc(parsed.scope).replace(/\n/g, '<br>')}</p>
+
+            <h4>Entregables</h4>
+            <div class="preview-deliverables">${entregables}</div>
+          </div>
+        </section>`;
+    }).join('');
+
+    const qty = (q.items.length ? q.items : [defaultItem()]).reduce((s,it)=>s+Number(it.qty||0),0) || 1;
+    const unit = (q.items.length === 1 ? Number(q.items[0]?.price || 0) : Number(q.neto || 0));
+
+    document.getElementById('pdf-canvas').innerHTML = `
+      <div class="preview-page-compact">
+        <header class="preview-header-compact">
+          <div class="preview-brand-compact">
+            <img src="logo.png" onerror="this.style.display='none'">
+            <div>
+              <h1>${COMPANY.name}</h1>
+              <p>Servicios topográficos y geodésicos</p>
+              <p>${COMPANY.email} · Fono: ${COMPANY.phone}</p>
+            </div>
+          </div>
+
+          <div class="preview-quote-compact">
+            <div>Cotización técnica</div><small class="quote-service-label">Servicio de topografía</small>
+            <strong>N° ${esc(quoteCode(q))}</strong>
+            <span>Fecha: ${fmtDate(q.date)}</span>
+          </div>
+        </header>
+
+        
+
+        <section class="preview-info-grid">
+          <div class="preview-info-card">
+            <div class="preview-section-bar dark">En atención a</div>
+            <h3>${esc((c.name || '---').toUpperCase())}</h3>
+            <p><b>RUT:</b> ${esc(c.rut || '—')}</p>
+            <p><b>Dirección:</b> ${esc(c.address || '—')}</p>
+            <p><b>Contacto:</b> ${esc(c.phone || c.email || '—')}</p>
+          </div>
+
+          <div class="preview-info-card">
+            <div class="preview-section-bar blue">Antecedentes del proyecto</div>
+            <div class="preview-project-lines">
+              <p><b>Proyecto:</b> ${esc(q.project || 'Servicio técnico')}</p>
+              <p><b>Ubicación:</b> ${esc(q.location || 'Por definir')}</p>
+              <p><b>Validez:</b> ${esc(q.validity || '15 días')}</p>
+              <p><b>Entrega:</b> ${esc(q.delivery || 'Según coordinación')}</p>
+              <p><b>Moneda:</b> ${esc(currencyText)}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="preview-description">
+          <div class="preview-section-bar blue">Descripción del servicio</div>
+          <p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g, '<br>')}</p>
+        </section>
+
+        ${serviceCards}
+
+        <section class="preview-closure-grid merged">
+          <div class="preview-small-card">
+            <div class="preview-section-bar blue">Condiciones comerciales</div>
+            <p>${esc(q.conditions || '50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.').replace(/\n/g, '<br>')}</p>
+          </div>
+
+          <div class="preview-small-card">
+            <div class="preview-section-bar dark">Transferencia</div>
+            <p><b>Nombre:</b> ${COMPANY.holder}</p>
+            <p><b>RUT:</b> ${COMPANY.rut}</p>
+            <p>${COMPANY.bank} · ${COMPANY.account}</p>
+            <p>${COMPANY.email}</p>
+          </div>
+
+          <div class="preview-total-card">
+            <div class="preview-section-bar blue">Valor del servicio</div>
+            <div><span>Cantidad</span><strong>${qty}</strong></div>
+            <div><span>Neto unitario</span><strong>${previewAmount(unit)}</strong></div>
+            <div><span>Neto</span><strong>${previewAmount(q.neto)}</strong></div>
+            <div><span>IVA 19%</span><strong>${previewAmount(q.iva)}</strong></div>
+            <hr>
+            <div class="total"><span>Total</span><strong>${previewAmount(q.total)}</strong></div>
+            ${q.currency === 'UF' && q.ufValue > 0 ? `<small>Equiv.: ${previewEquivalent(q.total)}</small>` : ''}
+          </div>
+        </section>
+
+        <section class="preview-signature">
+          <p>Atentamente,</p>
+          
+          <strong>ROBIN PINTO SERRANO</strong>
+          <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
+        </section>
+
+        <footer class="preview-footer">
+          ${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}
+        </footer>
+      </div>
+    `;
+
+    document.getElementById('items-list').innerHTML = items.map((it,i)=>`
+      <div class="flex justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 items-center gap-3">
+        <span class="truncate flex-1 text-white text-xs font-bold uppercase">${esc((it.name||'').split('\\n')[0] || 'SERVICIO')}</span>
+        <small class="text-blue-300 font-bold">${amount(it.total, q.currency)}</small>
+        <button onclick="editItem(${i})" class="text-blue-300 text-lg px-2">✏️</button>
+        <button onclick="items.splice(${i},1);renderPreview();" class="text-red-400 text-xl px-2">✕</button>
+      </div>`).join('');
+
+    setTimeout(fitPreviewZoom, 60);
+  }
+
+
+  function loadLogoPDF(){
+    return new Promise(resolve=>{ const img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>{ try{ const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight; c.getContext('2d').drawImage(img,0,0); resolve({data:c.toDataURL('image/png'),w:c.width,h:c.height}); }catch(e){resolve(null)} }; img.onerror=()=>resolve(null); img.src='logo.png'; });
+  }
+
+  async function generateAndSharePDF(historyId=null, clientName=null, mode='save'){
+    const JsPDF = window.jspdf?.jsPDF;
+    if(!JsPDF) return alert('No se cargó jsPDF.');
+
+    let q = historyId ? (window.historial || []).find(x => x.id === historyId) : currentQuote();
+    if(!q) return alert('No se encontró la cotización.');
+
+    q.currency = q.currency || 'CLP';
+    q.ufValue = Number(q.ufValue || 0);
+
+    const c = (window.clientes || []).find(x => x.name === q.client) || { name: q.client };
+    const quoteItems = (q.items || []).length ? q.items : [defaultItem()];
+
+    q.neto = quoteItems.reduce((s,i) => s + Number(i.total || 0), 0);
+    q.iva = Math.round(q.neto * 0.19);
+    q.total = q.neto + q.iva;
+
+    const pdf = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const logo = await loadLogoPDF();
+
+    const W = 210, H = 297, M = 12, CW = W - (M * 2);
+    const GRAFITO = [15, 23, 42];
+    const GRAFITO_2 = [30, 41, 59];
+    const AZUL_OSCURO = [20, 52, 93];
+    const AZUL_SUAVE = [239, 246, 255];
+    const GRIS = [100, 116, 139];
+    const GRIS_SUAVE = [248, 250, 252];
+    const LINEA = [203, 213, 225];
+    const BLANCO = [255,255,255];
+    let y = 11;
+
+    function clean(v){ return String(v ?? '').replace(/\r/g,'').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(); }
+    function cleanInline(v){ return String(v ?? '').replace(/\s+/g,' ').trim(); }
+    function displayAmount(n){ return amount(n, q.currency); }
+    function displayEq(n){ return amountEquivalent(n, q.currency, q.ufValue); }
+    function split(v,w){ return pdf.splitTextToSize(clean(v), w); }
+    function put(v,x,yy,opt={}){ Array.isArray(v) ? pdf.text(v, x, yy, opt) : pdf.text(String(v ?? ''), x, yy, opt); }
+    function setFont(size, style='normal', color=GRAFITO){ pdf.setFont('helvetica', style); pdf.setFontSize(size); pdf.setTextColor(...color); }
+    function stroke(color=LINEA, width=.22){ pdf.setDrawColor(...color); pdf.setLineWidth(width); }
+    function fill(color){ pdf.setFillColor(...color); }
+
+    function footer(){
+      stroke(AZUL_OSCURO,.45); pdf.line(M, H-10, W-M, H-10);
+      setFont(5.9,'normal',GRIS);
+      const footerText = `${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`;
+      put(footerText, W/2, H-6.2, { align:'center', maxWidth:CW });
+    }
+    function titleBar(title, x, yy, w, color=AZUL_OSCURO){
+      fill(color); pdf.roundedRect(x, yy, w, 6.8, 1.2, 1.2, 'F');
+      setFont(6.35,'bold',BLANCO); put(title.toUpperCase(), x+2.5, yy+4.65);
+    }
+    function header(){
+      if(logo){ const lw=27; const lh=Math.min(13, lw/(logo.w/logo.h)); pdf.addImage(logo.data,'PNG',M,y,lw,lh); }
+      setFont(12.2,'bold',GRAFITO); put(COMPANY.name, M+33, y+4.5);
+      setFont(6.7,'normal',GRIS); put('Servicios topográficos y geodésicos', M+33, y+8.8); put(`${COMPANY.email} · Fono: ${COMPANY.phone}`, M+33, y+12.8);
+      fill(AZUL_OSCURO); pdf.roundedRect(W-M-46,y,46,11,1.3,1.3,'F'); setFont(6.7,'bold',BLANCO); put('COTIZACIÓN TÉCNICA', W-M-23, y+7, {align:'center'});
+      setFont(15.5,'bold',GRAFITO); put(`N° ${quoteCode(q)}`, W-M, y+20, {align:'right'}); setFont(7.1,'normal',GRIS); put(`Fecha: ${fmtDate(q.date)}`, W-M, y+25, {align:'right'});
+      y += 29; stroke(AZUL_OSCURO,.75); pdf.line(M,y,W-M,y); y += 5;
+    }
+    function infoBox(){
+      const h=32, leftW=78, rightX=M+leftW+5, rightW=CW-leftW-5;
+      stroke(LINEA,.22); fill(BLANCO); pdf.roundedRect(M,y,leftW,h,1.6,1.6,'FD'); pdf.roundedRect(rightX,y,rightW,h,1.6,1.6,'FD');
+      titleBar('En atención a',M,y,leftW,GRAFITO_2); titleBar('Antecedentes del proyecto',rightX,y,rightW,AZUL_OSCURO);
+      setFont(7.3,'bold',GRAFITO); put(split((c.name || '---').toUpperCase(), leftW-6), M+2.6, y+12.3);
+      setFont(6.3,'normal',GRIS); put(`RUT: ${c.rut || '—'}`, M+2.6, y+19.5); put(`Dirección: ${c.address || '—'}`, M+2.6, y+24.2, {maxWidth:leftW-5}); put(`Contacto: ${c.phone || c.email || '—'}`, M+2.6, y+29);
+      const lx=rightX+2.6, vx=rightX+23; let yy=y+12.3;
+      function lv(label,value){ setFont(6.3,'bold',GRIS); put(label,lx,yy); setFont(6.3,'normal',GRAFITO); put(split(value || '—', rightW-27), vx, yy); yy += 4.25; }
+      lv('Proyecto:', q.project || 'Servicio técnico'); lv('Ubicación:', q.location || 'Por definir'); lv('Validez:', q.validity || '15 días'); lv('Entrega:', q.delivery || 'Según coordinación');
+      setFont(6.3,'bold',GRIS); put('Moneda:', lx, yy); setFont(6.3,'normal',GRAFITO); const currencyText = q.currency==='UF' ? `UF${q.ufValue ? ' · Valor UF: ' + money(q.ufValue) : ''}` : 'Pesos chilenos (CLP)'; put(currencyText, vx, yy);
+      y += h + 5;
+    }
+    function descriptionBlock(){
+      const padX = 4.8;
+      const textW = CW - (padX * 2);
+      const lines = split(q.serviceDesc || DEFAULT_SERVICE_DESC, textW);
+      const h = Math.max(21, lines.length * 3.25 + 14);
+
+      stroke(LINEA,.22);
+      fill(BLANCO);
+      pdf.roundedRect(M, y, CW, h, 1.6, 1.6, 'FD');
+      titleBar('Descripción del servicio', M, y, CW, AZUL_OSCURO);
+
+      setFont(6.95,'normal',GRAFITO);
+      put(lines, M + padX, y + 12.8, { maxWidth: textW });
+      y += h + 4.5;
+    }
+
+    function parseServiceText(txt){
+      const raw=clean(txt); const parts=raw.split(/Entregables\s*:/i); const scope=clean(parts[0] || raw); let deliverables=[];
+      if(parts[1]) deliverables=parts[1].split(/\n|•|-/).map(x=>cleanInline(x)).filter(Boolean);
+      return {scope, deliverables};
+    }
+    function serviceProposal(it,index){
+      const parsed=parseServiceText(it.name || '');
+      const textW=CW-7;
+      const scopeLines=split(parsed.scope, textW);
+      const deliverables=parsed.deliverables.length ? parsed.deliverables : ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
+      const scopeH=scopeLines.length*3.18+12;
+      const delRows=Math.ceil(deliverables.length/2);
+      const delH=delRows*4.2+10;
+      const cardH=Math.max(47, 8+scopeH+delH);
+
+      stroke(LINEA,.22);
+      fill(BLANCO);
+      pdf.roundedRect(M,y,CW,cardH,1.6,1.6,'FD');
+      titleBar(`Servicio profesional${quoteItems.length>1 ? ' '+(index+1) : ''}`,M,y,CW,GRAFITO_2);
+
+      const tx=M+3.5;
+      let ty=y+14.3;
+
+      setFont(6.7,'bold',AZUL_OSCURO);
+      put('ALCANCE TÉCNICO',tx,ty);
+      ty+=4.6;
+
+      setFont(6.85,'normal',GRAFITO);
+      put(scopeLines, tx, ty, {maxWidth:textW});
+      ty += scopeLines.length*3.18+5;
+
+      setFont(6.7,'bold',AZUL_OSCURO);
+      put('ENTREGABLES',tx,ty);
+      ty+=4.3;
+
+      setFont(6.85,'normal',GRAFITO);
+      const colW=(textW-9)/2;
+      deliverables.forEach((d,idx)=>{
+        const col=idx%2,row=Math.floor(idx/2),x=tx+(col*(colW+9)),yy=ty+row*4.2;
+        put('•',x,yy);
+        put(split(d,colW-5),x+3.7,yy);
+      });
+
+      y += cardH + 5;
+    }
+    function closureBand(){
+      const colGap=6;
+      const leftW=55;
+      const midW=61;
+      const totalW=CW-leftW-midW-(colGap*2);
+      const x1=M, x2=M+leftW+colGap, x3=x2+midW+colGap;
+      const h=47;
+
+      stroke(LINEA,.22);
+      fill(BLANCO);
+      pdf.roundedRect(x1,y,leftW,h,1.6,1.6,'FD');
+      pdf.roundedRect(x2,y,midW,h,1.6,1.6,'FD');
+      pdf.roundedRect(x3,y,totalW,h,1.6,1.6,'FD');
+
+      titleBar('Condiciones comerciales',x1,y,leftW,AZUL_OSCURO);
+      titleBar('Transferencia',x2,y,midW,GRAFITO_2);
+
+      setFont(6.15,'normal',GRAFITO);
+      const cond=q.conditions || '50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.';
+      put(split(cond,leftW-6),x1+3,y+12);
+
+      let by=y+12;
+      const bankLines=[`Nombre: ${COMPANY.holder}`,`RUT: ${COMPANY.rut}`,`${COMPANY.bank} · ${COMPANY.account}`,`Email: ${COMPANY.email}`];
+      setFont(5.65,'normal',GRAFITO);
+      bankLines.forEach(line=>{
+        const lines=split(line,midW-6);
+        put(lines,x2+3,by);
+        by += lines.length*2.95+1.3;
+      });
+
+      const x=x3;
+      fill(AZUL_OSCURO);
+      pdf.rect(x,y,totalW,7,'F');
+      setFont(6.45,'bold',BLANCO);
+      put('VALOR DEL SERVICIO',x+3.2,y+4.85);
+
+      let yy=y+13;
+      const qty=(quoteItems || []).reduce((s,it)=>s+Number(it?.qty||0),0) || 1;
+      const unit=quoteItems.length===1 ? Number(quoteItems[0].price || 0) : q.neto;
+
+      function row(label,val,bold=false,big=false){
+        setFont(big?8.3:6.9,bold?'bold':'normal',bold?GRAFITO:GRIS);
+        put(label,x+3.2,yy);
+        setFont(big?8.3:6.9,bold?'bold':'normal',GRAFITO);
+        put(typeof val==='number' ? displayAmount(val) : String(val),x+totalW-3.2,yy,{align:'right'});
+        yy += big ? 6.4 : 5.1;
+      }
+
+      row('Cantidad',String(qty));
+      row('Neto unitario',unit);
+      row('Neto',q.neto);
+      row('IVA 19%',q.iva);
+      stroke(LINEA,.25);
+      pdf.line(x+3.2,yy-1.8,x+totalW-3.2,yy-1.8);
+      row('TOTAL', Number(q.total || 0), true, true);
+
+      if(q.currency==='UF' && q.ufValue>0){
+        setFont(5.5,'normal',GRIS);
+        put(`Equiv.: ${displayEq(q.total)}`,x+totalW-3.2,yy-0.2,{align:'right'});
+      }
+
+      y += h + 7;
+    }
+    function signature(){
+      setFont(6.9,'normal',GRAFITO); put('Atentamente,',W/2,y,{align:'center'}); y+=11; stroke(GRAFITO,.3); pdf.line(W/2-28,y,W/2+28,y); y+=4.2;
+      setFont(7.5,'bold',GRAFITO); put('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.8; setFont(6.4,'normal',GRIS); put(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
+    }
+
+    header(); infoBox(); descriptionBlock(); quoteItems.forEach(serviceProposal); closureBand(); signature(); footer();
+    const filename = `COT_${quoteCode(q)}.pdf`;
+    if(mode === 'share' && navigator.share){ const blob=pdf.output('blob'); const file=new File([blob], filename, {type:'application/pdf'}); await navigator.share({files:[file], title:filename}); }
+    else pdf.save(filename);
+  }
+
+  async function saveAndSend(){
+    const q=currentQuote(); if(!q.client || !q.items.length) return alert('Falta cliente o ítems.'); let f=editingId?window.currentFolio:window.nextFolio;
+    if(!editingId){ await fb.runTransaction(fb.db, async(t)=>{ const ref=fb.doc(fb.db,'config','rps_cotizador_v1'); const snap=await t.get(ref); f=snap.exists()?snap.data().lastFolio:1000; t.update(ref,{lastFolio:f+1}); }); }
+    const data={...q, folio:f, ref: q.ref || ('AER-' + f)};
+    if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data); else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+    await generateAndSharePDF(null,null,'share'); items=[defaultItem()]; editingId=null; document.getElementById('i-name').value=DEFAULT_ITEM_TEXT; document.getElementById('q-service-desc').value=DEFAULT_SERVICE_DESC; renderPreview();
+  }
+
+
+  // --- ZOOM INTERNO ESTABLE PARA PRELIMINAR EN CELULAR ---
+  const previewZoom = { scale:1, minScale:1, maxScale:4, x:0, y:0, dragging:false, startX:0, startY:0, startDist:0, startScale:1, pinchX:0, pinchY:0, pinchStartX:0, pinchStartY:0 };
+  function zDist(touches){ const dx=touches[0].clientX-touches[1].clientX; const dy=touches[0].clientY-touches[1].clientY; return Math.hypot(dx,dy); }
+  function zCenter(touches){ return { x:(touches[0].clientX+touches[1].clientX)/2, y:(touches[0].clientY+touches[1].clientY)/2 }; }
+  function applyPreviewZoom(){
+    const wrap=document.getElementById('pdf-preview-wrapper');
+    if(!wrap) return;
+    wrap.style.transform=`translate3d(${previewZoom.x}px, ${previewZoom.y}px, 0) scale(${previewZoom.scale})`;
+  }
+  function fitPreviewZoom(){
+    const box=document.getElementById('preliminar-container');
+    const wrap=document.getElementById('pdf-preview-wrapper');
+    const page=document.getElementById('pdf-canvas');
+    if(!box || !wrap || !page) return;
+    const bw=box.clientWidth, bh=box.clientHeight, pw=page.offsetWidth, ph=page.offsetHeight;
+    if(!bw || !bh || !pw || !ph){ setTimeout(fitPreviewZoom,120); return; }
+    const pad=12;
+    const fit=Math.min((bw-pad*2)/pw, (bh-pad*2)/ph);
+    const scale=Math.max(0.12, Math.min(1, fit));
+    previewZoom.scale=scale;
+    previewZoom.minScale=scale;
+    previewZoom.maxScale=4;
+    previewZoom.x=(bw - pw*scale)/2;
+    previewZoom.y=Math.max(8, (bh - ph*scale)/2);
+    applyPreviewZoom();
+  }
+  function setupPreviewZoom(){
+    const box=document.getElementById('preliminar-container');
+    if(!box || box.dataset.zoomReady==='1') return;
+    box.dataset.zoomReady='1';
+    box.addEventListener('touchstart', e=>{
+      if(e.touches.length===1){ e.preventDefault(); previewZoom.dragging=true; previewZoom.startX=e.touches[0].clientX-previewZoom.x; previewZoom.startY=e.touches[0].clientY-previewZoom.y; }
+      if(e.touches.length===2){ e.preventDefault(); previewZoom.dragging=false; previewZoom.startDist=zDist(e.touches); previewZoom.startScale=previewZoom.scale; const c=zCenter(e.touches); previewZoom.pinchX=c.x; previewZoom.pinchY=c.y; previewZoom.pinchStartX=previewZoom.x; previewZoom.pinchStartY=previewZoom.y; }
+    }, {passive:false});
+    box.addEventListener('touchmove', e=>{
+      e.preventDefault();
+      if(e.touches.length===1 && previewZoom.dragging){ previewZoom.x=e.touches[0].clientX-previewZoom.startX; previewZoom.y=e.touches[0].clientY-previewZoom.startY; applyPreviewZoom(); }
+      if(e.touches.length===2 && previewZoom.startDist>0){
+        const current=zDist(e.touches);
+        const nextScale=Math.min(previewZoom.maxScale, Math.max(previewZoom.minScale, previewZoom.startScale*(current/previewZoom.startDist)));
+        const ratio=nextScale/previewZoom.startScale;
+        const c=zCenter(e.touches);
+        previewZoom.scale=nextScale;
+        previewZoom.x=c.x - (previewZoom.pinchX-previewZoom.pinchStartX)*ratio;
+        previewZoom.y=c.y - (previewZoom.pinchY-previewZoom.pinchStartY)*ratio;
+        applyPreviewZoom();
+      }
+    }, {passive:false});
+    box.addEventListener('touchend', e=>{ if(e.touches.length===0){ previewZoom.dragging=false; previewZoom.startDist=0; } }, {passive:false});
+    box.addEventListener('dblclick', e=>{ e.preventDefault(); if(previewZoom.scale <= previewZoom.minScale+0.03){ previewZoom.scale=Math.min(2,previewZoom.maxScale); previewZoom.x=20; previewZoom.y=20; applyPreviewZoom(); } else fitPreviewZoom(); });
+  }
+  window.addEventListener('resize', () => setTimeout(fitPreviewZoom, 150));
+
+  window.addEventListener('load',()=>{ if(!document.getElementById('q-service-desc').value) document.getElementById('q-service-desc').value=DEFAULT_SERVICE_DESC; if(!document.getElementById('i-name').value) document.getElementById('i-name').value=DEFAULT_ITEM_TEXT; updateClientsUI(); handleCurrencyChange(); setupPreviewZoom(); renderPreview(); setTimeout(fitPreviewZoom,160); });
+</script>
 </body>
 </html>

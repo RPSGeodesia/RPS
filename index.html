@@ -4,7 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RPS Topografía & Geodesia | Cotizador Técnico Compacto 1 Página</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com">
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const local = JSON.parse(localStorage.getItem('rps_clientes_local') || '[]');
+      if(local.length){
+        window.clientes = [...(window.clientes || []), ...local]
+          .filter((c,i,a)=>c && c.name && a.findIndex(x=>x.name===c.name)===i)
+          .sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+        if(typeof updateUI === 'function') updateUI();
+      }
+    } catch(e){}
+    if(typeof renderPreview === 'function') renderPreview();
+    if(typeof fitPreviewZoom === 'function') setTimeout(fitPreviewZoom, 120);
+  });
+
+</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -443,6 +458,21 @@
             font-weight:800;
         }
 
+    
+        .rps-logo-fallback{
+            width:27mm;
+            height:13mm;
+            align-items:center;
+            justify-content:center;
+            border-radius:3mm;
+            background:#eaf2ff;
+            color:#14345d;
+            font-weight:900;
+            font-size:16pt;
+            letter-spacing:-0.08em;
+            line-height:1;
+        }
+
     </style>
 
   <style id="palette-grafito-azul">
@@ -773,6 +803,21 @@
             font-weight:800;
         }
 
+    
+        .rps-logo-fallback{
+            width:27mm;
+            height:13mm;
+            align-items:center;
+            justify-content:center;
+            border-radius:3mm;
+            background:#eaf2ff;
+            color:#14345d;
+            font-weight:900;
+            font-size:16pt;
+            letter-spacing:-0.08em;
+            line-height:1;
+        }
+
     </style>
 </head>
 <body>
@@ -826,6 +871,7 @@
           <textarea id="q-notes" class="input-dark h-24 resize-none" placeholder="Observaciones adicionales..." oninput="renderPreview()"></textarea>
         </div>
 
+        <div id="items-list" class="space-y-2"></div>
         <button onclick="saveAndSend()" class="btn w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 uppercase text-base shadow-2xl">Guardar y enviar PDF</button>
         <button onclick="generateAndSharePDF(null,null,'save')" class="btn w-full bg-slate-700 hover:bg-slate-600 text-white uppercase text-xs">Descargar PDF de prueba</button>
       </div>
@@ -993,11 +1039,13 @@ Entregables:
     const qty = (q.items.length ? q.items : [defaultItem()]).reduce((s,it)=>s+Number(it.qty||0),0) || 1;
     const unit = (q.items.length === 1 ? Number(q.items[0]?.price || 0) : Number(q.neto || 0));
 
-    document.getElementById('pdf-canvas').innerHTML = `
+    const pdfCanvas = document.getElementById('pdf-canvas');
+    if(!pdfCanvas) return;
+    pdfCanvas.innerHTML = `
       <div class="preview-page-compact">
         <header class="preview-header-compact">
           <div class="preview-brand-compact">
-            <img src="logo.png" onerror="this.style.display='none'">
+            <img src="logo.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="rps-logo-fallback" style="display:none">RPS</div>
             <div>
               <h1>${COMPANY.name}</h1>
               <p>Servicios topográficos y geodésicos</p>
@@ -1081,7 +1129,8 @@ Entregables:
       </div>
     `;
 
-    document.getElementById('items-list').innerHTML = items.map((it,i)=>`
+    const itemsList = document.getElementById('items-list');
+    if(itemsList) itemsList.innerHTML = items.map((it,i)=>`
       <div class="flex justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 items-center gap-3">
         <span class="truncate flex-1 text-white text-xs font-bold uppercase">${esc((it.name||'').split('\\n')[0] || 'SERVICIO')}</span>
         <small class="text-blue-300 font-bold">${amount(it.total, q.currency)}</small>
@@ -1149,7 +1198,17 @@ Entregables:
       setFont(6.35,'bold',BLANCO); put(title.toUpperCase(), x+2.5, yy+4.65);
     }
     function header(){
-      if(logo){ const lw=27; const lh=Math.min(13, lw/(logo.w/logo.h)); pdf.addImage(logo.data,'PNG',M,y,lw,lh); }
+      if(logo){
+        const lw=27;
+        const lh=Math.min(13, lw/(logo.w/logo.h));
+        pdf.addImage(logo.data,'PNG',M,y,lw,lh);
+      } else {
+        fill(AZUL_SUAVE);
+        stroke(LINEA,.2);
+        pdf.roundedRect(M, y, 27, 13, 2, 2, 'FD');
+        setFont(15,'bold',AZUL_OSCURO);
+        put('RPS', M + 13.5, y + 8.8, { align:'center' });
+      }
       setFont(12.2,'bold',GRAFITO); put(COMPANY.name, M+33, y+4.5);
       setFont(6.7,'normal',GRIS); put('Servicios topográficos y geodésicos', M+33, y+8.8); put(`${COMPANY.email} · Fono: ${COMPANY.phone}`, M+33, y+12.8);
       fill(AZUL_OSCURO); pdf.roundedRect(W-M-46,y,46,11,1.3,1.3,'F'); setFont(6.7,'bold',BLANCO); put('COTIZACIÓN TÉCNICA', W-M-23, y+7, {align:'center'});
@@ -1309,7 +1368,10 @@ Entregables:
     if(sel){
       const current = sel.value;
       sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>';
-      (window.clientes || []).forEach(c => {
+      const localClients = JSON.parse(localStorage.getItem('rps_clientes_local') || '[]');
+      const mergedClients = [...(window.clientes || []), ...localClients].filter((c,i,a)=>c && c.name && a.findIndex(x=>x.name===c.name)===i).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      window.clientes = mergedClients;
+      mergedClients.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.name || '';
         opt.textContent = c.name || '';
@@ -1350,6 +1412,7 @@ Entregables:
     };
 
     const data = {
+      id: 'local_' + Date.now(),
       name: getVal('c-name').toUpperCase(),
       rut: getVal('c-rut'),
       phone: getVal('c-phone'),
@@ -1363,7 +1426,24 @@ Entregables:
     }
 
     try{
-      await fb.addDoc(fb.collection(fb.db, 'rps_clientes'), data);
+      const local = JSON.parse(localStorage.getItem('rps_clientes_local') || '[]');
+      const filtered = local.filter(c => c.name !== data.name);
+      filtered.push(data);
+      localStorage.setItem('rps_clientes_local', JSON.stringify(filtered));
+
+      window.clientes = [...(window.clientes || []).filter(c => c.name !== data.name), data]
+        .sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+
+      if(typeof updateUI === 'function') updateUI();
+      if(typeof updateClientsUI === 'function') updateClientsUI();
+
+      if(window.fb && fb.db){
+        try{
+          await fb.addDoc(fb.collection(fb.db, 'rps_clientes'), data);
+        }catch(fbErr){
+          console.warn('Cliente guardado localmente; Firebase no respondió:', fbErr);
+        }
+      }
 
       ['c-name','c-rut','c-phone','c-email','c-address'].forEach(id => {
         const el = document.getElementById(id);
@@ -1385,14 +1465,13 @@ Entregables:
           sel.value = data.name;
         }
         if(typeof renderPreview === 'function') renderPreview();
-      }, 250);
+      }, 100);
 
     }catch(err){
       console.error(err);
       alert('No se pudo guardar el cliente: ' + (err.message || err));
     }
   }
-
 
   window.saveClient = saveClient;
   window.checkNewClient = checkNewClient;

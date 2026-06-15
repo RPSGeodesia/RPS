@@ -1576,6 +1576,233 @@ textarea.input-dark{
   display:none !important;
 }
 
+
+/* ============================================================
+   FIX FINAL — Preliminar A4 real, totales visibles y footer sin montar
+   ============================================================ */
+
+#pdf-preview-wrapper{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  transform-origin:0 0 !important;
+}
+
+#pdf-canvas,
+.pdf-page,
+.preview-page-compact{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+.preview-page-compact{
+  padding:15mm 12mm 15mm 12mm !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:3.6mm !important;
+  background:#FFFFFF !important;
+}
+
+.preview-header-compact{
+  flex:0 0 auto !important;
+  display:grid !important;
+  grid-template-columns:1fr 48mm !important;
+  gap:7mm !important;
+}
+
+.preview-brand-compact img{
+  width:27mm !important;
+  max-height:16mm !important;
+  height:auto !important;
+  object-fit:contain !important;
+}
+
+.preview-brand-compact h1{
+  font-size:11.8pt !important;
+  line-height:1.05 !important;
+  margin:0 0 .8mm !important;
+}
+
+.preview-brand-compact p{
+  font-size:6.8pt !important;
+  line-height:1.12 !important;
+  margin:0 !important;
+}
+
+.preview-quote-compact div{
+  padding:2.2mm 3mm !important;
+  font-size:6.3pt !important;
+}
+
+.preview-quote-compact strong{
+  font-size:14.2pt !important;
+  margin-top:1.4mm !important;
+}
+
+.preview-divider{
+  margin:0 !important;
+  border-top:0.4mm solid #2F80ED !important;
+}
+
+.preview-info-grid{
+  flex:0 0 auto !important;
+  display:grid !important;
+  grid-template-columns:76mm 1fr !important;
+  gap:5mm !important;
+}
+
+.preview-info-card,
+.preview-description,
+.preview-service,
+.preview-payment-info,
+.preview-economic-card{
+  flex:0 0 auto !important;
+  border-radius:6px !important;
+}
+
+.preview-section-bar{
+  height:6.2mm !important;
+  font-size:6.5pt !important;
+  padding:0 2.8mm !important;
+}
+
+.preview-info-card h3{
+  font-size:7.8pt !important;
+  line-height:1.1 !important;
+  margin:2.2mm 2.8mm 1.3mm !important;
+}
+
+.preview-info-card p,
+.preview-project-lines p{
+  font-size:7pt !important;
+  line-height:1.12 !important;
+  margin:0 2.8mm .75mm !important;
+}
+
+.preview-project-lines{
+  padding-top:2.2mm !important;
+}
+
+.preview-description p{
+  font-size:9pt !important;
+  line-height:1.18 !important;
+  margin:2.6mm 3.6mm !important;
+  max-height:19mm !important;
+  overflow:hidden !important;
+}
+
+.preview-service-full{
+  padding:3.5mm !important;
+}
+
+.preview-service-full h4{
+  font-size:7pt !important;
+  margin:0 0 1.3mm !important;
+}
+
+.preview-service-full p{
+  font-size:8.8pt !important;
+  line-height:1.16 !important;
+  margin:0 0 2.4mm !important;
+  max-height:53mm !important;
+  overflow:hidden !important;
+}
+
+.preview-deliverables{
+  font-size:8.8pt !important;
+  line-height:1.12 !important;
+  row-gap:.8mm !important;
+}
+
+.preview-payment-layout{
+  flex:0 0 auto !important;
+  display:grid !important;
+  grid-template-columns:1fr 66mm !important;
+  gap:5mm !important;
+  align-items:stretch !important;
+}
+
+.preview-payment-title,
+.preview-economic-title{
+  font-size:6.4pt !important;
+  padding:1.9mm 3mm !important;
+}
+
+.preview-payment-columns{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:4.5mm !important;
+  padding:3mm !important;
+}
+
+.preview-payment-columns h4{
+  font-size:6.4pt !important;
+  margin:0 0 1.2mm !important;
+}
+
+.preview-payment-columns p{
+  font-size:7pt !important;
+  line-height:1.12 !important;
+  margin:0 0 .7mm !important;
+}
+
+.preview-economic-card div:not(.preview-economic-title){
+  font-size:7.7pt !important;
+  padding:1.45mm 3.2mm 0 !important;
+}
+
+.preview-economic-card .grand-total strong{
+  font-size:13.2pt !important;
+}
+
+.preview-economic-card hr{
+  margin:1.4mm 3.2mm 1mm !important;
+}
+
+.preview-signature{
+  margin-top:auto !important;
+  padding-top:.8mm !important;
+  padding-bottom:1mm !important;
+}
+
+.preview-signature p{
+  font-size:6.6pt !important;
+  margin:0 0 4.5mm !important;
+}
+
+.preview-signature div{
+  width:50mm !important;
+  margin:0 auto 1mm !important;
+}
+
+.preview-signature strong{
+  font-size:7.2pt !important;
+}
+
+.preview-signature span{
+  font-size:6pt !important;
+}
+
+.preview-footer{
+  flex:0 0 auto !important;
+  position:relative !important;
+  border-top:0.25mm solid #2F80ED !important;
+  padding-top:1.5mm !important;
+  font-size:5.2pt !important;
+  line-height:1.05 !important;
+  color:#64748B !important;
+  margin-top:.6mm !important;
+}
+
 </style>
 
   <style id="palette-grafito-azul">
@@ -2084,19 +2311,18 @@ Entregables:
   
   function normalizeItems(arr){
     return (arr || []).map(it => {
-      const qty = Number(it.qty || 1);
-      const price = Number(it.price || 0);
-      return {
-        ...it,
-        qty,
-        price,
-        total: Math.round(price * qty * 100) / 100
-      };
+      const qty = Number(it?.qty || 1);
+      const price = Number(it?.price || 0);
+      const total = Math.round(price * qty * 100) / 100;
+      return {...it, qty, price, total};
     });
   }
 
   function currentQuote(){
-    const neto = items.reduce((s,i)=>s+(Number(i.total ?? (Number(i.price||0)*Number(i.qty||1)))||0),0); const iva = Math.round(neto*.19);
+    const normalized = normalizeItems(items);
+    const neto = normalized.reduce((s,i)=>s + Number(i.total || 0), 0);
+    const iva = Math.round(neto * 0.19);
+
     return {
       folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
       date: document.getElementById('q-date-input')?.value || '',
@@ -2112,7 +2338,10 @@ Entregables:
       delivery: document.getElementById('q-delivery')?.value || 'Según coordinación',
       conditions: document.getElementById('q-conditions')?.value || '',
       notes: document.getElementById('q-notes')?.value || '',
-      items: normalizeItems(items), neto, iva, total: neto + iva
+      items: normalized,
+      neto,
+      iva,
+      total: neto + iva
     };
   }
 
@@ -2285,6 +2514,65 @@ Entregables:
   }
 
   
+  function addItem(){
+    const nameEl = document.getElementById('i-name');
+    const priceEl = document.getElementById('i-price');
+    const qtyEl = document.getElementById('i-qty');
+
+    const name = (nameEl?.value || '').trim();
+    const qty = Number(qtyEl?.value || 1);
+    const price = Number(priceEl?.value || 0);
+
+    if(!name){
+      alert('Ingresa el detalle técnico del servicio.');
+      return;
+    }
+
+    if(!Number.isFinite(qty) || qty <= 0){
+      alert('Ingresa una cantidad válida.');
+      return;
+    }
+
+    if(!Number.isFinite(price) || price < 0){
+      alert('Ingresa un precio válido.');
+      return;
+    }
+
+    items.push({
+      name,
+      qty,
+      price,
+      total: Math.round(price * qty * 100) / 100
+    });
+
+    if(nameEl) nameEl.value = DEFAULT_ITEM_TEXT;
+    if(qtyEl) qtyEl.value = '1';
+    if(priceEl) priceEl.value = '';
+
+    renderPreview();
+  }
+
+  window.addItem = addItem;
+
+  function editItem(i){
+    const it = items[i];
+    if(!it) return;
+
+    const nameEl = document.getElementById('i-name');
+    const qtyEl = document.getElementById('i-qty');
+    const priceEl = document.getElementById('i-price');
+
+    if(nameEl) nameEl.value = it.name || '';
+    if(qtyEl) qtyEl.value = Number(it.qty || 1);
+    if(priceEl) priceEl.value = Number(it.price || 0);
+
+    items.splice(i, 1);
+    renderPreview();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  window.editItem = editItem;
+
   function renderHistory(){
     const box = document.getElementById('history-content');
     if(!box) return;
@@ -2398,11 +2686,13 @@ async function generateAndSharePDF(historyId=null, clientName=null, mode='save')
     function fill(color){ pdf.setFillColor(...color); }
 
     function footer(){
-      stroke(AZUL_OSCURO,.45); pdf.line(M, H-MB+5, W-M, H-MB+5);
-      setFont(5.9,'normal',GRIS);
+      stroke([47,128,237],.32);
+      pdf.line(ML, H - 8, W - MR, H - 8);
+      setFont(5.2,'normal',GRIS);
       const footerText = `${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`;
-      put(footerText, W/2, H-MB+9, { align:'center', maxWidth:CW });
+      put(footerText, W/2, H - 4.8, { align:'center', maxWidth:CW });
     }
+
     function titleBar(title, x, yy, w, color=AZUL_OSCURO){
       fill(color); pdf.roundedRect(x, yy, w, 6.8, 1.2, 1.2, 'F');
       setFont(6.35,'bold',BLANCO); put(title.toUpperCase(), x+2.5, yy+4.65);
@@ -2594,8 +2884,18 @@ async function generateAndSharePDF(historyId=null, clientName=null, mode='save')
     }
 
     function signature(){
-      setFont(6.9,'normal',GRAFITO); put('Atentamente,',W/2,y,{align:'center'}); y+=11; stroke(GRAFITO,.3); pdf.line(W/2-28,y,W/2+28,y); y+=4.2;
-      setFont(7.5,'bold',GRAFITO); put('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.8; setFont(6.4,'normal',GRIS); put(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
+      if(y > H - 37) y = H - 37;
+      setFont(6.8,'normal',GRAFITO);
+      put('Atentamente,', W/2, y, {align:'center'});
+      y += 7;
+      stroke(GRAFITO,.28);
+      pdf.line(W/2 - 27, y, W/2 + 27, y);
+      y += 3.8;
+      setFont(7.2,'bold',GRAFITO);
+      put('ROBIN PINTO SERRANO', W/2, y, {align:'center'});
+      y += 3.5;
+      setFont(6,'normal',GRIS);
+      put(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`, W/2, y, {align:'center'});
     }
 
     header(); infoBox(); descriptionBlock(); quoteItems.forEach(serviceProposal); closureBand(); signature(); footer();

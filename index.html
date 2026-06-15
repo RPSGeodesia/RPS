@@ -1803,6 +1803,49 @@ textarea.input-dark{
   margin-top:.6mm !important;
 }
 
+
+/* ============================================================
+   FIX PRELIMINAR CENTRADO Y VISOR LIMPIO
+   ============================================================ */
+#preliminar-container{
+  width:100% !important;
+  max-width:100% !important;
+  overflow:auto !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  padding:18px !important;
+}
+
+#pdf-preview-wrapper{
+  margin:0 auto !important;
+  flex:0 0 auto !important;
+  transform-origin:top center !important;
+}
+
+#pdf-canvas{
+  margin:0 auto !important;
+}
+
+/* A4 real */
+.preview-page-compact{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+  padding:15mm 12mm 15mm 12mm !important;
+  background:#fff !important;
+}
+
+/* No forzar contenido infinito en una sola página en el preliminar */
+.preview-service-full p{
+  max-height:none !important;
+}
+
 </style>
 
   <style id="palette-grafito-azul">
@@ -2652,445 +2695,251 @@ async function generateAndSharePDF(historyId=null, clientName=null, mode='save')
     if(!q) return alert('No se encontró la cotización.');
 
     q.currency = q.currency || 'CLP';
-    q.ufValue = Number(q.ufValue || 0);
-
-    const c = (window.clientes || []).find(x => x.name === q.client) || { name: q.client };
-    const quoteItems = normalizeItems((q.items || []).length ? q.items : [defaultItem()]);
-
-    q.neto = quoteItems.reduce((s,i) => s + Number(i.total || 0), 0);
-    q.iva = Math.round(q.neto * 0.19);
-    q.total = q.neto + q.iva;
-
-    const pdf = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-    const logo = await loadLogoPDF();
-
-    const W=210,H=297,MT=15,MB=15,ML=12,MR=12,CW=W-ML-MR; const M=ML;
-    const GRAFITO = [15, 23, 42];
-    const GRAFITO_2 = [30, 41, 59];
-    const AZUL_OSCURO = [20, 52, 93];
-    const AZUL_SUAVE = [239, 246, 255];
-    const GRIS = [100, 116, 139];
-    const GRIS_SUAVE = [248, 250, 252];
-    const LINEA = [203, 213, 225];
-    const BLANCO = [255,255,255];
-    let y=MT;
-
-    function clean(v){ return String(v ?? '').replace(/\r/g,'').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim(); }
-    function cleanInline(v){ return String(v ?? '').replace(/\s+/g,' ').trim(); }
-    function displayAmount(n){ return amount(n, q.currency); }
-    function displayEq(n){ return amountEquivalent(n, q.currency, q.ufValue); }
-    function split(v,w){ return pdf.splitTextToSize(clean(v), w); }
-    function put(v,x,yy,opt={}){ Array.isArray(v) ? pdf.text(v, x, yy, opt) : pdf.text(String(v ?? ''), x, yy, opt); }
-    function setFont(size, style='normal', color=GRAFITO){ pdf.setFont('helvetica', style); pdf.setFontSize(size); pdf.setTextColor(...color); }
-    function stroke(color=LINEA, width=.22){ pdf.setDrawColor(...color); pdf.setLineWidth(width); }
-    function fill(color){ pdf.setFillColor(...color); }
-
-    function footer(){
-      stroke([47,128,237],.32);
-      pdf.line(ML, H - 8, W - MR, H - 8);
-      setFont(5.2,'normal',GRIS);
-      const footerText = `${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`;
-      put(footerText, W/2, H - 4.8, { align:'center', maxWidth:CW });
-    }
-
-    function titleBar(title, x, yy, w, color=AZUL_OSCURO){
-      fill(color); pdf.roundedRect(x, yy, w, 6.8, 1.2, 1.2, 'F');
-      setFont(6.35,'bold',BLANCO); put(title.toUpperCase(), x+2.5, yy+4.65);
-    }
-    function header(){
-      if(logo){
-        const maxW = 29;
-        const maxH = 18;
-        let lw = maxW;
-        let lh = lw / (logo.w / logo.h);
-        if(lh > maxH){
-          lh = maxH;
-          lw = lh * (logo.w / logo.h);
-        }
-        pdf.addImage(logo.data,'PNG',M,y,lw,lh);
-      } else {
-        fill(AZUL_SUAVE);
-        stroke(LINEA,.2);
-        pdf.roundedRect(M, y, 27, 13, 2, 2, 'FD');
-        setFont(15,'bold',AZUL_OSCURO);
-        put('RPS', M + 13.5, y + 8.8, { align:'center' });
-      }
-      setFont(12.2,'bold',GRAFITO); put(COMPANY.name, M+33, y+4.5);
-      setFont(6.7,'normal',GRIS); put('Servicios topográficos y geodésicos', M+33, y+8.8); put(`${COMPANY.email} · Fono: ${COMPANY.phone}`, M+33, y+12.8);
-      fill(AZUL_OSCURO); pdf.roundedRect(W-M-46,y,46,11,1.3,1.3,'F'); setFont(6.7,'bold',BLANCO); put('COTIZACIÓN TÉCNICA', W-M-23, y+7, {align:'center'});
-      setFont(15.5,'bold',GRAFITO); put(`N° ${quoteCode(q)}`, W-M, y+20, {align:'right'}); setFont(7.1,'normal',GRIS); put(`Fecha: ${fmtDate(q.date)}`, W-M, y+25, {align:'right'});
-      y += 29; stroke(AZUL_OSCURO,.75); pdf.line(M,y,W-M,y); y += 5;
-    }
-    function infoBox(){
-      const h=32, leftW=78, rightX=M+leftW+5, rightW=CW-leftW-5;
-      stroke(LINEA,.22); fill(BLANCO); pdf.roundedRect(M,y,leftW,h,1.6,1.6,'FD'); pdf.roundedRect(rightX,y,rightW,h,1.6,1.6,'FD');
-      titleBar('En atención a',M,y,leftW,GRAFITO_2); titleBar('Antecedentes del proyecto',rightX,y,rightW,AZUL_OSCURO);
-      setFont(7.3,'bold',GRAFITO); put(split((c.name || '---').toUpperCase(), leftW-6), M+2.6, y+12.3);
-      setFont(9.5,'normal',GRIS); put(`RUT: ${c.rut || '—'}`, M+2.6, y+19.5); put(`Dirección: ${c.address || '—'}`, M+2.6, y+24.2, {maxWidth:leftW-5}); put(`Contacto: ${c.phone || c.email || '—'}`, M+2.6, y+29);
-      const lx=rightX+2.6, vx=rightX+23; let yy=y+12.3;
-      function lv(label,value){ setFont(6.3,'bold',GRIS); put(label,lx,yy); setFont(9.5,'normal',GRAFITO); put(split(value || '—', rightW-27), vx, yy); yy += 4.25; }
-      lv('Proyecto:', q.project || 'Servicio técnico'); lv('Ubicación:', q.location || 'Por definir'); lv('Validez:', q.validity || '15 días'); lv('Entrega:', q.delivery || 'Según coordinación');
-      setFont(6.3,'bold',GRIS); put('Moneda:', lx, yy); setFont(9.5,'normal',GRAFITO); const currencyText = q.currency==='UF' ? `UF${q.ufValue ? ' · Valor UF: ' + money(q.ufValue) : ''}` : 'Pesos chilenos (CLP)'; put(currencyText, vx, yy);
-      y += h + 5;
-    }
-    function descriptionBlock(){
-      const padX = 4.8;
-      const textW = CW - (padX * 2);
-      const lines = split(q.serviceDesc || DEFAULT_SERVICE_DESC, textW);
-      const h = Math.max(21, lines.length * 3.25 + 14);
-
-      stroke(LINEA,.22);
-      fill(BLANCO);
-      pdf.roundedRect(M, y, CW, h, 1.6, 1.6, 'FD');
-      titleBar('Descripción del servicio', M, y, CW, AZUL_OSCURO);
-
-      setFont(10,'normal',GRAFITO);
-      put(lines, M + padX, y + 12.8, { maxWidth: textW });
-      y += h + 4.5;
-    }
-
-    function parseServiceText(txt){
-      const raw=clean(txt); const parts=raw.split(/Entregables\s*:/i); const scope=clean(parts[0] || raw); let deliverables=[];
-      if(parts[1]) deliverables=parts[1].split(/\n|•|-/).map(x=>cleanInline(x)).filter(Boolean);
-      return {scope, deliverables};
-    }
-    function serviceProposal(it,index){
-      const parsed=parseServiceText(it.name || '');
-      const textW=CW-7;
-      const scopeLines=split(parsed.scope, textW);
-      const deliverables=parsed.deliverables.length ? parsed.deliverables : ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
-      const scopeH=scopeLines.length*4.7+14;
-      const delRows=Math.ceil(deliverables.length/2);
-      const delH=delRows*5.2+11;
-      const cardH=Math.max(47, 8+scopeH+delH);
-
-      stroke(LINEA,.22);
-      fill(BLANCO);
-      pdf.roundedRect(M,y,CW,cardH,1.6,1.6,'FD');
-      titleBar(`Servicio profesional${quoteItems.length>1 ? ' '+(index+1) : ''}`,M,y,CW,GRAFITO_2);
-
-      const tx=M+3.5;
-      let ty=y+14.3;
-
-      setFont(10,'bold',AZUL_OSCURO);
-      put('ALCANCE TÉCNICO',tx,ty);
-      ty+=4.6;
-
-      setFont(10,'normal',GRAFITO);
-      put(scopeLines, tx, ty, {maxWidth:textW});
-      ty += scopeLines.length*4.7+6;
-
-      setFont(10,'bold',AZUL_OSCURO);
-      put('ENTREGABLES',tx,ty);
-      ty+=4.3;
-
-      setFont(10,'normal',GRAFITO);
-      const colW=(textW-9)/2;
-      deliverables.forEach((d,idx)=>{
-        const col=idx%2,row=Math.floor(idx/2),x=tx+(col*(colW+9)),yy=ty+row*5.2;
-        put('•',x,yy);
-        put(split(d,colW-5),x+3.7,yy);
-      });
-
-      y += cardH + 5;
-    }
-    function closureBand(){
-      const topY = y;
-      const gap = 6;
-      const totalW = 70;
-      const infoW = CW - totalW - gap;
-      const h = 50;
-
-      // Bloque izquierdo: condiciones + transferencia en una sola tarjeta editorial
-      stroke(LINEA,.22);
-      fill(BLANCO);
-      pdf.roundedRect(M, topY, infoW, h, 2, 2, 'FD');
-
-      // Franja superior muy limpia
-      fill(AZUL_SUAVE);
-      pdf.roundedRect(M, topY, infoW, 8, 2, 2, 'F');
-      setFont(7.4,'bold',AZUL_OSCURO);
-      put('CONDICIONES Y DATOS DE PAGO', M + 4, topY + 5.5);
-
-      const colGap = 7;
-      const colW = (infoW - 8 - colGap) / 2;
-      const x1 = M + 4;
-      const x2 = x1 + colW + colGap;
-
-      let cy = topY + 15;
-
-      setFont(7.3,'bold',AZUL_OSCURO);
-      put('Condiciones comerciales', x1, cy);
-      setFont(10,'normal',GRAFITO);
-      const cond = q.conditions || '50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.';
-      put(split(cond, colW), x1, cy + 6, { maxWidth: colW });
-
-      setFont(7.3,'bold',AZUL_OSCURO);
-      put('Transferencia bancaria', x2, cy);
-
-      setFont(8.4,'normal',GRAFITO);
-      const bankLines = [
-        `${COMPANY.holder}`,
-        `RUT: ${COMPANY.rut}`,
-        `${COMPANY.bank}`,
-        `${COMPANY.account}`,
-        `${COMPANY.email}`
-      ];
-
-      let by = cy + 6;
-      bankLines.forEach((line, idx) => {
-        const lines = split(line, colW);
-        setFont(idx === 0 ? 7.4 : 8.2, idx === 0 ? 'bold' : 'normal', idx === 0 ? GRAFITO : GRIS);
-        put(lines, x2, by, { maxWidth: colW });
-        by += lines.length * (idx === 0 ? 3.4 : 3.8) + 1.1;
-      });
-
-      // Tarjeta derecha: valor del servicio protagonista
-      const tx = M + infoW + gap;
-      stroke([189,201,214], .28);
-      fill([248,250,252]);
-      pdf.roundedRect(tx, topY, totalW, h, 2.2, 2.2, 'FD');
-
-      fill(AZUL_OSCURO);
-      pdf.roundedRect(tx, topY, totalW, 10, 2.2, 2.2, 'F');
-      setFont(7.1,'bold',BLANCO);
-      put('RESUMEN ECONÓMICO', tx + 4, topY + 6.6);
-
-      let yy = topY + 18;
-
-      function moneyRow(label, val, opts={}){
-        const {bold=false, total=false} = opts;
-        setFont(total ? 8.3 : 7.4, bold ? 'bold' : 'normal', total ? AZUL_OSCURO : GRIS);
-        put(label, tx + 4, yy);
-        setFont(total ? 10.8 : 7.7, bold ? 'bold' : 'normal', total ? AZUL_OSCURO : GRAFITO);
-        put(displayAmount(val), tx + totalW - 4, yy, { align:'right' });
-        yy += total ? 8.2 : 6.2;
-      }
-
-      moneyRow('Valor neto', q.neto);
-      moneyRow('IVA 19%', q.iva);
-
-      stroke(LINEA,.3);
-      pdf.line(tx + 4, yy - 2, tx + totalW - 4, yy - 2);
-
-      moneyRow('TOTAL SERVICIO', q.total, {bold:true, total:true});
-
-      if(q.currency === 'UF'){
-        setFont(6.2,'normal',GRIS);
-        put('Valores expresados en UF.', tx + totalW - 4, topY + h - 4, {align:'right'});
-      }
-
-      y = topY + h + 7;
-    }
-
-    function signature(){
-      if(y > H - 37) y = H - 37;
-      setFont(6.8,'normal',GRAFITO);
-      put('Atentamente,', W/2, y, {align:'center'});
-      y += 7;
-      stroke(GRAFITO,.28);
-      pdf.line(W/2 - 27, y, W/2 + 27, y);
-      y += 3.8;
-      setFont(7.2,'bold',GRAFITO);
-      put('ROBIN PINTO SERRANO', W/2, y, {align:'center'});
-      y += 3.5;
-      setFont(6,'normal',GRIS);
-      put(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`, W/2, y, {align:'center'});
-    }
-
-    header(); infoBox(); descriptionBlock(); quoteItems.forEach(serviceProposal); closureBand(); signature(); footer();
-    const filename = `COT_${quoteCode(q)}.pdf`;
-    if(mode === 'share' && navigator.share){ const blob=pdf.output('blob'); const file=new File([blob], filename, {type:'application/pdf'}); await navigator.share({files:[file], title:filename}); }
-    else pdf.save(filename);
-  }
-
-  
-  function updateUI(){
-    const sel = document.getElementById('q-client');
-    if(sel){
-      const current = sel.value;
-      sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>';
-      const localClients = JSON.parse(localStorage.getItem('rps_clientes_local') || '[]');
-      const mergedClients = [...(window.clientes || []), ...localClients].filter((c,i,a)=>c && c.name && a.findIndex(x=>x.name===c.name)===i).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-      window.clientes = mergedClients;
-      mergedClients.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.name || '';
-        opt.textContent = c.name || '';
-        sel.appendChild(opt);
-      });
-      if(current) sel.value = current;
-    }
-
-    const list = document.getElementById('clients-list');
-    if(list){
-      list.innerHTML = (window.clientes || []).map(c => `
-        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700 flex justify-between items-center gap-3">
-          <div class="min-w-0">
-            <b class="block text-white truncate">${esc(c.name || '')}</b>
-            <small class="block text-slate-400 truncate">${esc(c.rut || '')} · ${esc(c.phone || c.email || '')}</small>
-          </div>
-          <button onclick="fb.deleteDoc(fb.doc(fb.db,'rps_clientes','${c.id}'))" class="icon-btn text-red-400">🗑️</button>
-        </div>
-      `).join('');
-    }
-  }
-
-  function updateClientsUI(){ updateUI(); }
-
-  function checkNewClient(el){
-    if(el && el.value === 'NEW'){
-      navTo('clients');
-      el.value = '';
-      return;
-    }
-    if(typeof renderPreview === 'function') renderPreview();
-  }
-
-  async function saveClient(){
-    const getVal = (id) => {
-      const el = document.getElementById(id);
-      return el ? String(el.value || '').trim() : '';
-    };
-
-    const data = {
-      id: 'local_' + Date.now(),
-      name: getVal('c-name').toUpperCase(),
-      rut: getVal('c-rut'),
-      phone: getVal('c-phone'),
-      email: getVal('c-email'),
-      address: getVal('c-address')
-    };
-
-    if(!data.name){
-      alert('Ingresa el nombre del cliente.');
-      return;
-    }
-
-    try{
-      const local = JSON.parse(localStorage.getItem('rps_clientes_local') || '[]');
-      const filtered = local.filter(c => c.name !== data.name);
-      filtered.push(data);
-      localStorage.setItem('rps_clientes_local', JSON.stringify(filtered));
-
-      window.clientes = [...(window.clientes || []).filter(c => c.name !== data.name), data]
-        .sort((a,b) => (a.name || '').localeCompare(b.name || ''));
-
-      if(typeof updateUI === 'function') updateUI();
-      if(typeof updateClientsUI === 'function') updateClientsUI();
-
-      if(window.fb && fb.db){
-        try{
-          await fb.addDoc(fb.collection(fb.db, 'rps_clientes'), data);
-        }catch(fbErr){
-          console.warn('Cliente guardado localmente; Firebase no respondió:', fbErr);
-        }
-      }
-
-      ['c-name','c-rut','c-phone','c-email','c-address'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.value = '';
-      });
-
-      navTo('edit');
-
-      setTimeout(() => {
-        const sel = document.getElementById('q-client');
-        if(sel){
-          const exists = Array.from(sel.options).some(o => o.value === data.name);
-          if(!exists){
-            const opt = document.createElement('option');
-            opt.value = data.name;
-            opt.textContent = data.name;
-            sel.appendChild(opt);
-          }
-          sel.value = data.name;
-        }
-        if(typeof renderPreview === 'function') renderPreview();
-      }, 100);
-
-    }catch(err){
-      console.error(err);
-      alert('No se pudo guardar el cliente: ' + (err.message || err));
-    }
-  }
-
-  window.saveClient = saveClient;
-  window.checkNewClient = checkNewClient;
-  window.renderPreview = renderPreview;
-
-async function saveAndSend(){
-    const q = currentQuote();
-    q.items = normalizeItems(items);
+    q.items = normalizeItems((q.items || []).length ? q.items : [defaultItem()]);
     q.neto = q.items.reduce((s,i)=>s+Number(i.total||0),0);
     q.iva = Math.round(q.neto * 0.19);
     q.total = q.neto + q.iva;
 
-    if(!q.client){
-      alert('Falta seleccionar o crear cliente.');
-      return;
+    const c = (window.clientes || []).find(x => x.name === q.client) || { name:q.client };
+    const pdf = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const logo = await loadLogoPDF();
+
+    const W=210, H=297, MT=15, MB=15, ML=12, MR=12, CW=W-ML-MR;
+    const GRAFITO=[15,23,42], AZUL_OSCURO=[15,23,42], AZUL=[31,95,159], AZUL_SUAVE=[241,247,251], GRIS=[100,116,139], GRIS_SUAVE=[248,250,252], LINEA=[214,224,234], BLANCO=[255,255,255];
+
+    let y = MT;
+
+    function clean(v){ return String(v ?? '').replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim(); }
+    function cleanInline(v){ return String(v ?? '').replace(/\s+/g,' ').trim(); }
+    function split(v,w){ return pdf.splitTextToSize(clean(v), w); }
+    function setFont(size,style='normal',color=GRAFITO){ pdf.setFont('helvetica',style); pdf.setFontSize(size); pdf.setTextColor(...color); }
+    function stroke(color=LINEA,width=.25){ pdf.setDrawColor(...color); pdf.setLineWidth(width); }
+    function fill(color){ pdf.setFillColor(...color); }
+    function put(v,x,yy,opt={}){ Array.isArray(v) ? pdf.text(v,x,yy,opt) : pdf.text(String(v ?? ''),x,yy,opt); }
+    function displayAmount(n){ return amount(n, q.currency); }
+
+    function footer(){
+      stroke([47,128,237],.32);
+      pdf.line(ML, H - 9, W - MR, H - 9);
+      setFont(5.2,'normal',GRIS);
+      put(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5.2, {align:'center', maxWidth:CW});
     }
-    if(!q.items.length){
-      alert('Falta agregar ítems.');
-      return;
+
+    function pageHeader(){
+      y = MT;
+      if(logo){
+        const maxW=27, maxH=16;
+        let lw=maxW, lh=lw/(logo.w/logo.h);
+        if(lh>maxH){ lh=maxH; lw=lh*(logo.w/logo.h); }
+        pdf.addImage(logo.data,'PNG',ML,y,lw,lh);
+      }
+      setFont(11.5,'bold',GRAFITO);
+      put(COMPANY.name, ML+33, y+5);
+      setFont(6.8,'normal',GRIS);
+      put('Servicios topográficos y geodésicos', ML+33, y+9);
+      put(`${COMPANY.email} · Fono: ${COMPANY.phone}`, ML+33, y+13);
+
+      fill(AZUL_OSCURO);
+      pdf.roundedRect(W-MR-48, y, 48, 11, 1.5, 1.5, 'F');
+      setFont(6.5,'bold',BLANCO);
+      put('COTIZACIÓN TÉCNICA', W-MR-24, y+7, {align:'center'});
+
+      setFont(15,'bold',GRAFITO);
+      put(`N° ${quoteCode(q)}`, W-MR, y+22, {align:'right'});
+      setFont(6.8,'normal',GRIS);
+      put(`Fecha: ${fmtDate(q.date)}`, W-MR, y+27, {align:'right'});
+
+      y += 34;
+      stroke([47,128,237],.7);
+      pdf.line(ML,y,W-MR,y);
+      y += 6;
     }
 
-    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : Number(window.nextFolio || 1000);
-    if(f < 1000) f = 1000;
+    function newPage(){
+      footer();
+      pdf.addPage();
+      pageHeader();
+    }
 
-    try{
-      if(!editingId){
-        await fb.runTransaction(fb.db, async(t)=>{
-          const ref = fb.doc(fb.db,'config','rps_cotizador_v1');
-          const snap = await t.get(ref);
-          const last = snap.exists() ? Number(snap.data().lastFolio || 1000) : 1000;
-          f = Math.max(1000, last);
-          if(snap.exists()){
-            t.update(ref,{lastFolio:f+1});
-          }else{
-            t.set(ref,{lastFolio:f+1});
-          }
-        });
+    function ensure(space){
+      if(y + space > H - MB - 12) newPage();
+    }
+
+    function bar(title,x,yy,w,color=AZUL_OSCURO){
+      fill(color);
+      pdf.roundedRect(x,yy,w,6.5,1.2,1.2,'F');
+      setFont(6.5,'bold',BLANCO);
+      put(title.toUpperCase(),x+3,yy+4.5);
+    }
+
+    function infoBoxes(){
+      const h=32;
+      const leftW=78, gap=5, rightX=ML+leftW+gap, rightW=CW-leftW-gap;
+      ensure(h+6);
+      stroke(LINEA,.25); fill(BLANCO);
+      pdf.roundedRect(ML,y,leftW,h,1.5,1.5,'FD');
+      pdf.roundedRect(rightX,y,rightW,h,1.5,1.5,'FD');
+      bar('En atención a',ML,y,leftW,AZUL_OSCURO);
+      bar('Antecedentes del proyecto',rightX,y,rightW,AZUL);
+
+      setFont(7.6,'bold',GRAFITO);
+      put(split((c.name || '---').toUpperCase(), leftW-6), ML+3, y+12);
+      setFont(7,'normal',GRIS);
+      put(`RUT: ${c.rut || '—'}`, ML+3, y+20);
+      put(`Dirección: ${c.address || '—'}`, ML+3, y+25, {maxWidth:leftW-6});
+      put(`Contacto: ${c.phone || c.email || '—'}`, ML+3, y+30);
+
+      let yy=y+12;
+      const lx=rightX+3, vx=rightX+26;
+      function row(label,val){
+        setFont(6.6,'bold',GRIS); put(label,lx,yy);
+        setFont(7,'normal',GRAFITO); put(split(val || '—', rightW-30),vx,yy);
+        yy += 4.6;
       }
+      row('Proyecto:', q.project || 'Servicio técnico');
+      row('Ubicación:', q.location || 'Por definir');
+      row('Validez:', q.validity || '15 días');
+      row('Entrega:', q.delivery || 'Según coordinación');
+      row('Moneda:', q.currency === 'UF' ? 'Unidad de Fomento (UF)' : 'Pesos chilenos (CLP)');
+      y += h + 5;
+    }
 
-      const refCode = q.ref && q.ref.trim() ? q.ref.trim() : ('AER-' + f);
-      const data = {...q, folio:f, ref:refCode, createdAt: new Date().toISOString()};
+    function description(){
+      const lines=split(q.serviceDesc || DEFAULT_SERVICE_DESC, CW-8);
+      const h=Math.max(20, lines.length*4.2 + 12);
+      ensure(h+5);
+      stroke(LINEA,.25); fill(BLANCO);
+      pdf.roundedRect(ML,y,CW,h,1.5,1.5,'FD');
+      bar('Descripción del servicio',ML,y,CW,AZUL);
+      setFont(9.5,'normal',GRAFITO);
+      put(lines,ML+4,y+12,{maxWidth:CW-8});
+      y += h + 5;
+    }
 
-      if(editingId){
-        await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
-      }else{
-        await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+    function parseServiceText(txt){
+      const raw=clean(txt);
+      const parts=raw.split(/Entregables\s*:/i);
+      const scope=clean(parts[0] || raw);
+      let deliverables=[];
+      if(parts[1]) deliverables=parts[1].split(/\n|•|-/).map(x=>cleanInline(x)).filter(Boolean);
+      if(!deliverables.length) deliverables=['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
+      return {scope,deliverables};
+    }
+
+    function serviceCard(it,index){
+      const parsed=parseServiceText(it.name || '');
+      const lines=split(parsed.scope,CW-8);
+      const delRows=Math.ceil(parsed.deliverables.length/2);
+      const h=Math.max(56, 13 + lines.length*4.2 + 10 + delRows*5.2 + 8);
+      ensure(h+5);
+
+      stroke(LINEA,.25); fill(BLANCO);
+      pdf.roundedRect(ML,y,CW,h,1.5,1.5,'FD');
+      bar(`Servicio profesional${q.items.length>1 ? ' '+(index+1) : ''}`,ML,y,CW,AZUL_OSCURO);
+
+      let yy=y+14;
+      setFont(8,'bold',AZUL);
+      put('ALCANCE TÉCNICO',ML+4,yy); yy+=5;
+      setFont(9.5,'normal',GRAFITO);
+      put(lines,ML+4,yy,{maxWidth:CW-8});
+      yy += lines.length*4.2 + 6;
+
+      setFont(8,'bold',AZUL);
+      put('ENTREGABLES',ML+4,yy); yy+=5;
+      setFont(9.2,'normal',GRAFITO);
+      const colW=(CW-16)/2;
+      parsed.deliverables.forEach((d,i)=>{
+        const col=i%2, row=Math.floor(i/2);
+        const x=ML+4+col*(colW+8);
+        const dy=yy+row*5.2;
+        put('•',x,dy);
+        put(split(d,colW-5),x+4,dy);
+      });
+
+      y += h + 5;
+    }
+
+    function paymentAndTotals(){
+      const h=46, gap=6, totalW=68, infoW=CW-totalW-gap;
+      ensure(h+20);
+      const top=y;
+
+      stroke(LINEA,.25); fill(BLANCO);
+      pdf.roundedRect(ML,top,infoW,h,1.5,1.5,'FD');
+      fill(AZUL_SUAVE);
+      pdf.roundedRect(ML,top,infoW,7,1.5,1.5,'F');
+      setFont(6.8,'bold',AZUL_OSCURO);
+      put('CONDICIONES Y DATOS DE PAGO',ML+4,top+5);
+
+      const colGap=6, colW=(infoW-8-colGap)/2;
+      const x1=ML+4, x2=x1+colW+colGap;
+      setFont(7,'bold',AZUL); put('Condiciones comerciales',x1,top+14);
+      setFont(7.6,'normal',GRAFITO);
+      put(split(q.conditions || '50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.', colW),x1,top+19,{maxWidth:colW});
+
+      setFont(7,'bold',AZUL); put('Transferencia bancaria',x2,top+14);
+      const bank=[COMPANY.holder,`RUT: ${COMPANY.rut}`,COMPANY.bank,COMPANY.account,COMPANY.email];
+      let by=top+19;
+      bank.forEach((line,i)=>{
+        setFont(i===0?6.8:7.2,i===0?'bold':'normal',i===0?GRAFITO:GRIS);
+        const l=split(line,colW);
+        put(l,x2,by,{maxWidth:colW});
+        by += l.length*(i===0?3.4:3.8)+1;
+      });
+
+      const tx=ML+infoW+gap;
+      stroke([191,208,223],.3); fill(GRIS_SUAVE);
+      pdf.roundedRect(tx,top,totalW,h,1.8,1.8,'FD');
+      fill(AZUL_OSCURO);
+      pdf.roundedRect(tx,top,totalW,8,1.8,1.8,'F');
+      setFont(6.8,'bold',BLANCO);
+      put('RESUMEN ECONÓMICO',tx+4,top+5.5);
+      let yy=top+16;
+      function r(label,val,total=false){
+        setFont(total?8:7.4,total?'bold':'normal',total?AZUL:GRIS);
+        put(label,tx+4,yy);
+        setFont(total?11:7.8,total?'bold':'normal',total?AZUL:GRAFITO);
+        put(displayAmount(val),tx+totalW-4,yy,{align:'right'});
+        yy += total?8:6;
       }
+      r('Valor neto',q.neto);
+      r('IVA 19%',q.iva);
+      stroke(LINEA,.25); pdf.line(tx+4,yy-2,tx+totalW-4,yy-2);
+      r('TOTAL SERVICIO',q.total,true);
 
-      await generateAndSharePDF(null, null, 'save');
+      y = top + h + 7;
+    }
 
-      items = [defaultItem()];
-      editingId = null;
-      window.currentFolio = null;
+    function signature(){
+      ensure(24);
+      if(y > H - MB - 24) newPage();
+      setFont(6.8,'normal',GRAFITO);
+      put('Atentamente,',W/2,y,{align:'center'});
+      y += 7;
+      stroke(GRAFITO,.25); pdf.line(W/2-27,y,W/2+27,y);
+      y += 4;
+      setFont(7.2,'bold',GRAFITO); put('ROBIN PINTO SERRANO',W/2,y,{align:'center'});
+      y += 3.5;
+      setFont(6,'normal',GRIS); put(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
+    }
 
-      const set = (id, value) => {
-        const el = document.getElementById(id);
-        if(el) el.value = value;
-      };
+    pageHeader();
+    infoBoxes();
+    description();
+    q.items.forEach(serviceCard);
+    paymentAndTotals();
+    signature();
+    footer();
 
-      set('q-ref','');
-      set('i-name',DEFAULT_ITEM_TEXT);
-      set('i-price','');
-      set('i-qty','1');
-      set('q-service-desc',DEFAULT_SERVICE_DESC);
-
-      renderPreview();
-      navTo('hist');
-
-    }catch(err){
-      console.error(err);
-      alert('No se pudo guardar/enviar la cotización: ' + (err.message || err));
+    const filename=`COT_${quoteCode(q)}.pdf`;
+    if(mode === 'share' && navigator.share){
+      const blob=pdf.output('blob');
+      const file=new File([blob],filename,{type:'application/pdf'});
+      await navigator.share({files:[file],title:filename});
+    }else{
+      pdf.save(filename);
     }
   }
-
-  
-  window.saveAndSend = saveAndSend;
-  window.generateAndSharePDF = generateAndSharePDF;
 
   // --- ZOOM INTERNO ESTABLE PARA PRELIMINAR EN CELULAR ---
   const previewZoom = { scale:1, minScale:1, maxScale:4, x:0, y:0, dragging:false, startX:0, startY:0, startDist:0, startScale:1, pinchX:0, pinchY:0, pinchStartX:0, pinchStartY:0 };
@@ -3100,6 +2949,8 @@ async function saveAndSend(){
     const wrap=document.getElementById('pdf-preview-wrapper');
     if(!wrap) return;
     wrap.style.transform=`translate3d(${previewZoom.x}px, ${previewZoom.y}px, 0) scale(${previewZoom.scale})`;
+    wrap.style.marginLeft='auto';
+    wrap.style.marginRight='auto';
   }
   function fitPreviewZoom(){
     const box=document.getElementById('preliminar-container');

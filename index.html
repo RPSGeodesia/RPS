@@ -1846,6 +1846,71 @@ textarea.input-dark{
   max-height:none !important;
 }
 
+
+/* FINAL RESPONSIVE + PREVIEW */
+#sec-edit > div{ align-items:start !important; }
+#preliminar-container{
+  width:100% !important; max-width:100% !important;
+  min-height:calc(100vh - 120px) !important;
+  overflow:auto !important; display:flex !important;
+  justify-content:center !important; align-items:flex-start !important;
+  padding:18px !important;
+}
+#pdf-preview-wrapper{
+  margin:0 auto !important; flex:0 0 auto !important;
+  transform-origin:top center !important;
+  width:210mm !important; height:297mm !important;
+}
+#pdf-canvas,.pdf-page,.preview-page-compact{
+  width:210mm !important; height:297mm !important;
+  max-width:210mm !important; max-height:297mm !important;
+  overflow:hidden !important; box-sizing:border-box !important;
+}
+.preview-page-compact{
+  padding:15mm 12mm 15mm 12mm !important;
+  display:flex !important; flex-direction:column !important;
+  gap:3.6mm !important; background:#fff !important;
+}
+.preview-header-compact{ display:grid !important; grid-template-columns:1fr 48mm !important; gap:7mm !important; flex:0 0 auto !important; }
+.preview-brand-compact img{ width:27mm !important; max-height:16mm !important; height:auto !important; object-fit:contain !important; }
+.preview-brand-compact h1{ font-size:11.8pt !important; line-height:1.05 !important; margin:0 0 .8mm !important; }
+.preview-brand-compact p{ font-size:6.8pt !important; line-height:1.12 !important; margin:0 !important; }
+.preview-quote-compact div{ padding:2.2mm 3mm !important; font-size:6.3pt !important; }
+.preview-quote-compact strong{ font-size:14.2pt !important; margin-top:1.4mm !important; }
+.preview-divider{ margin:0 !important; border-top:0.4mm solid #2F80ED !important; }
+.preview-info-grid{ display:grid !important; grid-template-columns:76mm 1fr !important; gap:5mm !important; flex:0 0 auto !important; }
+.preview-section-bar{ height:6.2mm !important; font-size:6.5pt !important; padding:0 2.8mm !important; }
+.preview-info-card h3{ font-size:7.8pt !important; line-height:1.1 !important; margin:2.2mm 2.8mm 1.3mm !important; }
+.preview-info-card p,.preview-project-lines p{ font-size:7pt !important; line-height:1.12 !important; margin:0 2.8mm .75mm !important; }
+.preview-project-lines{ padding-top:2.2mm !important; }
+.preview-description p{ font-size:9pt !important; line-height:1.18 !important; margin:2.6mm 3.6mm !important; max-height:19mm !important; overflow:hidden !important; }
+.preview-service-full{ padding:3.5mm !important; }
+.preview-service-full h4{ font-size:7pt !important; margin:0 0 1.3mm !important; }
+.preview-service-full p{ font-size:8.8pt !important; line-height:1.16 !important; margin:0 0 2.4mm !important; max-height:53mm !important; overflow:hidden !important; }
+.preview-deliverables{ font-size:8.8pt !important; line-height:1.12 !important; row-gap:.8mm !important; }
+.preview-payment-layout{ display:grid !important; grid-template-columns:1fr 66mm !important; gap:5mm !important; flex:0 0 auto !important; }
+.preview-payment-title,.preview-economic-title{ font-size:6.4pt !important; padding:1.9mm 3mm !important; }
+.preview-payment-columns{ display:grid !important; grid-template-columns:1fr 1fr !important; gap:4.5mm !important; padding:3mm !important; }
+.preview-payment-columns h4{ font-size:6.4pt !important; margin:0 0 1.2mm !important; }
+.preview-payment-columns p{ font-size:7pt !important; line-height:1.12 !important; margin:0 0 .7mm !important; }
+.preview-economic-card div:not(.preview-economic-title){ font-size:7.7pt !important; padding:1.45mm 3.2mm 0 !important; }
+.preview-economic-card .grand-total strong{ font-size:13.2pt !important; }
+.preview-economic-card hr{ margin:1.4mm 3.2mm 1mm !important; }
+.preview-signature{ margin-top:auto !important; padding-top:.8mm !important; padding-bottom:1mm !important; }
+.preview-signature p{ font-size:6.6pt !important; margin:0 0 4.5mm !important; }
+.preview-signature div{ width:50mm !important; margin:0 auto 1mm !important; }
+.preview-signature strong{ font-size:7.2pt !important; }
+.preview-signature span{ font-size:6pt !important; }
+.preview-footer{ flex:0 0 auto !important; border-top:0.25mm solid #2F80ED !important; padding-top:1.5mm !important; font-size:5.2pt !important; line-height:1.05 !important; color:#64748B !important; margin-top:.6mm !important; }
+@media (min-width:1024px){
+  #sec-edit > div{ grid-template-columns:minmax(360px,430px) minmax(0,1fr) !important; }
+}
+@media (max-width:1023px){
+  #sec-edit > div{ display:block !important; }
+  #preliminar-container{ margin-top:18px !important; min-height:70vh !important; }
+  .input-dark{ font-size:16px !important; }
+}
+
 </style>
 
   <style id="palette-grafito-azul">
@@ -2255,7 +2320,6 @@ textarea.input-dark{
 
         <div id="items-list" class="space-y-2"></div>
         <button onclick="saveAndSend()" class="btn w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 uppercase text-base shadow-2xl">Guardar y enviar PDF</button>
-        <button onclick="generateAndSharePDF(null,null,'save')" class="btn w-full bg-slate-700 hover:bg-slate-600 text-white uppercase text-xs">Descargar PDF de prueba</button>
       </div>
 
       <div id="preliminar-container" class="sheet-wrap"><div id="pdf-preview-wrapper"><div id="pdf-canvas" class="pdf-page"></div></div></div>
@@ -2365,7 +2429,6 @@ Entregables:
     const normalized = normalizeItems(items);
     const neto = normalized.reduce((s,i)=>s + Number(i.total || 0), 0);
     const iva = Math.round(neto * 0.19);
-
     return {
       folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
       date: document.getElementById('q-date-input')?.value || '',
@@ -2381,10 +2444,7 @@ Entregables:
       delivery: document.getElementById('q-delivery')?.value || 'Según coordinación',
       conditions: document.getElementById('q-conditions')?.value || '',
       notes: document.getElementById('q-notes')?.value || '',
-      items: normalized,
-      neto,
-      iva,
-      total: neto + iva
+      items: normalized, neto, iva, total: neto + iva
     };
   }
 
@@ -2561,59 +2621,35 @@ Entregables:
     const nameEl = document.getElementById('i-name');
     const priceEl = document.getElementById('i-price');
     const qtyEl = document.getElementById('i-qty');
-
     const name = (nameEl?.value || '').trim();
     const qty = Number(qtyEl?.value || 1);
     const price = Number(priceEl?.value || 0);
-
-    if(!name){
-      alert('Ingresa el detalle técnico del servicio.');
-      return;
-    }
-
-    if(!Number.isFinite(qty) || qty <= 0){
-      alert('Ingresa una cantidad válida.');
-      return;
-    }
-
-    if(!Number.isFinite(price) || price < 0){
-      alert('Ingresa un precio válido.');
-      return;
-    }
-
-    items.push({
-      name,
-      qty,
-      price,
-      total: Math.round(price * qty * 100) / 100
-    });
-
+    if(!name){ alert('Ingresa el detalle técnico del servicio.'); return; }
+    if(!Number.isFinite(qty) || qty <= 0){ alert('Ingresa una cantidad válida.'); return; }
+    if(!Number.isFinite(price) || price < 0){ alert('Ingresa un precio válido.'); return; }
+    const newItem = { name, qty, price, total: Math.round(price * qty * 100) / 100 };
+    const onlyDefault = items.length === 1 && (items[0]?.isDefault || items[0]?.name === DEFAULT_ITEM_TEXT) && Number(items[0]?.total || 0) === 0;
+    if(onlyDefault) items[0] = newItem; else items.push(newItem);
     if(nameEl) nameEl.value = DEFAULT_ITEM_TEXT;
     if(qtyEl) qtyEl.value = '1';
     if(priceEl) priceEl.value = '';
-
     renderPreview();
   }
-
   window.addItem = addItem;
 
   function editItem(i){
-    const it = items[i];
-    if(!it) return;
-
+    const it = items[i]; if(!it) return;
     const nameEl = document.getElementById('i-name');
     const qtyEl = document.getElementById('i-qty');
     const priceEl = document.getElementById('i-price');
-
     if(nameEl) nameEl.value = it.name || '';
     if(qtyEl) qtyEl.value = Number(it.qty || 1);
     if(priceEl) priceEl.value = Number(it.price || 0);
-
     items.splice(i, 1);
+    if(!items.length) items = [defaultItem()];
     renderPreview();
     window.scrollTo({top:0, behavior:'smooth'});
   }
-
   window.editItem = editItem;
 
   function renderHistory(){
@@ -2941,6 +2977,9 @@ async function generateAndSharePDF(historyId=null, clientName=null, mode='save')
     }
   }
 
+  window.saveAndSend = saveAndSend;
+window.generateAndSharePDF = generateAndSharePDF;
+
   // --- ZOOM INTERNO ESTABLE PARA PRELIMINAR EN CELULAR ---
   const previewZoom = { scale:1, minScale:1, maxScale:4, x:0, y:0, dragging:false, startX:0, startY:0, startDist:0, startScale:1, pinchX:0, pinchY:0, pinchStartX:0, pinchStartY:0 };
   function zDist(touches){ const dx=touches[0].clientX-touches[1].clientX; const dy=touches[0].clientY-touches[1].clientY; return Math.hypot(dx,dy); }
@@ -2955,20 +2994,21 @@ async function generateAndSharePDF(historyId=null, clientName=null, mode='save')
   function fitPreviewZoom(){
     const box=document.getElementById('preliminar-container');
     const wrap=document.getElementById('pdf-preview-wrapper');
-    const page=document.getElementById('pdf-canvas');
+    const page=document.querySelector('.preview-page-compact');
     if(!box || !wrap || !page) return;
-    const bw=box.clientWidth, bh=box.clientHeight, pw=page.offsetWidth, ph=page.offsetHeight;
-    if(!bw || !bh || !pw || !ph){ setTimeout(fitPreviewZoom,120); return; }
-    const pad=12;
-    const fit=Math.min((bw-pad*2)/pw, (bh-pad*2)/ph);
-    const scale=Math.max(0.12, Math.min(1, fit));
-    previewZoom.scale=scale;
-    previewZoom.minScale=scale;
-    previewZoom.maxScale=4;
-    previewZoom.x=(bw - pw*scale)/2;
-    previewZoom.y=Math.max(8, (bh - ph*scale)/2);
+    const availableW = Math.max(280, box.clientWidth - 36);
+    const availableH = Math.max(380, box.clientHeight - 36);
+    const pageW = page.offsetWidth || 794;
+    const pageH = page.offsetHeight || 1123;
+    const scaleX = availableW / pageW;
+    const scaleY = availableH / pageH;
+    previewZoom.scale = Math.min(scaleX, scaleY, 1.35) * 0.96;
+    previewZoom.minScale = Math.min(previewZoom.scale, 1);
+    previewZoom.x = 0;
+    previewZoom.y = 0;
     applyPreviewZoom();
   }
+
   function setupPreviewZoom(){
     const box=document.getElementById('preliminar-container');
     if(!box || box.dataset.zoomReady==='1') return;

@@ -1911,6 +1911,227 @@ textarea.input-dark{
   .input-dark{ font-size:16px !important; }
 }
 
+
+/* ============================================================
+   FIX DEFINITIVO PRELIMINAR
+   A4 completo, centrado, sin scroll interno gigante.
+   ============================================================ */
+#preliminar-container{
+  width:100% !important;
+  height:calc(100vh - 118px) !important;
+  min-height:620px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+}
+
+#pdf-preview-wrapper{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  transform:none !important;
+  transform-origin:top center !important;
+  margin:auto !important;
+  flex:0 0 auto !important;
+}
+
+#pdf-canvas,
+.pdf-page,
+.preview-page-compact{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+
+.preview-page-compact{
+  padding:15mm 12mm 15mm 12mm !important;
+  background:#fff !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:3.3mm !important;
+}
+
+.preview-description p{
+  max-height:18mm !important;
+  overflow:hidden !important;
+}
+
+.preview-service-full p{
+  max-height:44mm !important;
+  overflow:hidden !important;
+}
+
+.preview-payment-layout{
+  grid-template-columns:1fr 64mm !important;
+  gap:4.5mm !important;
+}
+
+.preview-signature{
+  margin-top:auto !important;
+}
+
+@media (max-width:1023px){
+  #preliminar-container{
+    height:72vh !important;
+    min-height:520px !important;
+    padding:12px !important;
+  }
+}
+
+
+/* ============================================================
+   FIX CENTRADO REAL DEL PRELIMINAR
+   ============================================================ */
+
+#preliminar-container{
+  position:relative !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:calc(100vh - 118px) !important;
+  min-height:620px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  display:block !important;
+}
+
+#pdf-preview-wrapper{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  margin:0 !important;
+  transform-origin:center center !important;
+  flex:none !important;
+}
+
+#pdf-canvas,
+.pdf-page,
+.preview-page-compact{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+@media (max-width:1023px){
+  #preliminar-container{
+    height:72vh !important;
+    min-height:520px !important;
+  }
+}
+
+
+/* ============================================================
+   VISOR PRELIMINAR DEFINITIVO
+   Centrado real como referencia: A4 visible completo, sin corte lateral.
+   ============================================================ */
+
+#sec-edit > div{
+  align-items:start !important;
+}
+
+#preliminar-container{
+  width:100% !important;
+  max-width:100% !important;
+  height:calc(100vh - 118px) !important;
+  min-height:620px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+  position:relative !important;
+}
+
+#pdf-preview-wrapper{
+  position:relative !important;
+  margin:auto !important;
+  flex:0 0 auto !important;
+  width:auto !important;
+  height:auto !important;
+  min-width:0 !important;
+  min-height:0 !important;
+  max-width:none !important;
+  max-height:none !important;
+  transform:none !important;
+  zoom:1 !important;
+  overflow:visible !important;
+}
+
+#pdf-canvas{
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  transform-origin:top left !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+
+.pdf-page,
+.preview-page-compact{
+  width:210mm !important;
+  height:297mm !important;
+  min-width:210mm !important;
+  min-height:297mm !important;
+  max-width:210mm !important;
+  max-height:297mm !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+
+.preview-page-compact{
+  padding:15mm 12mm 15mm 12mm !important;
+  background:#FFFFFF !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:3.4mm !important;
+}
+
+@media (min-width:1024px){
+  #sec-edit > div{
+    grid-template-columns:minmax(360px,430px) minmax(0,1fr) !important;
+    gap:28px !important;
+  }
+}
+
+@media (max-width:1023px){
+  #sec-edit > div{
+    display:block !important;
+  }
+
+  #preliminar-container{
+    margin-top:18px !important;
+    height:72vh !important;
+    min-height:520px !important;
+    padding:12px !important;
+  }
+}
+
 </style>
 
   <style id="palette-grafito-azul">
@@ -2596,7 +2817,7 @@ Entregables:
         <button onclick="items.splice(${i},1);renderPreview();" class="text-red-400 text-xl px-2">✕</button>
       </div>`).join('');
 
-    setTimeout(fitPreviewZoom, 60);
+    setTimeout(fitPreviewZoom, 120);
   }
 
   function loadLogoPDF(){
@@ -2621,20 +2842,32 @@ Entregables:
     const nameEl = document.getElementById('i-name');
     const priceEl = document.getElementById('i-price');
     const qtyEl = document.getElementById('i-qty');
+
     const name = (nameEl?.value || '').trim();
     const qty = Number(qtyEl?.value || 1);
     const price = Number(priceEl?.value || 0);
+
     if(!name){ alert('Ingresa el detalle técnico del servicio.'); return; }
     if(!Number.isFinite(qty) || qty <= 0){ alert('Ingresa una cantidad válida.'); return; }
     if(!Number.isFinite(price) || price < 0){ alert('Ingresa un precio válido.'); return; }
+
     const newItem = { name, qty, price, total: Math.round(price * qty * 100) / 100 };
-    const onlyDefault = items.length === 1 && (items[0]?.isDefault || items[0]?.name === DEFAULT_ITEM_TEXT) && Number(items[0]?.total || 0) === 0;
-    if(onlyDefault) items[0] = newItem; else items.push(newItem);
+
+    const onlyDefault = items.length === 1 &&
+      (items[0]?.isDefault || items[0]?.name === DEFAULT_ITEM_TEXT) &&
+      Number(items[0]?.price || 0) === 0 &&
+      Number(items[0]?.total || 0) === 0;
+
+    if(onlyDefault) items[0] = newItem;
+    else items.push(newItem);
+
     if(nameEl) nameEl.value = DEFAULT_ITEM_TEXT;
     if(qtyEl) qtyEl.value = '1';
     if(priceEl) priceEl.value = '';
+
     renderPreview();
   }
+
   window.addItem = addItem;
 
   function editItem(i){
@@ -2976,36 +3209,119 @@ async function generateAndSharePDF(historyId=null, clientName=null, mode='save')
       pdf.save(filename);
     }
   }
+window.generateAndSharePDF = generateAndSharePDF;
+
+  async function saveAndSend(){
+    const q = currentQuote();
+    q.items = normalizeItems(items);
+    q.neto = q.items.reduce((s,i)=>s+Number(i.total||0),0);
+    q.iva = Math.round(q.neto * 0.19);
+    q.total = q.neto + q.iva;
+
+    if(!q.client){
+      alert('Falta seleccionar o crear cliente.');
+      return;
+    }
+
+    if(!q.items.length){
+      alert('Falta agregar ítems.');
+      return;
+    }
+
+    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : Number(window.nextFolio || 1000);
+    if(f < 1000) f = 1000;
+
+    try{
+      if(!editingId && window.fb?.runTransaction){
+        await fb.runTransaction(fb.db, async(t)=>{
+          const ref = fb.doc(fb.db,'config','rps_cotizador_v1');
+          const snap = await t.get(ref);
+          const last = snap.exists() ? Number(snap.data().lastFolio || 1000) : 1000;
+          f = Math.max(1000, last);
+          if(snap.exists()) t.update(ref,{lastFolio:f+1});
+          else t.set(ref,{lastFolio:f+1});
+        });
+      }
+
+      const refCode = q.ref && q.ref.trim() ? q.ref.trim() : ('AER-' + f);
+      const data = {...q, folio:f, ref:refCode, createdAt:new Date().toISOString()};
+
+      if(window.fb?.db){
+        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
+        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+      }
+
+      await generateAndSharePDF(null,null,'save');
+
+      items = [defaultItem()];
+      editingId = null;
+      window.currentFolio = null;
+
+      const set = (id,value)=>{ const el=document.getElementById(id); if(el) el.value=value; };
+      set('q-ref','');
+      set('i-name',DEFAULT_ITEM_TEXT);
+      set('i-price','');
+      set('i-qty','1');
+      set('q-service-desc',DEFAULT_SERVICE_DESC);
+
+      renderPreview();
+      if(typeof renderHistory === 'function') renderHistory();
+
+    }catch(err){
+      console.error(err);
+      alert('No se pudo guardar/enviar la cotización: ' + (err.message || err));
+    }
+  }
 
   window.saveAndSend = saveAndSend;
-window.generateAndSharePDF = generateAndSharePDF;
 
   // --- ZOOM INTERNO ESTABLE PARA PRELIMINAR EN CELULAR ---
   const previewZoom = { scale:1, minScale:1, maxScale:4, x:0, y:0, dragging:false, startX:0, startY:0, startDist:0, startScale:1, pinchX:0, pinchY:0, pinchStartX:0, pinchStartY:0 };
   function zDist(touches){ const dx=touches[0].clientX-touches[1].clientX; const dy=touches[0].clientY-touches[1].clientY; return Math.hypot(dx,dy); }
   function zCenter(touches){ return { x:(touches[0].clientX+touches[1].clientX)/2, y:(touches[0].clientY+touches[1].clientY)/2 }; }
   function applyPreviewZoom(){
-    const wrap=document.getElementById('pdf-preview-wrapper');
-    if(!wrap) return;
-    wrap.style.transform=`translate3d(${previewZoom.x}px, ${previewZoom.y}px, 0) scale(${previewZoom.scale})`;
-    wrap.style.marginLeft='auto';
-    wrap.style.marginRight='auto';
+    const wrap = document.getElementById('pdf-preview-wrapper');
+    const canvas = document.getElementById('pdf-canvas');
+    const page = document.querySelector('.preview-page-compact');
+    if(!wrap || !canvas || !page) return;
+
+    const pageW = page.offsetWidth || canvas.offsetWidth || 794;
+    const pageH = page.offsetHeight || canvas.offsetHeight || 1123;
+    const s = previewZoom.scale || 1;
+
+    wrap.style.width = (pageW * s) + 'px';
+    wrap.style.height = (pageH * s) + 'px';
+    wrap.style.transform = 'none';
+    wrap.style.zoom = '1';
+
+    canvas.style.transformOrigin = 'top left';
+    canvas.style.transform = `scale(${s})`;
   }
+
   function fitPreviewZoom(){
-    const box=document.getElementById('preliminar-container');
-    const wrap=document.getElementById('pdf-preview-wrapper');
-    const page=document.querySelector('.preview-page-compact');
-    if(!box || !wrap || !page) return;
-    const availableW = Math.max(280, box.clientWidth - 36);
-    const availableH = Math.max(380, box.clientHeight - 36);
-    const pageW = page.offsetWidth || 794;
-    const pageH = page.offsetHeight || 1123;
+    const box = document.getElementById('preliminar-container');
+    const canvas = document.getElementById('pdf-canvas');
+    const page = document.querySelector('.preview-page-compact');
+    if(!box || !canvas || !page) return;
+
+    // Reset para medir A4 real sin acumulación de escala
+    canvas.style.transform = 'none';
+
+    const pageW = page.offsetWidth || canvas.offsetWidth || 794;
+    const pageH = page.offsetHeight || canvas.offsetHeight || 1123;
+
+    const availableW = Math.max(260, box.clientWidth - 36);
+    const availableH = Math.max(360, box.clientHeight - 36);
+
     const scaleX = availableW / pageW;
     const scaleY = availableH / pageH;
-    previewZoom.scale = Math.min(scaleX, scaleY, 1.35) * 0.96;
-    previewZoom.minScale = Math.min(previewZoom.scale, 1);
+
+    previewZoom.scale = Math.min(scaleX, scaleY, 1.2) * 0.98;
+    previewZoom.minScale = previewZoom.scale;
+    previewZoom.maxScale = Math.max(3, previewZoom.scale * 4);
     previewZoom.x = 0;
     previewZoom.y = 0;
+
     applyPreviewZoom();
   }
 

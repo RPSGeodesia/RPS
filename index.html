@@ -7,6 +7,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     :root {
@@ -240,6 +241,8 @@
       .tab { padding:12px; }
       .card { padding:18px; border-radius:22px; }
     }
+  
+    .list-row button{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:10px;padding:7px 9px;font-weight:800;}
   </style>
 </head>
 
@@ -312,12 +315,14 @@
   <section id="tab-clients" class="tab">
     <div class="max-w-xl mx-auto stack">
       <div class="card stack">
+        <input id="c-id" type="hidden">
         <input id="c-name" class="input" placeholder="Nombre / Empresa">
         <input id="c-rut" class="input" placeholder="RUT">
         <input id="c-phone" class="input" placeholder="Teléfono / WhatsApp">
         <input id="c-email" class="input" placeholder="Email">
         <input id="c-address" class="input" placeholder="Dirección">
         <button class="btn" onclick="saveClient()">Guardar cliente</button>
+        <button class="btn small" style="background:#334155;color:white" onclick="clearClientForm()">Cancelar edición</button>
       </div>
       <div id="clients-list" class="stack"></div>
     </div>
@@ -393,6 +398,7 @@ Entregables:
 
   let items = [defaultItem()];
   let editingId = null;
+  let editingClientId = null;
 
   function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
   function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -585,8 +591,9 @@ Entregables:
   }
 
   async function saveClient(){
+    const id = document.getElementById('c-id').value || editingClientId;
     const data = {
-      id:'local_'+Date.now(),
+      id: id || ('local_'+Date.now()),
       name:document.getElementById('c-name').value.trim().toUpperCase(),
       rut:document.getElementById('c-rut').value.trim(),
       phone:document.getElementById('c-phone').value.trim(),
@@ -594,12 +601,60 @@ Entregables:
       address:document.getElementById('c-address').value.trim()
     };
     if(!data.name) return alert('Ingresa el nombre del cliente.');
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.name!==data.name);
-    local.push(data); localStorage.setItem('rps_clientes_local',JSON.stringify(local));
-    window.clientes = [...(window.clientes||[]).filter(c=>c.name!==data.name),data];
-    try{ if(window.fb?.db) await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data); }catch(e){ console.warn(e); }
-    ['c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value='');
-    updateClientsUI(); navTo('edit'); document.getElementById('q-client').value=data.name; renderPreview();
+
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name);
+    local.push(data);
+    localStorage.setItem('rps_clientes_local',JSON.stringify(local));
+
+    window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
+
+    try{
+      if(window.fb?.db){
+        if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
+        else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
+      }
+    }catch(e){ console.warn(e); }
+
+    clearClientForm();
+    updateClientsUI();
+    navTo('edit');
+    document.getElementById('q-client').value=data.name;
+    renderPreview();
+  }
+
+  function clearClientForm(){
+    editingClientId = null;
+    ['c-id','c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value='');
+  }
+
+  function editClient(id){
+    const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
+    if(!c) return;
+    editingClientId = c.id;
+    document.getElementById('c-id').value = c.id || '';
+    document.getElementById('c-name').value = c.name || '';
+    document.getElementById('c-rut').value = c.rut || '';
+    document.getElementById('c-phone').value = c.phone || '';
+    document.getElementById('c-email').value = c.email || '';
+    document.getElementById('c-address').value = c.address || '';
+    navTo('clients');
+  }
+
+  async function deleteClient(id){
+    const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
+    if(!c) return;
+    if(!confirm('¿Eliminar este cliente?')) return;
+
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id) && x.name!==c.name);
+    localStorage.setItem('rps_clientes_local',JSON.stringify(local));
+    window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id) && x.name!==c.name);
+
+    try{
+      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
+    }catch(e){ console.warn(e); }
+
+    updateClientsUI();
+    renderPreview();
   }
 
   function updateClientsUI(){
@@ -610,13 +665,85 @@ Entregables:
     const cur = sel.value;
     sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
     if(cur) sel.value=cur;
-    document.getElementById('clients-list').innerHTML = merged.length ? merged.map(c=>`<div class="list-row"><b>${esc(c.name)}</b><br><small>${esc(c.rut||'')} · ${esc(c.phone||c.email||'')}</small><br><small>${esc(c.address||'')}</small></div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
+    document.getElementById('clients-list').innerHTML = merged.length ? merged.map(c=>`
+      <div class="list-row">
+        <div class="flex justify-between gap-3 items-start">
+          <div class="min-w-0">
+            <b>${esc(c.name)}</b><br>
+            <small>${esc(c.rut||'')} · ${esc(c.phone||c.email||'')}</small><br>
+            <small>${esc(c.address||'')}</small>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button title="Editar" onclick="editClient('${c.id}')">✏️</button>
+            <button title="Eliminar" onclick="deleteClient('${c.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
   }
 
   function renderHistory(){
     const q = document.getElementById('search-hist').value.toLowerCase();
-    const data = (window.historial||[]).filter(h=>`${h.ref} ${h.client} ${h.project}`.toLowerCase().includes(q));
-    document.getElementById('history-list').innerHTML = data.length ? data.map(h=>`<div class="list-row flex justify-between gap-3"><div><b>${esc(h.ref||('AER-'+h.folio))}</b><br><small>${esc(h.client||'')} · ${amount(h.total,h.currency)}</small></div><button onclick="generateAndSharePDF('${h.id}')">PDF</button></div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
+    const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
+    document.getElementById('history-list').innerHTML = data.length ? data.map(h=>`
+      <div class="list-row">
+        <div class="flex justify-between gap-3 items-start">
+          <div class="min-w-0">
+            <b>${esc(h.ref||('AER-'+h.folio))}</b><br>
+            <small>${esc(h.client||'Sin cliente')} · ${amount(h.total,h.currency)}</small><br>
+            <small>${esc(h.project||'Servicio técnico')}</small>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button title="Ver" onclick="viewQuote('${h.id}')">🔍</button>
+            <button title="Editar" onclick="editQuote('${h.id}')">✏️</button>
+            <button title="PDF" onclick="generateAndSharePDF('${h.id}')">PDF</button>
+            <button title="Eliminar" onclick="deleteQuote('${h.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
+  }
+
+  function quoteById(id){
+    return (window.historial||[]).find(h=>h.id===id);
+  }
+
+  function loadQuoteToForm(h){
+    if(!h) return alert('No se encontró la cotización.');
+    editingId = h.id;
+    window.currentFolio = Number(h.folio || 1000);
+    items = normalizeItems((h.items && h.items.length) ? h.items : [defaultItem()]);
+    document.getElementById('q-date').value = h.date || '';
+    document.getElementById('q-ref').value = h.ref || ('AER-' + (h.folio || 1000));
+    document.getElementById('q-currency').value = h.currency || 'CLP';
+    document.getElementById('q-client').value = h.client || '';
+    document.getElementById('q-project').value = h.project || '';
+    document.getElementById('q-location').value = h.location || '';
+    document.getElementById('q-desc').value = h.serviceDesc || DEFAULT_SERVICE_DESC;
+    document.getElementById('q-validity').value = h.validity || '15 días';
+    document.getElementById('q-delivery').value = h.delivery || 'Según coordinación';
+    document.getElementById('q-conditions').value = h.conditions || '50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.';
+    document.getElementById('q-notes').value = h.notes || '';
+    renderPreview();
+    navTo('edit');
+  }
+
+  function editQuote(id){
+    loadQuoteToForm(quoteById(id));
+  }
+
+  function viewQuote(id){
+    loadQuoteToForm(quoteById(id));
+  }
+
+  async function deleteQuote(id){
+    if(!confirm('¿Eliminar esta cotización del historial?')) return;
+    try{
+      if(window.fb?.db) await fb.deleteDoc(fb.doc(fb.db,'rps_cotizaciones',id));
+      window.historial = (window.historial||[]).filter(h=>h.id!==id);
+      renderHistory();
+    }catch(e){
+      console.error(e);
+      alert('No se pudo eliminar: ' + (e.message || e));
+    }
   }
 
   function loadLogoPDF(){
@@ -631,42 +758,66 @@ Entregables:
   async function generateAndSharePDF(historyId=null){
     const JsPDF = window.jspdf?.jsPDF;
     if(!JsPDF) return alert('No se cargó jsPDF.');
-    const q = historyId ? (window.historial||[]).find(x=>x.id===historyId) : currentQuote();
+    if(!window.html2canvas) return alert('No se cargó html2canvas.');
+
+    let originalState = null;
+
+    if(historyId){
+      const h = quoteById(historyId);
+      if(!h) return alert('No se encontró la cotización.');
+      originalState = { items:[...items], editingId, currentFolio:window.currentFolio };
+      loadQuoteToForm(h);
+      await new Promise(r=>setTimeout(r,150));
+    }
+
+    const q = currentQuote();
+    const page = document.querySelector('#pdf-canvas .a4');
+    if(!page) return alert('No se encontró el preliminar.');
+
+    const oldTransform = document.getElementById('previewScaler').style.transform;
+    document.getElementById('previewScaler').style.transform = 'none';
+
+    const canvas = await html2canvas(page, {
+      scale: 2.5,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    });
+
+    document.getElementById('previewScaler').style.transform = oldTransform;
+    fitPreview();
+
+    const imgData = canvas.toDataURL('image/png');
     const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-    const canvasHtml = document.getElementById('pdf-canvas').innerHTML;
-    // Generación vectorial simplificada y estable
-    const logo = await loadLogoPDF();
-    const W=210,H=297,ML=12,MR=12,MT=15,CW=W-ML-MR;
-    let y=MT;
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(12);
-    if(logo){ let lw=28, lh=lw/(logo.w/logo.h); if(lh>17){lh=17;lw=lh*(logo.w/logo.h)} pdf.addImage(logo.data,'PNG',ML,y,lw,lh); }
-    pdf.text(COMPANY.name,ML+35,y+6);
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML+35,y+11);
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(15); pdf.text(`N° ${quoteCode(q)}`,W-MR,y+20,{align:'right'});
-    y+=30; pdf.setDrawColor(31,95,159); pdf.line(ML,y,W-MR,y); y+=8;
-    pdf.setFontSize(9); pdf.text(`Cliente: ${q.client||''}`,ML,y); y+=6;
-    pdf.text(`Proyecto: ${q.project||'Servicio técnico'}`,ML,y); y+=8;
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(9);
-    pdf.text(pdf.splitTextToSize(q.serviceDesc||DEFAULT_SERVICE_DESC,CW),ML,y); y+=28;
-    (q.items||[]).forEach((it,i)=>{ pdf.setFont('helvetica','bold'); pdf.text(`Servicio profesional ${i+1}`,ML,y); y+=6; pdf.setFont('helvetica','normal'); pdf.text(pdf.splitTextToSize(it.name||'',CW),ML,y); y+=38; });
-    pdf.setFont('helvetica','bold'); pdf.setFontSize(10);
-    pdf.text(`Neto: ${amount(q.neto,q.currency)}`,W-MR,245,{align:'right'});
-    pdf.text(`IVA 19%: ${amount(q.iva,q.currency)}`,W-MR,252,{align:'right'});
-    pdf.setFontSize(14); pdf.text(`TOTAL: ${amount(q.total,q.currency)}`,W-MR,262,{align:'right'});
-    pdf.setFontSize(6); pdf.setFont('helvetica','normal'); pdf.text(`${COMPANY.name} · ${COMPANY.email} · Fono: ${COMPANY.phone}`,W/2,290,{align:'center'});
+    pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
     pdf.save(`COT_${quoteCode(q)}.pdf`);
+
+    if(originalState){
+      items = originalState.items;
+      editingId = originalState.editingId;
+      window.currentFolio = originalState.currentFolio;
+      renderPreview();
+    }
   }
 
   async function saveAndSend(){
     const q = currentQuote();
     if(!q.client) return alert('Falta seleccionar o crear cliente.');
-    let f = window.nextFolio || 1000;
+    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
     try{
-      if(window.fb?.runTransaction){
-        await fb.runTransaction(fb.db,async(t)=>{ const r=fb.doc(fb.db,'config','rps_cotizador_v1'); const s=await t.get(r); f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000; s.exists()?t.update(r,{lastFolio:f+1}):t.set(r,{lastFolio:f+1}); });
+      if(!editingId && window.fb?.runTransaction){
+        await fb.runTransaction(fb.db,async(t)=>{
+          const r=fb.doc(fb.db,'config','rps_cotizador_v1');
+          const s=await t.get(r);
+          f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000;
+          s.exists()?t.update(r,{lastFolio:f+1}):t.set(r,{lastFolio:f+1});
+        });
       }
       const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
-      if(window.fb?.db) await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+      if(window.fb?.db){
+        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
+        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+      }
       await generateAndSharePDF();
     }catch(e){ console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
   }

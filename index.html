@@ -392,34 +392,45 @@
 </style>
 
 
+<style id="rps-multipage-final-css">
+  #previewBox{
+    overflow:auto !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+  }
 
-<style id="rps-safe-multipage-css">
+  #previewScaler{
+    width:210mm !important;
+    height:auto !important;
+    transform-origin:top center !important;
+    flex:0 0 auto !important;
+  }
+
+  #pdf-canvas{
+    width:210mm !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:8mm !important;
+  }
+
+  .a4{
+    width:210mm !important;
+    height:297mm !important;
+    min-height:297mm !important;
+    max-height:297mm !important;
+    overflow:hidden !important;
+    flex:0 0 auto !important;
+    box-shadow:0 18px 45px rgba(0,0,0,.38);
+  }
+
   .desc p,
   .service-body p{
     max-height:none !important;
     overflow:visible !important;
   }
 
-  #pdf-print-stage{
-    position:fixed;
-    left:-99999px;
-    top:0;
-    width:210mm;
-    background:#fff;
-    z-index:-1;
-    opacity:1;
-    pointer-events:none;
-  }
-
-  #pdf-print-stage .a4{
-    width:210mm !important;
-    height:297mm !important;
-    min-height:297mm !important;
-    max-height:297mm !important;
-    overflow:hidden !important;
-    box-shadow:none !important;
-    margin:0 !important;
-    page-break-after:always;
+  .page-footer{
+    margin-top:auto !important;
   }
 </style>
 
@@ -1437,66 +1448,23 @@ Entregables:
 </script>
 
 
-
-<script id="rps-safe-multipage-pdf">
+<script id="rps-multipage-final-js">
 (function(){
-  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-  function safeClonePage(){
-    const original = document.querySelector('#pdf-canvas .a4');
-    if(!original) return null;
-    return original.cloneNode(true);
-  }
-
-  function removeFooters(page){
-    page.querySelectorAll('.footer, .page-footer').forEach(x=>x.remove());
-  }
-
-  function addFooterTo(page){
-    if(page.querySelector('.footer')) return;
-    const footer = document.createElement('footer');
-    footer.className = 'footer';
-    footer.textContent = `${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`;
-    page.appendChild(footer);
-  }
-
-  function createBlankPageFrom(basePage){
-    const page = basePage.cloneNode(false);
-    page.className = basePage.className;
-    page.innerHTML = '';
-
-    const header = basePage.querySelector('.pdf-header');
-    const line = basePage.querySelector('.blueLine');
-
-    if(header) page.appendChild(header.cloneNode(true));
-    if(line) page.appendChild(line.cloneNode(true));
-
-    return page;
-  }
-
-  function isHeaderNode(node){
-    return node.matches?.('.pdf-header, .blueLine, .footer, .page-footer');
-  }
-
-  function pageOverflows(page){
-    return page.scrollHeight > page.clientHeight + 2;
-  }
-
-  function splitTextToChunks(text, maxChars){
+  function chunkText(text, maxChars){
     const source = String(text || '').replace(/\r/g,'').trim();
     if(!source) return [''];
 
-    const blocks = source.split(/\n{2,}/).map(x=>x.trim()).filter(Boolean);
-    const parts = blocks.length ? blocks : [source];
-    const chunks = [];
+    const parts = [];
+    const paragraphs = source.split(/\n{2,}/).map(x=>x.trim()).filter(Boolean);
+    const blocks = paragraphs.length ? paragraphs : [source];
 
-    parts.forEach(part=>{
-      const lines = part.split(/\n/).map(x=>x.trim()).filter(Boolean);
-      const base = lines.length > 1 ? lines : [part];
+    blocks.forEach(block=>{
+      const lines = block.split(/\n/).map(x=>x.trim()).filter(Boolean);
+      const lineBlocks = lines.length > 1 ? lines : [block];
 
-      base.forEach(b=>{
+      lineBlocks.forEach(b=>{
         if(b.length <= maxChars){
-          chunks.push(b);
+          parts.push(b);
           return;
         }
 
@@ -1505,60 +1473,23 @@ Entregables:
         words.forEach(w=>{
           const next = (acc + ' ' + w).trim();
           if(next.length > maxChars){
-            if(acc.trim()) chunks.push(acc.trim());
+            if(acc.trim()) parts.push(acc.trim());
             acc = w;
           }else{
             acc = next;
           }
         });
-        if(acc.trim()) chunks.push(acc.trim());
+        if(acc.trim()) parts.push(acc.trim());
       });
     });
 
-    return chunks.filter(Boolean);
+    return parts.filter(Boolean);
   }
 
-  function makeDescCard(title, text, blue=true, continuation=false){
-    const section = document.createElement('section');
-    section.className = 'pdf-card desc';
-    section.innerHTML = `
-      <div class="bar ${blue ? 'blue' : ''}">${title}${continuation ? ' (continuación)' : ''}</div>
-      <p>${esc(text).replace(/\n/g,'<br>')}</p>
-    `;
-    return section;
-  }
-
-  function makeServiceCard(title, text, continuation=false){
-    const section = document.createElement('section');
-    section.className = 'pdf-card';
-    section.innerHTML = `
-      <div class="bar">${title}${continuation ? ' (continuación)' : ''}</div>
-      <div class="service-body">
-        <h4>Alcance técnico</h4>
-        <p>${esc(text).replace(/\n/g,'<br>')}</p>
-      </div>
-    `;
-    return section;
-  }
-
-  function makeDeliverablesCard(title, deliverables){
-    const section = document.createElement('section');
-    section.className = 'pdf-card';
-    section.innerHTML = `
-      <div class="bar">${title} · entregables</div>
-      <div class="service-body">
-        <h4>Entregables</h4>
-        <div class="deliverables">
-          ${deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}
-        </div>
-      </div>
-    `;
-    return section;
-  }
-
-  function parseServiceForPdf(txt){
-    try { return parseService(txt); }
-    catch(e){
+  function parseServiceText(txt){
+    try{
+      return parseService(txt);
+    }catch(e){
       const raw = String(txt || '');
       const parts = raw.split(/Entregables\s*:/i);
       let deliverables = [];
@@ -1568,84 +1499,191 @@ Entregables:
       if(!deliverables.length){
         deliverables = ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
       }
-      return { scope:(parts[0] || raw).trim(), deliverables };
+      return {scope:(parts[0] || raw).trim(), deliverables};
     }
   }
 
-  function buildPrintPages(){
-    renderPreview();
+  function headerHTML(q){
+    return `
+      <header class="pdf-header">
+        <div class="brand">
+          <img src="${RPS_LOGO_DATA}">
+          <div>
+            <h1>${COMPANY.name}</h1>
+            <p>Servicios topográficos y geodésicos</p>
+            <p>${COMPANY.email} · Fono: ${COMPANY.phone}</p>
+          </div>
+        </div>
+        <div class="quoteBox">
+          <div class="quoteTag">Cotización técnica</div>
+          <div class="quoteNum">N° ${esc(quoteCode(q))}</div>
+          <div class="quoteDate">Fecha: ${fmtDate(q.date)}</div>
+        </div>
+      </header>
+      <div class="blueLine"></div>
+    `;
+  }
 
-    const base = safeClonePage();
-    if(!base) return null;
+  function footerHTML(){
+    return `<footer class="footer page-footer">${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}</footer>`;
+  }
 
-    removeFooters(base);
+  function makePage(q){
+    const page = document.createElement('div');
+    page.className = 'a4';
+    page.innerHTML = headerHTML(q);
+    return page;
+  }
 
-    const stage = document.createElement('div');
-    stage.id = 'pdf-print-stage';
-    document.body.appendChild(stage);
+  function addFooter(page){
+    if(!page.querySelector('.page-footer')){
+      page.insertAdjacentHTML('beforeend', footerHTML());
+    }
+  }
 
-    let pages = [];
-    let page = createBlankPageFrom(base);
-    stage.appendChild(page);
-    pages.push(page);
+  function overflow(page){
+    return page.scrollHeight > page.clientHeight + 2;
+  }
 
-    function pushPage(){
-      addFooterTo(page);
-      page = createBlankPageFrom(base);
-      stage.appendChild(page);
+  function addBlock(pages, q, block){
+    let page = pages[pages.length - 1];
+    page.appendChild(block);
+
+    if(overflow(page)){
+      page.removeChild(block);
+      addFooter(page);
+
+      page = makePage(q);
       pages.push(page);
+      document.getElementById('pdf-canvas').appendChild(page);
+      page.appendChild(block);
     }
+  }
 
-    function addNode(node){
-      page.appendChild(node);
-      if(pageOverflows(page)){
-        page.removeChild(node);
-        pushPage();
-        page.appendChild(node);
-      }
-    }
+  function infoBlock(q,c){
+    const el = document.createElement('section');
+    el.className = 'grid2';
+    el.innerHTML = `
+      <div class="pdf-card">
+        <div class="bar">En atención a</div>
+        <div class="pdf-card-body">
+          <h3>${esc((c.name||'---').toUpperCase())}</h3>
+          <p>RUT: ${esc(c.rut||'—')}</p>
+          <p>Dirección: ${esc(c.address||'—')}</p>
+          <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
+        </div>
+      </div>
+      <div class="pdf-card">
+        <div class="bar blue">Antecedentes del proyecto</div>
+        <div class="pdf-card-body">
+          <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
+          <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
+          <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
+          <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
+          <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
+        </div>
+      </div>`;
+    return el;
+  }
 
-    const originalChildren = Array.from(base.children).filter(n=>!isHeaderNode(n));
+  function descBlock(text, continuation){
+    const el = document.createElement('section');
+    el.className = 'pdf-card desc';
+    el.innerHTML = `
+      <div class="bar blue">Descripción del servicio${continuation?' (continuación)':''}</div>
+      <p>${esc(text).replace(/\n/g,'<br>')}</p>`;
+    return el;
+  }
 
-    originalChildren.forEach(child=>{
-      if(child.matches('.desc')){
-        const bar = child.querySelector('.bar');
-        const p = child.querySelector('p');
-        const title = (bar?.textContent || 'Descripción del servicio').replace('(continuación)','').trim();
-        const text = p ? p.innerText : child.innerText;
-        splitTextToChunks(text, 420).forEach((chunk, idx)=>{
-          addNode(makeDescCard(title, chunk, true, idx>0));
-        });
-        return;
-      }
+  function serviceBlock(title, text, continuation){
+    const el = document.createElement('section');
+    el.className = 'pdf-card';
+    el.innerHTML = `
+      <div class="bar">${esc(title)}${continuation?' (continuación)':''}</div>
+      <div class="service-body">
+        <h4>Alcance técnico</h4>
+        <p>${esc(text).replace(/\n/g,'<br>')}</p>
+      </div>`;
+    return el;
+  }
 
-      const bar = child.querySelector(':scope > .bar');
-      const serviceBody = child.querySelector('.service-body');
+  function deliverablesBlock(title, deliverables){
+    const el = document.createElement('section');
+    el.className = 'pdf-card';
+    el.innerHTML = `
+      <div class="bar">${esc(title)} · entregables</div>
+      <div class="service-body">
+        <h4>Entregables</h4>
+        <div class="deliverables">${deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
+      </div>`;
+    return el;
+  }
 
-      if(bar && serviceBody){
-        const title = bar.textContent.replace('(continuación)','').trim();
-        const p = serviceBody.querySelector('p');
-        const deliverables = Array.from(serviceBody.querySelectorAll('.deliverables span'))
-          .map(x=>x.textContent.replace(/^•\s*/,'').trim())
-          .filter(Boolean);
+  function paymentBlock(q){
+    const el = document.createElement('section');
+    el.className = 'payment';
+    el.innerHTML = `
+      <div class="pdf-card">
+        <div class="bar blue">Condiciones y datos de pago</div>
+        <div class="paymentCols">
+          <div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div>
+          <div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div>
+        </div>
+      </div>
+      <div class="economic">
+        <div class="head">Resumen económico</div>
+        <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
+        <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
+        <hr>
+        <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
+      </div>`;
+    return el;
+  }
 
-        if(p){
-          splitTextToChunks(p.innerText, 460).forEach((chunk, idx)=>{
-            addNode(makeServiceCard(title, chunk, idx>0));
-          });
-          if(deliverables.length){
-            addNode(makeDeliverablesCard(title, deliverables));
-          }
-          return;
-        }
-      }
+  function signatureBlock(){
+    const el = document.createElement('section');
+    el.className = 'signature';
+    el.innerHTML = `<div>Atentamente,</div><div class="sigLine"></div><b>ROBIN PINTO SERRANO</b><br><span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>`;
+    return el;
+  }
 
-      addNode(child.cloneNode(true));
+  window.renderPreview = function(){
+    const q = currentQuote();
+    const c = selectedClient();
+    const canvas = document.getElementById('pdf-canvas');
+    if(!canvas) return;
+
+    canvas.innerHTML = '';
+    const pages = [makePage(q)];
+    canvas.appendChild(pages[0]);
+
+    addBlock(pages, q, infoBlock(q,c));
+
+    chunkText(q.serviceDesc || DEFAULT_SERVICE_DESC, 420).forEach((part, idx)=>{
+      addBlock(pages, q, descBlock(part, idx>0));
     });
 
-    addFooterTo(page);
-    return {stage, pages};
-  }
+    const quoteItems = q.items.length ? q.items : [defaultItem()];
+
+    quoteItems.forEach((it, i)=>{
+      const parsed = parseServiceText(it.name);
+      const title = `Servicio profesional${quoteItems.length>1 ? ' ' + (i+1) : ''}`;
+
+      chunkText(parsed.scope, 520).forEach((part, idx)=>{
+        addBlock(pages, q, serviceBlock(title, part, idx>0));
+      });
+
+      addBlock(pages, q, deliverablesBlock(title, parsed.deliverables));
+    });
+
+    addBlock(pages, q, paymentBlock(q));
+    addBlock(pages, q, signatureBlock());
+
+    pages.forEach(addFooter);
+
+    try{ renderItems(); }catch(e){}
+    setTimeout(()=>{ try{ fitPreview(); }catch(e){} }, 80);
+  };
 
   window.generateAndSharePDF = async function(historyId=null, quoteOverride=null){
     const JsPDF = window.jspdf?.jsPDF;
@@ -1653,45 +1691,52 @@ Entregables:
     if(!window.html2canvas) return alert('No se cargó html2canvas.');
 
     let original = null;
-    let built = null;
 
     try{
       if(quoteOverride){
         original = captureFormState();
         applyQuoteToForm(quoteOverride, false);
         renderPreview();
-        await sleep(250);
+        await new Promise(r=>setTimeout(r,250));
       }else if(historyId){
         const h = quoteById(historyId);
         if(!h) return alert('No se encontró la cotización.');
         original = captureFormState();
         applyQuoteToForm(h, false);
         renderPreview();
-        await sleep(250);
+        await new Promise(r=>setTimeout(r,250));
       }else{
         renderPreview();
-        await sleep(150);
+        await new Promise(r=>setTimeout(r,180));
       }
 
       const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
-      built = buildPrintPages();
-      if(!built || !built.pages || !built.pages.length){
-        return alert('No se pudo construir el PDF.');
-      }
+      const scaler = document.getElementById('previewScaler');
+      const oldTransform = scaler ? scaler.style.transform : '';
+
+      if(scaler) scaler.style.transform = 'none';
+
+      const pdfPages = Array.from(document.querySelectorAll('#pdf-canvas .a4'));
+      if(!pdfPages.length) return alert('No se encontró el preliminar.');
 
       const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4'});
 
-      for(let i=0; i<built.pages.length; i++){
-        const canvas = await html2canvas(built.pages[i], {
+      for(let i=0; i<pdfPages.length; i++){
+        const c = await html2canvas(pdfPages[i], {
           scale:2.5,
           useCORS:true,
           backgroundColor:'#ffffff',
           logging:false
         });
 
-        const img = canvas.toDataURL('image/png');
+        const img = c.toDataURL('image/png');
         if(i>0) pdf.addPage();
         pdf.addImage(img, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+      }
+
+      if(scaler){
+        scaler.style.transform = oldTransform;
+        try{ fitPreview(); }catch(e){}
       }
 
       pdf.save(`COT_${quoteCode(q)}.pdf`);
@@ -1700,13 +1745,14 @@ Entregables:
       console.error(err);
       alert('Error al generar PDF: ' + (err.message || err));
     }finally{
-      if(built && built.stage) built.stage.remove();
       if(original){
         restoreFormState(original);
         renderPreview();
       }
     }
   };
+
+  setTimeout(()=>renderPreview(), 250);
 })();
 </script>
 

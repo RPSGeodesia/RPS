@@ -120,126 +120,53 @@
       box-shadow:0 24px 80px rgba(0,0,0,.30);
     }
 
-    #previewScaler {
-      width:210mm;
-      height:auto;
-      transform-origin:top center;
-      flex:0 0 auto;
-    }
-
-    #pdf-canvas {
-      width:210mm;
-      display:flex;
-      flex-direction:column;
-      gap:8mm;
-    }
+    #previewScaler { width:210mm; height:auto; transform-origin:top center; flex:0 0 auto; }
+    #pdf-canvas { width:210mm; display:flex; flex-direction:column; gap:8mm; }
 
     .a4 {
-      width:210mm;
-      height:297mm;
-      min-height:297mm;
-      max-height:297mm;
-      overflow:hidden;
-      background:white;
-      color:var(--ink);
-      padding:15mm 12mm;
-      box-shadow:0 18px 45px rgba(0,0,0,.38);
-      display:flex;
-      flex-direction:column;
-      gap:4mm;
-      font-family:Arial, sans-serif;
-      flex:0 0 auto;
+      width:210mm; height:297mm; min-height:297mm; max-height:297mm;
+      overflow:hidden; background:white; color:var(--ink);
+      padding:15mm 12mm; box-shadow:0 18px 45px rgba(0,0,0,.38);
+      display:flex; flex-direction:column; gap:4mm;
+      font-family:Arial, sans-serif; flex:0 0 auto;
     }
 
-    .pdf-header {
-      display:grid;
-      grid-template-columns:1fr 50mm;
-      gap:8mm;
-      align-items:start;
-    }
-    .brand {
-      display:flex; align-items:flex-start; gap:7mm;
-    }
-    .brand img {
-      width:28mm; max-height:17mm; object-fit:contain;
-    }
+    .pdf-header { display:grid; grid-template-columns:1fr 50mm; gap:8mm; align-items:start; }
+    .brand { display:flex; align-items:flex-start; gap:7mm; }
+    .brand img { width:28mm; max-height:17mm; object-fit:contain; }
     .brand h1 { margin:0; font-size:13pt; line-height:1.05; }
     .brand p { margin:1mm 0 0; font-size:7pt; color:#64748b; line-height:1.15; }
-
     .quoteBox { text-align:right; }
-    .quoteTag {
-      display:inline-block; background:#0f172a; color:white;
-      padding:3mm 4mm; border-radius:4px; font-size:7pt; font-weight:900;
-      text-transform:uppercase;
-    }
+    .quoteTag { display:inline-block; background:#0f172a; color:white; padding:3mm 4mm; border-radius:4px; font-size:7pt; font-weight:900; text-transform:uppercase; }
     .quoteNum { margin-top:3mm; font-size:16pt; font-weight:900; }
     .quoteDate { font-size:7pt; color:#64748b; }
-
     .blueLine { border-top:.55mm solid #1f5f9f; }
-
-    .grid2 {
-      display:grid; grid-template-columns:78mm 1fr; gap:5mm;
-    }
-    .pdf-card {
-      border:.25mm solid #d5dfea; border-radius:5px; overflow:hidden; background:white;
-    }
-    .bar {
-      background:#0f172a; color:white; font-size:6.8pt; font-weight:900;
-      text-transform:uppercase; padding:2.2mm 3mm;
-    }
+    .grid2 { display:grid; grid-template-columns:78mm 1fr; gap:5mm; }
+    .pdf-card { border:.25mm solid #d5dfea; border-radius:5px; overflow:hidden; background:white; }
+    .bar { background:#0f172a; color:white; font-size:6.8pt; font-weight:900; text-transform:uppercase; padding:2.2mm 3mm; }
     .bar.blue { background:#1f5f9f; }
     .pdf-card-body { padding:3mm; font-size:7.5pt; line-height:1.25; }
     .pdf-card-body h3 { margin:0 0 2mm; font-size:8pt; }
     .pdf-card-body p { margin:0 0 1mm; }
-
-    .desc p, .service-body p {
-      font-size:9.2pt; line-height:1.22; margin:3mm 4mm;
-      max-height:none; overflow:visible; white-space: pre-wrap;
-    }
-
+    .desc p, .service-body p { font-size:9.2pt; line-height:1.22; margin:3mm 4mm; max-height:none; overflow:visible; white-space:pre-wrap; }
     .service-body { padding:4mm; }
-    .service-body h4 {
-      margin:0 0 1.8mm; color:#1f5f9f; font-size:7.5pt; text-transform:uppercase;
-    }
-    .deliverables {
-      display:grid; grid-template-columns:1fr 1fr; gap:1mm 8mm;
-      font-size:8.8pt; line-height:1.15;
-    }
-
-    .payment {
-      display:grid; grid-template-columns:1fr 66mm; gap:5mm;
-    }
-    .paymentCols {
-      display:grid; grid-template-columns:1fr 1fr; gap:5mm; padding:3mm;
-    }
-    .paymentCols h4 {
-      margin:0 0 1.4mm; font-size:6.7pt; color:#1f5f9f; text-transform:uppercase;
-    }
+    .service-body h4 { margin:0 0 1.8mm; color:#1f5f9f; font-size:7.5pt; text-transform:uppercase; }
+    .deliverables { display:grid; grid-template-columns:1fr 1fr; gap:1mm 8mm; font-size:8.8pt; line-height:1.15; }
+    .payment { display:grid; grid-template-columns:1fr 66mm; gap:5mm; }
+    .paymentCols { display:grid; grid-template-columns:1fr 1fr; gap:5mm; padding:3mm; }
+    .paymentCols h4 { margin:0 0 1.4mm; font-size:6.7pt; color:#1f5f9f; text-transform:uppercase; }
     .paymentCols p { margin:0 0 .8mm; font-size:7pt; line-height:1.14; }
-
-    .economic {
-      border:.3mm solid #bfd0df; border-radius:6px; background:#f8fbfd; overflow:hidden;
-    }
-    .economic .head {
-      background:#0f172a; color:white; padding:2mm 3mm; font-size:6.8pt; font-weight:900; text-transform:uppercase;
-    }
-    .econRow {
-      display:flex; justify-content:space-between; gap:4mm;
-      padding:1.6mm 3.2mm 0; font-size:7.8pt; color:#64748b;
-    }
+    .economic { border:.3mm solid #bfd0df; border-radius:6px; background:#f8fbfd; overflow:hidden; }
+    .economic .head { background:#0f172a; color:white; padding:2mm 3mm; font-size:6.8pt; font-weight:900; text-transform:uppercase; }
+    .econRow { display:flex; justify-content:space-between; gap:4mm; padding:1.6mm 3.2mm 0; font-size:7.8pt; color:#64748b; }
     .econRow strong { color:#0f172a; }
     .economic hr { border:0; border-top:.25mm solid #d5dfea; margin:1.5mm 3.2mm 1mm; }
     .grand span { color:#0f172a; font-weight:900; text-transform:uppercase; }
     .grand strong { font-size:13.4pt; color:#1f5f9f; }
-
-    .signature {
-      margin-top:auto !important; text-align:center; font-size:6.5pt;
-    }
+    .signature { margin-top:auto !important; text-align:center; font-size:6.5pt; }
     .sigLine { width:50mm; margin:4.5mm auto 1mm; border-top:.25mm solid #0f172a; }
-    .footer {
-      border-top:.3mm solid #1f5f9f; padding-top:1.5mm;
-      text-align:center; color:#64748b; font-size:5.2pt;
-    }
+    .footer { border-top:.3mm solid #1f5f9f; padding-top:1.5mm; text-align:center; color:#64748b; font-size:5.2pt; }
+    .list-row button, .item-row button { background:#1e293b; color:#e2e8f0; border:1px solid #334155; border-radius:10px; padding:7px 9px; font-weight:800; }
 
     @media (max-width:1023px) {
       .layout { display:block; }
@@ -247,8 +174,6 @@
       .tab { padding:12px; }
       .card { padding:18px; border-radius:22px; }
     }
-  
-    .list-row button{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:10px;padding:7px 9px;font-weight:800;}
   </style>
 </head>
 
@@ -281,10 +206,10 @@
         </div>
 
         <div class="card stack">
-          <textarea id="i-name" class="input" placeholder="Detalle técnico del servicio"></textarea>
+          <textarea id="i-name" class="input" placeholder="Detalle técnico del servicio" oninput="syncItemLive()"></textarea>
           <div class="grid grid-cols-[80px_1fr] gap-3">
-            <input id="i-qty" type="number" class="input text-center" value="1">
-            <input id="i-price" type="number" class="input" placeholder="Precio neto">
+            <input id="i-qty" type="number" class="input text-center" value="1" oninput="syncItemLive()">
+            <input id="i-price" type="number" class="input" placeholder="Precio neto" oninput="syncItemLive()">
           </div>
           <button class="btn small" onclick="addItem()">Agregar / Actualizar ítem</button>
         </div>
@@ -339,16 +264,16 @@
   import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-      apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
-      authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
-      projectId: "registro-de-gastos-a21e8",
-      storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
-      messagingSenderId: "947355933583",
-      appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
-    };
+    apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
+    authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
+    projectId: "registro-de-gastos-a21e8",
+    storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
+    messagingSenderId: "947355933583",
+    appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
+  };
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
   window.fb = { db, collection, addDoc, setDoc, deleteDoc, doc, runTransaction };
 
   window.clientes = [];
@@ -357,6 +282,7 @@
 
   onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
     window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
+    if(!window.editingId && document.getElementById('q-ref')) document.getElementById('q-ref').value = 'AER-' + window.nextFolio;
     if(typeof renderPreview === 'function') renderPreview();
   });
 
@@ -405,7 +331,8 @@ Entregables:
   let items = [defaultItem()];
   let editingId = null;
   let editingClientId = null;
-  let editingItemIdx = null; 
+  let editingItemIdx = 0;
+  window.editingId = editingId;
 
   function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
   function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -422,11 +349,42 @@ Entregables:
     });
   }
 
+  function setEditingId(v){ editingId = v; window.editingId = v; }
+
+  function loadItemToEditor(i=0){
+    if(!items.length) items = [defaultItem()];
+    const it = normalizeItems(items)[i] || defaultItem();
+    items[i] = it;
+    editingItemIdx = i;
+    const name = document.getElementById('i-name');
+    const qty = document.getElementById('i-qty');
+    const price = document.getElementById('i-price');
+    if(name) name.value = it.name || DEFAULT_ITEM_TEXT;
+    if(qty) qty.value = Number(it.qty || 1);
+    if(price) price.value = Number(it.price || 0);
+  }
+
+  function syncItemLive(){
+    if(editingItemIdx === null || editingItemIdx < 0) return;
+    if(!items.length) items = [defaultItem()];
+    const name = document.getElementById('i-name')?.value.trim() || DEFAULT_ITEM_TEXT;
+    const qty = Number(document.getElementById('i-qty')?.value || 1);
+    const price = Number(document.getElementById('i-price')?.value || 0);
+    items[editingItemIdx] = { name, qty, price, total: Math.round(qty * price * 100) / 100, isDefault:false };
+    renderPreview();
+  }
+
+  function forceSyncBeforeSave(){
+    if(editingItemIdx !== null && editingItemIdx >= 0) syncItemLive();
+  }
+
   function captureFormState() {
+    forceSyncBeforeSave();
     return {
       editingId,
       currentFolio: window.currentFolio,
       items: JSON.parse(JSON.stringify(items)),
+      editingItemIdx,
       date: document.getElementById('q-date').value,
       ref: document.getElementById('q-ref').value,
       currency: document.getElementById('q-currency').value,
@@ -442,7 +400,8 @@ Entregables:
   }
 
   function applyQuoteToForm(h, triggerRender = true) {
-    editingId = h.id;
+    if(!h) return;
+    setEditingId(h.id || null);
     window.currentFolio = Number(h.folio || 1000);
     items = normalizeItems((h.items && h.items.length) ? h.items : [defaultItem()]);
     document.getElementById('q-date').value = h.date || '';
@@ -456,13 +415,15 @@ Entregables:
     document.getElementById('q-delivery').value = h.delivery || 'Según coordinación';
     document.getElementById('q-conditions').value = h.conditions || '';
     document.getElementById('q-notes').value = h.notes || '';
+    loadItemToEditor(0);
     if (triggerRender) renderPreview();
   }
 
   function restoreFormState(state) {
-    editingId = state.editingId;
+    setEditingId(state.editingId);
     window.currentFolio = state.currentFolio;
-    items = state.items;
+    items = normalizeItems(state.items);
+    editingItemIdx = state.editingItemIdx ?? 0;
     document.getElementById('q-date').value = state.date;
     document.getElementById('q-ref').value = state.ref;
     document.getElementById('q-currency').value = state.currency;
@@ -474,9 +435,11 @@ Entregables:
     document.getElementById('q-delivery').value = state.delivery;
     document.getElementById('q-conditions').value = state.conditions;
     document.getElementById('q-notes').value = state.notes;
+    loadItemToEditor(editingItemIdx || 0);
   }
 
   function currentQuote(){
+    forceSyncBeforeSave();
     const normalized = normalizeItems(items);
     const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
     const iva = Math.round(neto*.19);
@@ -513,79 +476,50 @@ Entregables:
   }
 
   function renderPreview(){
-    const q = currentQuote();
+    const q = currentQuoteNoSync();
     const c = selectedClient();
     const canvas = document.getElementById('pdf-canvas');
     if(!canvas) return;
 
     const PAGE_LIMIT = 100;
     const HEADER_UNITS = 16;
-
     function cleanText(v){ return String(v ?? '').replace(/\r/g,'').trim(); }
-
     function splitText(v, maxChars){
       const source = cleanText(v);
       if(!source) return [''];
       const out = [];
       const blocks = source.split(/\n{2,}/).map(x=>x.trim()).filter(Boolean);
       const baseBlocks = blocks.length ? blocks : [source];
-
       baseBlocks.forEach(block=>{
         const lines = block.split(/\n/).map(x=>x.trim()).filter(Boolean);
         const parts = lines.length > 1 ? lines : [block];
-
         parts.forEach(part=>{
           if(part.length <= maxChars){ out.push(part); return; }
           const words = part.split(/\s+/);
           let acc = '';
           words.forEach(w=>{
             const next = (acc + ' ' + w).trim();
-            if(next.length > maxChars){
-              if(acc.trim()) out.push(acc.trim());
-              acc = w;
-            }else{ acc = next; }
+            if(next.length > maxChars){ if(acc.trim()) out.push(acc.trim()); acc = w; }
+            else acc = next;
           });
           if(acc.trim()) out.push(acc.trim());
         });
       });
       return out.length ? out : [''];
     }
-
-    function units(text, base){ 
-      const txtLen = cleanText(text).length;
-      return base + Math.ceil((txtLen > 0 ? txtLen : 1) / 55); 
-    }
-
-    function headerHTML(){
-      return `
-        <header class="pdf-header">
-          <div class="brand">
-            <img src="${RPS_LOGO_DATA}">
-            <div>
-              <h1>${COMPANY.name}</h1>
-              <p>Servicios topográficos y geodésicos</p>
-              <p>${COMPANY.email} · Fono: ${COMPANY.phone}</p>
-            </div>
-          </div>
-          <div class="quoteBox">
-            <div class="quoteTag">Cotización técnica</div>
-            <div class="quoteNum">N° ${esc(quoteCode(q))}</div>
-            <div class="quoteDate">Fecha: ${fmtDate(q.date)}</div>
-          </div>
-        </header>
-        <div class="blueLine"></div>`;
-    }
-
-    function footerHTML(){
-      return `<footer class="footer rps-page-footer">${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}</footer>`;
-    }
+    function units(text, base){ const txtLen = cleanText(text).length; return base + Math.ceil((txtLen > 0 ? txtLen : 1) / 55); }
+    function headerHTML(){ return `
+      <header class="pdf-header">
+        <div class="brand"><img src="${RPS_LOGO_DATA}"><div><h1>${COMPANY.name}</h1><p>Servicios topográficos y geodésicos</p><p>${COMPANY.email} · Fono: ${COMPANY.phone}</p></div></div>
+        <div class="quoteBox"><div class="quoteTag">Cotización técnica</div><div class="quoteNum">N° ${esc(quoteCode(q))}</div><div class="quoteDate">Fecha: ${fmtDate(q.date)}</div></div>
+      </header><div class="blueLine"></div>`; }
+    function footerHTML(){ return `<footer class="footer rps-page-footer">${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}</footer>`; }
 
     canvas.innerHTML = '';
     let pages = [];
     let page;
-
     function newPage(){
-      if(page && !page.querySelector('.rps-page-footer')){ page.insertAdjacentHTML('beforeend', footerHTML()); }
+      if(page && !page.querySelector('.rps-page-footer')) page.insertAdjacentHTML('beforeend', footerHTML());
       page = document.createElement('div');
       page.className = 'a4';
       page.dataset.units = String(HEADER_UNITS);
@@ -593,103 +527,58 @@ Entregables:
       pages.push(page);
       canvas.appendChild(page);
     }
-
     function currentUnits(){ return Number(page.dataset.units || HEADER_UNITS); }
-
-    function addBlock(node, unitCost){
-      if(!page) newPage();
-      if(currentUnits() + unitCost > PAGE_LIMIT){ newPage(); }
-      page.appendChild(node);
-      page.dataset.units = String(currentUnits() + unitCost);
-    }
-
-    function makeSection(className, innerHTML){
-      const el = document.createElement('section');
-      el.className = className;
-      el.innerHTML = innerHTML;
-      return el;
-    }
+    function addBlock(node, unitCost){ if(!page) newPage(); if(currentUnits() + unitCost > PAGE_LIMIT) newPage(); page.appendChild(node); page.dataset.units = String(currentUnits() + unitCost); }
+    function makeSection(className, innerHTML){ const el = document.createElement('section'); el.className = className; el.innerHTML = innerHTML; return el; }
 
     newPage();
-
     addBlock(makeSection('grid2', `
-      <div class="pdf-card">
-        <div class="bar">En atención a</div>
-        <div class="pdf-card-body">
-          <h3>${esc((c.name||'---').toUpperCase())}</h3>
-          <p>RUT: ${esc(c.rut||'—')}</p>
-          <p>Dirección: ${esc(c.address||'—')}</p>
-          <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
-        </div>
-      </div>
-      <div class="pdf-card">
-        <div class="bar blue">Antecedentes del proyecto</div>
-        <div class="pdf-card-body">
-          <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
-          <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
-          <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
-          <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
-          <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
-        </div>
-      </div>`), 22);
+      <div class="pdf-card"><div class="bar">En atención a</div><div class="pdf-card-body"><h3>${esc((c.name||'---').toUpperCase())}</h3><p>RUT: ${esc(c.rut||'—')}</p><p>Dirección: ${esc(c.address||'—')}</p><p>Contacto: ${esc(c.phone||c.email||'—')}</p></div></div>
+      <div class="pdf-card"><div class="bar blue">Antecedentes del proyecto</div><div class="pdf-card-body"><p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p><p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p><p><b>Validez:</b> ${esc(q.validity||'15 días')}</p><p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p><p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p></div></div>`), 22);
 
     splitText(q.serviceDesc || DEFAULT_SERVICE_DESC, 340).forEach((txt, idx)=>{
-      addBlock(makeSection('pdf-card desc', `
-        <div class="bar blue">Descripción del servicio${idx>0?' (continuación)':''}</div>
-        <p>${esc(txt).replace(/\n/g,'<br>')}</p>`), units(txt, 11));
+      addBlock(makeSection('pdf-card desc', `<div class="bar blue">Descripción del servicio${idx>0?' (continuación)':''}</div><p>${esc(txt).replace(/\n/g,'<br>')}</p>`), units(txt, 11));
     });
 
     const quoteItems = q.items.length ? q.items : [defaultItem()];
-
     quoteItems.forEach((it, i)=>{
       const parsed = parseService(it.name);
       const title = `Servicio profesional${quoteItems.length>1?' '+(i+1):''}`;
-
       splitText(parsed.scope, 360).forEach((txt, idx)=>{
-        addBlock(makeSection('pdf-card', `
-          <div class="bar">${esc(title)}${idx>0?' (continuación)':''}</div>
-          <div class="service-body">
-            <h4>Alcance técnico</h4>
-            <p>${esc(txt).replace(/\n/g,'<br>')}</p>
-          </div>`), units(txt, 13));
+        addBlock(makeSection('pdf-card', `<div class="bar">${esc(title)}${idx>0?' (continuación)':''}</div><div class="service-body"><h4>Alcance técnico</h4><p>${esc(txt).replace(/\n/g,'<br>')}</p></div>`), units(txt, 13));
       });
-
-      addBlock(makeSection('pdf-card', `
-        <div class="bar">${esc(title)} · entregables</div>
-        <div class="service-body">
-          <h4>Entregables</h4>
-          <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
-        </div>`), 18);
+      addBlock(makeSection('pdf-card', `<div class="bar">${esc(title)} · entregables</div><div class="service-body"><h4>Entregables</h4><div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div></div>`), 18);
     });
 
     addBlock(makeSection('payment', `
-      <div class="pdf-card">
-        <div class="bar blue">Condiciones y datos de pago</div>
-        <div class="paymentCols">
-          <div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div>
-          <div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div>
-        </div>
-      </div>
-      <div class="economic">
-        <div class="head">Resumen económico</div>
-        <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
-        <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
-        <hr>
-        <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
-      </div>`), 26);
+      <div class="pdf-card"><div class="bar blue">Condiciones y datos de pago</div><div class="paymentCols"><div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div><div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div></div></div>
+      <div class="economic"><div class="head">Resumen económico</div><div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div><div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div><hr><div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div></div>`), 26);
 
-    addBlock(makeSection('signature', `
-      <div>Atentamente,</div>
-      <div class="sigLine"></div>
-      <b>ROBIN PINTO SERRANO</b><br>
-      <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>`), 12);
-
-    pages.forEach(p=>{
-      if(!p.querySelector('.rps-page-footer')){ p.insertAdjacentHTML('beforeend', footerHTML()); }
-    });
-
+    addBlock(makeSection('signature', `<div>Atentamente,</div><div class="sigLine"></div><b>ROBIN PINTO SERRANO</b><br><span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>`), 12);
+    pages.forEach(p=>{ if(!p.querySelector('.rps-page-footer')) p.insertAdjacentHTML('beforeend', footerHTML()); });
     renderItems();
     setTimeout(fitPreview,80);
+  }
+
+  function currentQuoteNoSync(){
+    const normalized = normalizeItems(items);
+    const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
+    const iva = Math.round(neto*.19);
+    return {
+      folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
+      date: document.getElementById('q-date').value,
+      ref: document.getElementById('q-ref').value,
+      currency: document.getElementById('q-currency').value,
+      client: document.getElementById('q-client').value,
+      project: document.getElementById('q-project').value,
+      location: document.getElementById('q-location').value,
+      serviceDesc: document.getElementById('q-desc').value || DEFAULT_SERVICE_DESC,
+      validity: document.getElementById('q-validity').value,
+      delivery: document.getElementById('q-delivery').value,
+      conditions: document.getElementById('q-conditions').value,
+      notes: document.getElementById('q-notes').value,
+      items: normalized, neto, iva, total: neto+iva
+    };
   }
 
   function fitPreview(){
@@ -704,46 +593,37 @@ Entregables:
 
   function renderItems(){
     const box = document.getElementById('items-list');
+    if(!box) return;
+    const q = currentQuoteNoSync();
     box.innerHTML = items.map((it,i)=>`<div class="item-row flex justify-between gap-3 items-center">
       <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
-      <small class="text-cyan-300 font-bold">${amount(it.total,currentQuote().currency)}</small>
+      <small class="text-cyan-300 font-bold">${amount(it.total,q.currency)}</small>
       <div class="flex gap-2">
          <button onclick="editItem(${i})">✏️</button>
-         <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; renderPreview();">✕</button>
+         <button onclick="deleteItem(${i})">✕</button>
       </div>
     </div>`).join('');
   }
 
-  // Corregida la inyección destructiva del precio por defecto. Ahora newItem guarda estrictamente el valor del input.
   function addItem(){
     const name = document.getElementById('i-name').value.trim();
     const qty = Number(document.getElementById('i-qty').value||1);
     const price = Number(document.getElementById('i-price').value||0);
     if(!name) return alert('Ingresa el detalle técnico del servicio.');
-    
     const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
-    
-    if(editingItemIdx !== null && editingItemIdx >= 0) {
-      items[editingItemIdx] = newItem;
-      editingItemIdx = null; 
-    } else {
-      const onlyDefault = items.length===1 && items[0].isDefault;
-      if(onlyDefault) items[0]=newItem; else items.push(newItem);
-    }
-    
-    document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-    document.getElementById('i-qty').value = 1;
-    document.getElementById('i-price').value = '';
+    if(editingItemIdx !== null && editingItemIdx >= 0) items[editingItemIdx] = newItem;
+    else items.push(newItem);
+    loadItemToEditor(editingItemIdx ?? 0);
     renderPreview();
   }
 
-  function editItem(i){
-    const it = items[i];
-    document.getElementById('i-name').value = it.name;
-    document.getElementById('i-qty').value = it.qty;
-    // Forzamos el precio exacto almacenado en el array, eliminando cualquier callback heredado de Firebase
-    document.getElementById('i-price').value = it.price || 0;
-    editingItemIdx = i; 
+  function editItem(i){ loadItemToEditor(i); renderPreview(); }
+
+  function deleteItem(i){
+    items.splice(i,1);
+    if(!items.length) items=[defaultItem()];
+    loadItemToEditor(0);
+    renderPreview();
   }
 
   function navTo(tab){
@@ -772,19 +652,16 @@ Entregables:
       address:document.getElementById('c-address').value.trim()
     };
     if(!data.name) return alert('Ingresa el nombre del cliente.');
-
     const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name);
     local.push(data);
     localStorage.setItem('rps_clientes_local',JSON.stringify(local));
     window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
-
     try{
       if(window.fb?.db){
         if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
         else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
       }
     }catch(e){ console.warn(e); }
-
     clearClientForm();
     updateClientsUI();
     navTo('edit');
@@ -814,15 +691,11 @@ Entregables:
     const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
     if(!c) return;
     if(!confirm('¿Eliminar este cliente?')) return;
-
     const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id) && x.name!==c.name);
     localStorage.setItem('rps_clientes_local',JSON.stringify(local));
     window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id) && x.name!==c.name);
-
-    try{
-      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
-    }catch(e){ console.warn(e); }
-
+    try{ if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id)); }
+    catch(e){ console.warn(e); }
     updateClientsUI();
     renderPreview();
   }
@@ -832,48 +705,27 @@ Entregables:
     const merged = [...(window.clientes||[]),...local].filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i).sort((a,b)=>a.name.localeCompare(b.name));
     window.clientes = merged;
     const sel = document.getElementById('q-client');
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-    if(cur) sel.value=cur;
-    document.getElementById('clients-list').innerHTML = merged.length ? merged.map(c=>`
-      <div class="list-row">
-        <div class="flex justify-between gap-3 items-start">
-          <div class="min-w-0">
-            <b>${esc(c.name)}</b><br>
-            <small>${esc(c.rut||'')} · ${esc(c.phone||c.email||'')}</small><br>
-            <small>${esc(c.address||'')}</small>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button title="Editar" onclick="editClient('${c.id}')">✏️</button>
-            <button title="Eliminar" onclick="deleteClient('${c.id}')">🗑️</button>
-          </div>
-        </div>
-      </div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
+    if(sel){
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
+    const list = document.getElementById('clients-list');
+    if(list) list.innerHTML = merged.length ? merged.map(c=>`
+      <div class="list-row"><div class="flex justify-between gap-3 items-start"><div class="min-w-0"><b>${esc(c.name)}</b><br><small>${esc(c.rut||'')} · ${esc(c.phone||c.email||'')}</small><br><small>${esc(c.address||'')}</small></div><div class="flex gap-2 shrink-0"><button title="Editar" onclick="editClient('${c.id}')">✏️</button><button title="Eliminar" onclick="deleteClient('${c.id}')">🗑️</button></div></div></div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
   }
 
   function renderHistory(){
-    const q = document.getElementById('search-hist').value.toLowerCase();
+    const search = document.getElementById('search-hist');
+    const q = (search?.value || '').toLowerCase();
     const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
-    document.getElementById('history-list').innerHTML = data.length ? data.map(h=>`
-      <div class="list-row">
-        <div class="flex justify-between gap-3 items-start">
-          <div class="min-w-0">
-            <b>${esc(h.ref||('AER-'+h.folio))}</b><br>
-            <small>${esc(h.client||'Sin cliente')} · ${amount(h.total,h.currency)}</small><br>
-            <small>${esc(h.project||'Servicio técnico')}</small>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button title="Ver" onclick="viewQuote('${h.id}')">🔍</button>
-            <button title="Editar" onclick="editQuote('${h.id}')">✏️</button>
-            <button title="PDF" onclick="generateAndSharePDF('${h.id}')">PDF</button>
-            <button title="Eliminar" onclick="deleteQuote('${h.id}')">🗑️</button>
-          </div>
-        </div>
-      </div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
+    const list = document.getElementById('history-list');
+    if(!list) return;
+    list.innerHTML = data.length ? data.map(h=>`
+      <div class="list-row"><div class="flex justify-between gap-3 items-start"><div class="min-w-0"><b>${esc(h.ref||('AER-'+h.folio))}</b><br><small>${esc(h.client||'Sin cliente')} · ${amount(h.total,h.currency)}</small><br><small>${esc(h.project||'Servicio técnico')}</small></div><div class="flex gap-2 shrink-0"><button title="Ver" onclick="viewQuote('${h.id}')">🔍</button><button title="Editar" onclick="editQuote('${h.id}')">✏️</button><button title="PDF" onclick="generateAndSharePDF('${h.id}')">PDF</button><button title="Eliminar" onclick="deleteQuote('${h.id}')">🗑️</button></div></div></div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
   }
 
   function quoteById(id){ return (window.historial||[]).find(h=>h.id===id); }
-
   function editQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
   function viewQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
 
@@ -887,6 +739,7 @@ Entregables:
   }
 
   async function saveAndSend(){
+    forceSyncBeforeSave();
     const q = currentQuote();
     if(!q.client) return alert('Falta seleccionar o crear cliente.');
     let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
@@ -904,7 +757,7 @@ Entregables:
         if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
         else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
       }
-      await generateAndSharePDF();
+      await generateAndSharePDF(null, data);
     }catch(e){ console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
   }
 
@@ -912,17 +765,18 @@ Entregables:
   document.getElementById('q-ref').value = 'AER-1000';
   document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
   document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-  
+  document.getElementById('i-qty').value = 1;
+  document.getElementById('i-price').value = 0;
   window.addEventListener('resize',fitPreview);
 </script>
 
 <script>
 async function generateAndSharePDF(historyId=null, quoteOverride=null){
+  forceSyncBeforeSave();
   const JsPDF = window.jspdf?.jsPDF;
   if(!JsPDF) return alert('No se cargó jsPDF.');
 
   let originalState = null;
-
   if(quoteOverride){
     originalState = captureFormState();
     applyQuoteToForm(quoteOverride, false);
@@ -942,103 +796,43 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
 
   const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
   const c = selectedClient();
-
   const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
 
   const W=210, H=297, ML=12, MR=12, MT=15, MB=15, CW=W-ML-MR;
   const G=[15,23,42], B=[31,95,159], S=[100,116,139], L=[213,223,234];
   let y=MT;
 
-  function font(size, style='normal', color=G){
-    pdf.setFont('helvetica', style);
-    pdf.setFontSize(size);
-    pdf.setTextColor(...color);
-  }
-
+  function font(size, style='normal', color=G){ pdf.setFont('helvetica', style); pdf.setFontSize(size); pdf.setTextColor(...color); }
   function lines(text, w){ return pdf.splitTextToSize(String(text ?? ''), w); }
-
-  function foot(){
-    pdf.setDrawColor(...B); pdf.setLineWidth(.3);
-    pdf.line(ML,H-9,W-MR,H-9);
-    font(5.4,'normal',S);
-    pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW});
-  }
-
+  function foot(){ pdf.setDrawColor(...B); pdf.setLineWidth(.3); pdf.line(ML,H-9,W-MR,H-9); font(5.4,'normal',S); pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW}); }
   function head(){
     y=MT;
-    try{
-      if(typeof RPS_LOGO_DATA==='string' && RPS_LOGO_DATA.startsWith('data:image')){
-        pdf.addImage(RPS_LOGO_DATA,'PNG',ML,y,38,22,undefined,'FAST');
-      }
-    }catch(e){}
+    try{ if(typeof RPS_LOGO_DATA==='string' && RPS_LOGO_DATA.startsWith('data:image')) pdf.addImage(RPS_LOGO_DATA,'PNG',ML,y,38,22,undefined,'FAST'); }catch(e){}
     font(12,'bold',G); pdf.text(COMPANY.name,ML+45,y+7);
-    font(7,'normal',S);
-    pdf.text('Servicios topográficos y geodésicos',ML+45,y+12);
-    pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML+45,y+16);
-
-    pdf.setFillColor(15,23,42);
-    pdf.roundedRect(W-MR-48,y,48,11,1.5,1.5,'F');
-    font(6.5,'bold',[255,255,255]);
-    pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+7,{align:'center'});
+    font(7,'normal',S); pdf.text('Servicios topográficos y geodésicos',ML+45,y+12); pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML+45,y+16);
+    pdf.setFillColor(15,23,42); pdf.roundedRect(W-MR-48,y,48,11,1.5,1.5,'F');
+    font(6.5,'bold',[255,255,255]); pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+7,{align:'center'});
     font(15,'bold',G); pdf.text(`N° ${quoteCode(q)}`,W-MR,y+23,{align:'right'});
     font(7,'normal',S); pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+28,{align:'right'});
     y+=36; pdf.setDrawColor(...B); pdf.setLineWidth(.7); pdf.line(ML,y,W-MR,y); y+=6;
   }
-
   function page(){ foot(); pdf.addPage(); head(); }
   function need(h){ if(y+h > H-MB-8) page(); }
-
-  function title(t, color=B){
-    need(12);
-    pdf.setFillColor(...color);
-    pdf.roundedRect(ML,y,CW,7,1.2,1.2,'F');
-    font(6.8,'bold',[255,255,255]);
-    pdf.text(String(t).toUpperCase(),ML+3,y+4.8);
-    y+=9;
-  }
-
-  function para(text, size=8.6, lh=4.0){
-    const arr=lines(text,CW-8);
-    for(const ln of arr){
-      need(lh+2);
-      font(size,'normal',G);
-      pdf.text(ln,ML+4,y);
-      y+=lh;
-    }
-    y+=3;
-  }
-
+  function title(t, color=B){ need(12); pdf.setFillColor(...color); pdf.roundedRect(ML,y,CW,7,1.2,1.2,'F'); font(6.8,'bold',[255,255,255]); pdf.text(String(t).toUpperCase(),ML+3,y+4.8); y+=9; }
+  function para(text, size=8.6, lh=4.0){ const arr=lines(text,CW-8); for(const ln of arr){ need(lh+2); font(size,'normal',G); pdf.text(ln,ML+4,y); y+=lh; } y+=3; }
   function info(){
     need(40);
     const h=34, leftW=78, gap=5, rx=ML+leftW+gap, rw=CW-leftW-gap;
-    pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
-    pdf.roundedRect(ML,y,leftW,h,1.5,1.5,'FD');
-    pdf.roundedRect(rx,y,rw,h,1.5,1.5,'FD');
-    pdf.setFillColor(15,23,42); pdf.roundedRect(ML,y,leftW,7,1.5,1.5,'F');
-    pdf.setFillColor(...B); pdf.roundedRect(rx,y,rw,7,1.5,1.5,'F');
-    font(6.6,'bold',[255,255,255]);
-    pdf.text('EN ATENCIÓN A',ML+3,y+4.8);
-    pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.8);
+    pdf.setDrawColor(...L); pdf.setFillColor(255,255,255); pdf.roundedRect(ML,y,leftW,h,1.5,1.5,'FD'); pdf.roundedRect(rx,y,rw,h,1.5,1.5,'FD');
+    pdf.setFillColor(15,23,42); pdf.roundedRect(ML,y,leftW,7,1.5,1.5,'F'); pdf.setFillColor(...B); pdf.roundedRect(rx,y,rw,7,1.5,1.5,'F');
+    font(6.6,'bold',[255,255,255]); pdf.text('EN ATENCIÓN A',ML+3,y+4.8); pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.8);
     font(7.5,'bold',G); pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+13);
-    font(6.8,'normal',S);
-    pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+21);
-    pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+26);
-    pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+32);
-
+    font(6.8,'normal',S); pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+21); pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+26); pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+32);
     let yy=y+13;
-    function row(label,val){
-      font(6.6,'bold',S); pdf.text(label,rx+3,yy);
-      font(6.8,'normal',G); pdf.text(lines(val||'—',rw-30),rx+27,yy);
-      yy+=4.8;
-    }
-    row('Proyecto:',q.project||'Servicio técnico');
-    row('Ubicación:',q.location||'Por definir');
-    row('Validez:',q.validity||'15 días');
-    row('Entrega:',q.delivery||'Según coordinación');
-    row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
+    function row(label,val){ font(6.6,'bold',S); pdf.text(label,rx+3,yy); font(6.8,'normal',G); pdf.text(lines(val||'—',rw-30),rx+27,yy); yy+=4.8; }
+    row('Proyecto:',q.project||'Servicio técnico'); row('Ubicación:',q.location||'Por definir'); row('Validez:',q.validity||'15 días'); row('Entrega:',q.delivery||'Según coordinación'); row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
     y+=h+6;
   }
-
   function serviceBlock(label,it){
     const p=parseService(it.name);
     title(label,[15,23,42]);
@@ -1046,77 +840,48 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
     para(p.scope,8.4,3.9);
     font(7,'bold',B); need(6); pdf.text('ENTREGABLES',ML+4,y); y+=5;
     font(8.1,'normal',G);
-    for(const d of p.deliverables){
-      need(5);
-      pdf.text(`• ${d}`,ML+6,y);
-      y+=4.2;
-    }
+    for(const d of p.deliverables){ need(5); pdf.text(`• ${d}`,ML+6,y); y+=4.2; }
     y+=3;
   }
-
   function payment(){
     need(48);
     const top=y,h=43,gap=6,totalW=68,infoW=CW-totalW-gap;
-    pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
-    pdf.roundedRect(ML,top,infoW,h,1.5,1.5,'FD');
+    pdf.setDrawColor(...L); pdf.setFillColor(255,255,255); pdf.roundedRect(ML,top,infoW,h,1.5,1.5,'FD');
     pdf.setFillColor(241,247,251); pdf.roundedRect(ML,top,infoW,7,1.5,1.5,'F');
     font(6.6,'bold',[15,23,42]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+4,top+5);
     const colW=(infoW-10)/2, x2=ML+6+colW+4;
     font(6.5,'bold',B); pdf.text('Condiciones comerciales',ML+4,top+14);
     font(6.4,'normal',G); pdf.text(lines(q.conditions||'',colW),ML+4,top+19);
     font(6.5,'bold',B); pdf.text('Transferencia bancaria',x2,top+14);
-    font(6.2,'normal',S);
-    pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+19);
-
+    font(6.2,'normal',S); pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+19);
     const tx=ML+infoW+gap;
-    pdf.setDrawColor(191,208,223); pdf.setFillColor(248,250,252);
-    pdf.roundedRect(tx,top,totalW,h,1.8,1.8,'FD');
+    pdf.setDrawColor(191,208,223); pdf.setFillColor(248,250,252); pdf.roundedRect(tx,top,totalW,h,1.8,1.8,'FD');
     pdf.setFillColor(15,23,42); pdf.roundedRect(tx,top,totalW,8,1.8,1.8,'F');
     font(6.6,'bold',[255,255,255]); pdf.text('RESUMEN ECONÓMICO',tx+4,top+5.5);
     let yy=top+16;
-    function r(label,val,total=false){
-      font(total?8:7.2,total?'bold':'normal',total?B:S);
-      pdf.text(label,tx+4,yy);
-      font(total?10.5:7.6,total?'bold':'normal',total?B:G);
-      pdf.text(amount(val,q.currency),tx+totalW-4,yy,{align:'right'});
-      yy+=total?8:6;
-    }
-    r('Valor neto',q.neto); r('IVA 19%',q.iva);
-    pdf.setDrawColor(...L); pdf.line(tx+4,yy-2,tx+totalW-4,yy-2);
-    r('TOTAL SERVICIO',q.total,true);
+    function r(label,val,total=false){ font(total?8:7.2,total?'bold':'normal',total?B:S); pdf.text(label,tx+4,yy); font(total?10.5:7.6,total?'bold':'normal',total?B:G); pdf.text(amount(val,q.currency),tx+totalW-4,yy,{align:'right'}); yy+=total?8:6; }
+    r('Valor neto',q.neto); r('IVA 19%',q.iva); pdf.setDrawColor(...L); pdf.line(tx+4,yy-2,tx+totalW-4,yy-2); r('TOTAL SERVICIO',q.total,true);
     y=top+h+8;
   }
-
-  function sign(){
-    need(24);
-    font(6.8,'normal',G); pdf.text('Atentamente,',W/2,y,{align:'center'}); y+=7;
-    pdf.setDrawColor(...G); pdf.line(W/2-27,y,W/2+27,y); y+=4;
-    font(7.2,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.5;
-    font(6,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
-  }
+  function sign(){ need(24); font(6.8,'normal',G); pdf.text('Atentamente,',W/2,y,{align:'center'}); y+=7; pdf.setDrawColor(...G); pdf.line(W/2-27,y,W/2+27,y); y+=4; font(7.2,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.5; font(6,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'}); }
 
   head();
   info();
   title('Descripción del servicio',B);
   para(q.serviceDesc||DEFAULT_SERVICE_DESC,8.6,3.9);
-
   const its=q.items&&q.items.length?q.items:[defaultItem()];
   its.forEach((it,i)=>serviceBlock(`Servicio profesional${its.length>1?' '+(i+1):''}`,it));
-
   payment();
   sign();
   foot();
-
   pdf.save(`COT_${quoteCode(q)}.pdf`);
 
-  if(originalState){
-    restoreFormState(originalState);
-    renderPreview();
-  }
+  if(originalState){ restoreFormState(originalState); renderPreview(); }
 }
 
 window.onload = function() {
   updateClientsUI();
+  loadItemToEditor(0);
   renderPreview();
 };
 </script>

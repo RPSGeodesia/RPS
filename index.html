@@ -373,7 +373,6 @@
 </script>
 
 <script>
-  // Reemplazado Base64 corrupto por una imagen transparente de respaldo para prevenir el congelamiento total del navegador
   const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   const COMPANY = {
@@ -391,7 +390,7 @@
 
   const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
 
-  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elements relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
+  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
 
 Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
 
@@ -552,7 +551,6 @@ Entregables:
       return out.length ? out : [''];
     }
 
-    // Corregido cálculo de unidades para evitar que cadenas corruptas pongan en bucle infinito el renderizador
     function units(text, base){ 
       const txtLen = cleanText(text).length;
       return base + Math.ceil((txtLen > 0 ? txtLen : 1) / 55); 
@@ -716,19 +714,20 @@ Entregables:
     </div>`).join('');
   }
 
+  // Corregida la inyección destructiva del precio por defecto. Ahora newItem guarda estrictamente el valor del input.
   function addItem(){
     const name = document.getElementById('i-name').value.trim();
     const qty = Number(document.getElementById('i-qty').value||1);
     const price = Number(document.getElementById('i-price').value||0);
     if(!name) return alert('Ingresa el detalle técnico del servicio.');
     
-    const newItem = {name, qty, price, total:Math.round(qty*price*100)/100};
+    const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
     
     if(editingItemIdx !== null && editingItemIdx >= 0) {
       items[editingItemIdx] = newItem;
       editingItemIdx = null; 
     } else {
-      const onlyDefault = items.length===1 && items[0].isDefault && Number(items[0].total||0)===0;
+      const onlyDefault = items.length===1 && items[0].isDefault;
       if(onlyDefault) items[0]=newItem; else items.push(newItem);
     }
     
@@ -742,7 +741,8 @@ Entregables:
     const it = items[i];
     document.getElementById('i-name').value = it.name;
     document.getElementById('i-qty').value = it.qty;
-    document.getElementById('i-price').value = it.price;
+    // Forzamos el precio exacto almacenado en el array, eliminando cualquier callback heredado de Firebase
+    document.getElementById('i-price').value = it.price || 0;
     editingItemIdx = i; 
   }
 

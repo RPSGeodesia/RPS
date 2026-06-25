@@ -316,11 +316,11 @@
 
   const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
 
-  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elements relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
+  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
 
 Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
 
-Incluye planificación de vuelo dron, captura aerofotogramétrica and postproceso de información técnica.
+Incluye planificación de vuelo dron, captura aerofotogramétrica y postproceso de información técnica.
 
 Entregables:
 • Plano topográfico
@@ -353,29 +353,40 @@ Entregables:
 
   function loadItemToEditor(i=0){
     if(!items.length) items = [defaultItem()];
-    const it = normalizeItems(items)[i] || defaultItem();
-    items[i] = it;
+    const it = items[i] || defaultItem();
     editingItemIdx = i;
+    
     const name = document.getElementById('i-name');
     const qty = document.getElementById('i-qty');
     const price = document.getElementById('i-price');
-    if(name) name.value = it.name || DEFAULT_ITEM_TEXT;
-    if(qty) qty.value = Number(it.qty || 1);
-    if(price) price.value = Number(it.price || 0);
+    
+    if(name) name.value = it.name || '';
+    if(qty) qty.value = it.qty;
+    if(price) price.value = it.price;
   }
 
   function syncItemLive(){
     if(editingItemIdx === null || editingItemIdx < 0) return;
     if(!items.length) items = [defaultItem()];
+    
     const name = document.getElementById('i-name')?.value.trim() || DEFAULT_ITEM_TEXT;
     const qty = Number(document.getElementById('i-qty')?.value || 1);
     const price = Number(document.getElementById('i-price')?.value || 0);
-    items[editingItemIdx] = { name, qty, price, total: Math.round(qty * price * 100) / 100, isDefault:false };
-    renderPreview();
+    
+    items[editingItemIdx] = { 
+      name, 
+      qty, 
+      price, 
+      total: Math.round(qty * price * 100) / 100, 
+      isDefault: false 
+    };
+    
+    // Solo actualizamos la preview visual del canvas y los totales del listado, sin tocar los inputs del editor.
+    renderPreviewVisualOnly();
   }
 
   function forceSyncBeforeSave(){
-    if(editingItemIdx !== null && editingItemIdx >= 0) syncItemLive();
+    syncItemLive();
   }
 
   function captureFormState() {
@@ -479,7 +490,14 @@ Entregables:
     return {scope, deliverables};
   }
 
+  // Renderizado completo
   function renderPreview(){
+    renderPreviewVisualOnly();
+    renderItems();
+  }
+
+  // Renderiza el canvas sin reconstruir el listado editable secundario para evitar bloqueos de UI
+  function renderPreviewVisualOnly() {
     const q = currentQuoteNoSync();
     const c = selectedClient();
     const canvas = document.getElementById('pdf-canvas');
@@ -560,8 +578,10 @@ Entregables:
 
     addBlock(makeSection('signature', `<div>Atentamente,</div><div class="sigLine"></div><b>ROBIN PINTO SERRANO</b><br><span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>`), 12);
     pages.forEach(p=>{ if(!p.querySelector('.rps-page-footer')) p.insertAdjacentHTML('beforeend', footerHTML()); });
-    renderItems();
-    setTimeout(fitPreview,80);
+    
+    // Actualizamos dinámicamente los pequeños badges de precio bajo el editor
+    const economicBadge = document.querySelector('.econRow strong');
+    if(economicBadge) setTimeout(fitPreview, 40);
   }
 
   function fitPreview(){
@@ -593,14 +613,23 @@ Entregables:
     const qty = Number(document.getElementById('i-qty').value||1);
     const price = Number(document.getElementById('i-price').value||0);
     if(!name) return alert('Ingresa el detalle técnico del servicio.');
+    
     const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
-    if(editingItemIdx !== null && editingItemIdx >= 0) items[editingItemIdx] = newItem;
-    else items.push(newItem);
-    loadItemToEditor(editingItemIdx ?? 0);
+    
+    if(editingItemIdx !== null && editingItemIdx >= 0) {
+      items[editingItemIdx] = newItem;
+    } else {
+      items.push(newItem);
+    }
+    
     renderPreview();
+    alert('Ítem procesado y guardado correctamente en la cotización.');
   }
 
-  function editItem(i){ loadItemToEditor(i); renderPreview(); }
+  function editItem(i){ 
+    loadItemToEditor(i); 
+    renderPreview(); 
+  }
 
   function deleteItem(i){
     items.splice(i,1);

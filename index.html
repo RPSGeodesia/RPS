@@ -316,7 +316,7 @@
 
   const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
 
-  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
+  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elements relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
 
 Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
 
@@ -438,8 +438,7 @@ Entregables:
     loadItemToEditor(editingItemIdx || 0);
   }
 
-  function currentQuote(){
-    forceSyncBeforeSave();
+  function currentQuoteNoSync(){
     const normalized = normalizeItems(items);
     const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
     const iva = Math.round(neto*.19);
@@ -458,6 +457,11 @@ Entregables:
       notes: document.getElementById('q-notes').value,
       items: normalized, neto, iva, total: neto+iva
     };
+  }
+
+  function currentQuote(){
+    forceSyncBeforeSave();
+    return currentQuoteNoSync();
   }
 
   function selectedClient(){
@@ -558,27 +562,6 @@ Entregables:
     pages.forEach(p=>{ if(!p.querySelector('.rps-page-footer')) p.insertAdjacentHTML('beforeend', footerHTML()); });
     renderItems();
     setTimeout(fitPreview,80);
-  }
-
-  function currentQuoteNoSync(){
-    const normalized = normalizeItems(items);
-    const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
-    const iva = Math.round(neto*.19);
-    return {
-      folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
-      date: document.getElementById('q-date').value,
-      ref: document.getElementById('q-ref').value,
-      currency: document.getElementById('q-currency').value,
-      client: document.getElementById('q-client').value,
-      project: document.getElementById('q-project').value,
-      location: document.getElementById('q-location').value,
-      serviceDesc: document.getElementById('q-desc').value || DEFAULT_SERVICE_DESC,
-      validity: document.getElementById('q-validity').value,
-      delivery: document.getElementById('q-delivery').value,
-      conditions: document.getElementById('q-conditions').value,
-      notes: document.getElementById('q-notes').value,
-      items: normalized, neto, iva, total: neto+iva
-    };
   }
 
   function fitPreview(){
@@ -737,37 +720,6 @@ Entregables:
       renderHistory();
     }catch(e){ console.error(e); alert('No se pudo eliminar: ' + (e.message || e)); }
   }
-
-  async function saveAndSend(){
-    forceSyncBeforeSave();
-    const q = currentQuote();
-    if(!q.client) return alert('Falta seleccionar o crear cliente.');
-    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
-    try{
-      if(!editingId && window.fb?.runTransaction){
-        await fb.runTransaction(fb.db,async(t)=>{
-          const r=fb.doc(fb.db,'config','rps_cotizador_v1');
-          const s=await t.get(r);
-          f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000;
-          s.exists()?t.update(r,{lastFolio:f+1}):t.set(r,{lastFolio:f+1});
-        });
-      }
-      const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
-      if(window.fb?.db){
-        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
-        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
-      }
-      await generateAndSharePDF(null, data);
-    }catch(e){ console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
-  }
-
-  document.getElementById('q-date').valueAsDate = new Date();
-  document.getElementById('q-ref').value = 'AER-1000';
-  document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
-  document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-  document.getElementById('i-qty').value = 1;
-  document.getElementById('i-price').value = 0;
-  window.addEventListener('resize',fitPreview);
 </script>
 
 <script>
@@ -781,21 +733,22 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
     originalState = captureFormState();
     applyQuoteToForm(quoteOverride, false);
     renderPreview();
-    await new Promise(r=>setTimeout(r,80));
+    await new Promise(r=>setTimeout(r,100));
   }else if(historyId){
     const h = quoteById(historyId);
     if(!h) return alert('No se encontró la cotización.');
     originalState = captureFormState();
     applyQuoteToForm(h, false);
     renderPreview();
-    await new Promise(r=>setTimeout(r,80));
+    await new Promise(r=>setTimeout(r,100));
   }else{
     renderPreview();
     await new Promise(r=>setTimeout(r,50));
   }
 
-  const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
-  const c = selectedClient();
+  const q = quoteOverride || currentQuoteNoSync();
+  const c = (window.clientes || []).find(x => x.name === q.client) || { name: q.client };
+  
   const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
 
   const W=210, H=297, ML=12, MR=12, MT=15, MB=15, CW=W-ML-MR;
@@ -878,6 +831,54 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
 
   if(originalState){ restoreFormState(originalState); renderPreview(); }
 }
+
+async function saveAndSend(){
+  forceSyncBeforeSave();
+  const q = currentQuote();
+  if(!q.client) return alert('Falta seleccionar o crear cliente.');
+  
+  let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
+  
+  try{
+    if(!editingId && window.fb?.runTransaction){
+      await fb.runTransaction(fb.db, async(t)=>{
+        const r = fb.doc(fb.db, 'config', 'rps_cotizador_v1');
+        const s = await t.get(r);
+        f = s.exists() ? Math.max(1000, Number(s.data().lastFolio || 1000)) : 1000;
+        s.exists() ? t.update(r, {lastFolio: f + 1}) : t.set(r, {lastFolio: f + 1});
+      });
+    }
+    
+    const data = {
+      ...q, 
+      folio: f, 
+      ref: document.getElementById('q-ref').value || ('AER-' + f), 
+      createdAt: new Date().toISOString()
+    };
+    
+    if(window.fb?.db){
+      if(editingId) {
+        await fb.setDoc(fb.doc(fb.db, 'rps_cotizaciones', editingId), data);
+      } else {
+        await fb.addDoc(fb.collection(fb.db, 'rps_cotizaciones'), data);
+      }
+    }
+    
+    await generateAndSharePDF(null, data);
+    alert('Cotización guardada y PDF generado con éxito.');
+  }catch(e){ 
+    console.error(e); 
+    alert('No se pudo guardar/enviar: ' + (e.message || e)); 
+  }
+}
+
+document.getElementById('q-date').valueAsDate = new Date();
+document.getElementById('q-ref').value = 'AER-1000';
+document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
+document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
+document.getElementById('i-qty').value = 1;
+document.getElementById('i-price').value = 0;
+window.addEventListener('resize',fitPreview);
 
 window.onload = function() {
   updateClientsUI();

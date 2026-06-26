@@ -179,7 +179,7 @@
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
       padding: 20px;
       display: block;
-      touch-action: pan-x pan-y pinch-zoom;
+      touch-action: pan-x pan-y;
     }
 
     #pdf-canvas {
@@ -554,6 +554,17 @@
 
   onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
     window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
+
+    // Mantiene visible el próximo folio real mientras se crea una cotización nueva.
+    // No toca cotizaciones cargadas desde historial/edición.
+    const refEl = document.getElementById('q-ref');
+    let isEditingQuote = false;
+    try { isEditingQuote = !!editingId; } catch(e) { isEditingQuote = false; }
+
+    if (refEl && !isEditingQuote && (!refEl.value || /^AER-\d+$/.test(refEl.value))) {
+      refEl.value = 'AER-' + window.nextFolio;
+      if (typeof renderPreview === 'function') renderPreview();
+    }
   });
 
   onSnapshot(collection(db, "rps_clientes"), snap => {
@@ -1195,10 +1206,13 @@
         });
       }
 
+      const finalQuote = forceVisibleSingleItemPrice(currentQuote());
+      const finalRef = editingId ? (finalQuote.ref || ('AER-' + f)) : ('AER-' + f);
+
       const data = {
-        ...forceVisibleSingleItemPrice(currentQuote()),
+        ...finalQuote,
         folio: f,
-        ref: q.ref || ('AER-' + f),
+        ref: finalRef,
         createdAt: new Date().toISOString()
       };
 
@@ -1207,8 +1221,12 @@
       document.getElementById('q-ref').value = data.ref;
 
       if(window.fb?.db){
-        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
-        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+        if(editingId) {
+          await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
+        } else {
+          const createdDoc = await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+          editingId = createdDoc?.id || null;
+        }
       }
 
       // AQUÍ ESTABA EL ERROR: antes se pasaba "data" al PDF, y ese objeto podía arrastrar
@@ -1286,6 +1304,12 @@
         canvas.style.height = `${Math.ceil(page.offsetHeight * previewZoom)}px`;
         canvas.style.marginLeft = '0';
         canvas.style.marginRight = '0';
+
+        // Asegura que, al hacer zoom, el contenido sea realmente desplazable
+        // en horizontal dentro del preliminar.
+        if (canvas.offsetWidth > box.clientWidth && box.scrollLeft === 0) {
+          box.scrollLeft = Math.max(0, (canvas.offsetWidth - box.clientWidth) / 2);
+        }
       }
     }, { passive: false });
   }
@@ -1594,7 +1618,7 @@
 
   function initApp(){
     document.getElementById('q-date').valueAsDate = new Date();
-    document.getElementById('q-ref').value = 'AER-1000';
+    document.getElementById('q-ref').value = 'AER-' + (window.nextFolio || 1000);
     document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
     document.getElementById('i-qty').value = 1;

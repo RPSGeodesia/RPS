@@ -161,6 +161,7 @@
       text-transform: uppercase; letter-spacing: 0.5px;
     }
     .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #062221; }
+    .quoteTag + .quoteNum { margin-top: 2mm; }
     .quoteDate { font-size: 7.5pt; color: #64748b; }
 
     .grid2 {
@@ -343,6 +344,8 @@
 </script>
 
 <script>
+  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
     legalName:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.',
@@ -816,7 +819,7 @@ Entregables:
   document.getElementById('i-price').addEventListener('input', renderPreview);
   document.getElementById('i-qty').addEventListener('input', renderPreview);
 
-  // MÓDULO JS-PDF SIN ENLACES ROTOS NI ERRORES DE LLAVES
+  // MÓDULO JS-PDF CORREGIDO (Error de color '25df' resuelto a '253' para evitar congelamiento)
   async function generateAndSharePDF(historyId=null, quoteOverride=null){
     const JsPDF = window.jspdf?.jsPDF;
     if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -934,7 +937,7 @@ Entregables:
       pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
 
       const tx=ML+infoW+gap;
-      pdf.setDrawColor(167,243,208); pdf.setFillColor(240,25df,244);
+      pdf.setDrawColor(167,243,208); pdf.setFillColor(240,253,244);
       pdf.roundedRect(tx,top,totalW,h,1,1,'FD');
       pdf.setFillColor(6,34,33); pdf.roundedRect(tx,top,totalW,6,1,1,'F');
       font(6.5,'bold',[255,255,255]); pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);

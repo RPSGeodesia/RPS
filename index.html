@@ -123,17 +123,44 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    #previewTools {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      pointer-events: auto;
+    }
+
+    #previewTools button {
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(17, 24, 39, 0.92);
+      color: #fde68a;
+      font-weight: 900;
+      border-radius: 12px;
+      padding: 9px 13px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+    }
+
+    #previewScaler {
+      width: 210mm;
+      transform-origin: top left;
+      transform: scale(var(--preview-scale, 1));
+      touch-action: none;
+    }
+
     #pdf-canvas {
-      width: 100%;
-      max-width: 210mm;
-      margin: 0 auto;
+      width: 210mm;
+      max-width: none;
+      margin: 0;
       display: flex;
       flex-direction: column;
-      touch-action: pan-x pan-y pinch-zoom;
     }
 
     .a4 {
-      width: 100%;
+      width: 210mm;
       height: 297mm;
       background: white;
       color: #1e293b;
@@ -239,8 +266,12 @@
         overflow: auto;
       }
 
+      #previewScaler {
+        width: 210mm;
+      }
+
       #pdf-canvas {
-        width: max-content;
+        width: 210mm;
         max-width: none;
         margin: 0;
       }
@@ -305,7 +336,14 @@
       </div>
 
       <div id="previewBox">
-        <div id="pdf-canvas"></div>
+        <div id="previewTools">
+          <button type="button" onclick="zoomPreview(-0.1)">−</button>
+          <button type="button" onclick="resetPreviewZoom()">Ajustar</button>
+          <button type="button" onclick="zoomPreview(0.1)">+</button>
+        </div>
+        <div id="previewScaler">
+          <div id="pdf-canvas"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -411,8 +449,7 @@ Entregables:
     if (
       manualPriceInput &&
       manualPriceInput.value !== "" &&
-      normalized.length === 1 &&
-      normalized[0].isDefault
+      normalized.length === 1
     ) {
       const mQty = Number(document.getElementById('i-qty').value || 1);
       const mPrice = Number(manualPriceInput.value || 0);
@@ -1056,6 +1093,97 @@ Entregables:
     }
   }
 
+
+  let previewScale = 1;
+  let previewBaseScale = 1;
+  const previewPointers = new Map();
+  let pinchStartDistance = 0;
+  let pinchStartScale = 1;
+
+  function clampPreviewScale(v){
+    return Math.max(0.28, Math.min(2.2, Number(v || 1)));
+  }
+
+  function setPreviewScale(v){
+    previewScale = clampPreviewScale(v);
+    const scaler = document.getElementById('previewScaler');
+    if(scaler) scaler.style.setProperty('--preview-scale', previewScale);
+  }
+
+  function fitPreviewToBox(){
+    const box = document.getElementById('previewBox');
+    const scaler = document.getElementById('previewScaler');
+    if(!box || !scaler) return;
+
+    const paperWidthPx = 210 * 96 / 25.4;
+    const available = Math.max(260, box.clientWidth - 40);
+    previewBaseScale = clampPreviewScale(Math.min(1, available / paperWidthPx));
+    setPreviewScale(previewBaseScale);
+  }
+
+  function zoomPreview(delta){
+    setPreviewScale(previewScale + delta);
+  }
+
+  function resetPreviewZoom(){
+    fitPreviewToBox();
+  }
+
+  function distanceBetweenPointers(){
+    const pts = Array.from(previewPointers.values());
+    if(pts.length < 2) return 0;
+    const dx = pts[0].clientX - pts[1].clientX;
+    const dy = pts[0].clientY - pts[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  function setupPreviewZoom(){
+    const box = document.getElementById('previewBox');
+    if(!box) return;
+
+    box.addEventListener('pointerdown', (ev) => {
+      if(ev.target.closest('#previewTools')) return;
+      previewPointers.set(ev.pointerId, ev);
+      if(previewPointers.size === 2){
+        pinchStartDistance = distanceBetweenPointers();
+        pinchStartScale = previewScale;
+        box.setPointerCapture?.(ev.pointerId);
+      }
+    }, {passive:false});
+
+    box.addEventListener('pointermove', (ev) => {
+      if(!previewPointers.has(ev.pointerId)) return;
+      previewPointers.set(ev.pointerId, ev);
+
+      if(previewPointers.size === 2){
+        ev.preventDefault();
+        const d = distanceBetweenPointers();
+        if(pinchStartDistance > 0){
+          setPreviewScale(pinchStartScale * (d / pinchStartDistance));
+        }
+      }
+    }, {passive:false});
+
+    ['pointerup','pointercancel','pointerleave'].forEach(type => {
+      box.addEventListener(type, (ev) => {
+        previewPointers.delete(ev.pointerId);
+        if(previewPointers.size < 2){
+          pinchStartDistance = 0;
+        }
+      });
+    });
+
+    box.addEventListener('wheel', (ev) => {
+      if(!ev.ctrlKey) return;
+      ev.preventDefault();
+      zoomPreview(ev.deltaY < 0 ? 0.08 : -0.08);
+    }, {passive:false});
+
+    window.addEventListener('resize', () => {
+      fitPreviewToBox();
+    });
+  }
+
   window.downloadHist = (id) => {
     const h = window.historial.find(x => x.id === id);
     generateAndSharePDF(null, h);
@@ -1079,6 +1207,9 @@ Entregables:
     deleteQuote,
     saveAndSend,
     generateAndSharePDF,
+    zoomPreview,
+    resetPreviewZoom,
+    fitPreviewToBox,
     captureFormState,
     applyQuoteToForm,
     restoreFormState,
@@ -1118,6 +1249,8 @@ Entregables:
 
     updateClientsUI();
     renderPreview();
+    setupPreviewZoom();
+    setTimeout(fitPreviewToBox, 80);
   });
 </script>
 </body>

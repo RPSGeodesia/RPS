@@ -131,12 +131,11 @@
       justify-content: center;
       gap: 8px;
       margin-bottom: 12px;
-      pointer-events: auto;
     }
 
     #previewTools button {
       border: 1px solid rgba(245, 158, 11, 0.35);
-      background: rgba(17, 24, 39, 0.92);
+      background: rgba(17, 24, 39, 0.94);
       color: #fde68a;
       font-weight: 900;
       border-radius: 12px;
@@ -144,19 +143,14 @@
       box-shadow: 0 8px 22px rgba(0,0,0,0.28);
     }
 
-    #previewScaler {
-      width: 210mm;
-      transform-origin: top left;
-      transform: scale(var(--preview-scale, 1));
-      touch-action: none;
-    }
-
     #pdf-canvas {
       width: 210mm;
       max-width: none;
-      margin: 0;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
+      zoom: var(--preview-zoom, 1);
+      touch-action: pan-x pan-y;
     }
 
     .a4 {
@@ -266,14 +260,10 @@
         overflow: auto;
       }
 
-      #previewScaler {
-        width: 210mm;
-      }
-
       #pdf-canvas {
         width: 210mm;
         max-width: none;
-        margin: 0;
+        margin: 0 auto;
       }
 
       .a4 {
@@ -341,9 +331,7 @@
           <button type="button" onclick="resetPreviewZoom()">Ajustar</button>
           <button type="button" onclick="zoomPreview(0.1)">+</button>
         </div>
-        <div id="previewScaler">
-          <div id="pdf-canvas"></div>
-        </div>
+        <div id="pdf-canvas"></div>
       </div>
     </div>
   </section>
@@ -449,7 +437,8 @@ Entregables:
     if (
       manualPriceInput &&
       manualPriceInput.value !== "" &&
-      normalized.length === 1
+      normalized.length === 1 &&
+      normalized[0].isDefault
     ) {
       const mQty = Number(document.getElementById('i-qty').value || 1);
       const mPrice = Number(manualPriceInput.value || 0);
@@ -517,6 +506,12 @@ Entregables:
     document.getElementById('q-delivery').value = state.delivery;
     document.getElementById('q-conditions').value = state.conditions;
     document.getElementById('q-notes').value = state.notes;
+
+    const firstItem = items[0] || defaultItem();
+    document.getElementById('i-name').value = firstItem.name || DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = firstItem.qty || 1;
+    document.getElementById('i-price').value = firstItem.price || '';
+    editingItemIdx = null;
   }
 
   function currentQuote(){
@@ -1094,42 +1089,39 @@ Entregables:
   }
 
 
-  let previewScale = 1;
-  let previewBaseScale = 1;
+  let previewZoom = 1;
   const previewPointers = new Map();
   let pinchStartDistance = 0;
-  let pinchStartScale = 1;
+  let pinchStartZoom = 1;
 
-  function clampPreviewScale(v){
-    return Math.max(0.28, Math.min(2.2, Number(v || 1)));
+  function clampPreviewZoom(v){
+    return Math.max(0.35, Math.min(2.4, Number(v || 1)));
   }
 
-  function setPreviewScale(v){
-    previewScale = clampPreviewScale(v);
-    const scaler = document.getElementById('previewScaler');
-    if(scaler) scaler.style.setProperty('--preview-scale', previewScale);
+  function setPreviewZoom(v){
+    previewZoom = clampPreviewZoom(v);
+    const canvas = document.getElementById('pdf-canvas');
+    if(canvas) canvas.style.setProperty('--preview-zoom', previewZoom);
   }
 
   function fitPreviewToBox(){
     const box = document.getElementById('previewBox');
-    const scaler = document.getElementById('previewScaler');
-    if(!box || !scaler) return;
+    if(!box) return;
 
     const paperWidthPx = 210 * 96 / 25.4;
-    const available = Math.max(260, box.clientWidth - 40);
-    previewBaseScale = clampPreviewScale(Math.min(1, available / paperWidthPx));
-    setPreviewScale(previewBaseScale);
+    const available = Math.max(240, box.clientWidth - 44);
+    setPreviewZoom(Math.min(1, available / paperWidthPx));
   }
 
   function zoomPreview(delta){
-    setPreviewScale(previewScale + delta);
+    setPreviewZoom(previewZoom + delta);
   }
 
   function resetPreviewZoom(){
     fitPreviewToBox();
   }
 
-  function distanceBetweenPointers(){
+  function previewPointerDistance(){
     const pts = Array.from(previewPointers.values());
     if(pts.length < 2) return 0;
     const dx = pts[0].clientX - pts[1].clientX;
@@ -1144,10 +1136,10 @@ Entregables:
     box.addEventListener('pointerdown', (ev) => {
       if(ev.target.closest('#previewTools')) return;
       previewPointers.set(ev.pointerId, ev);
+
       if(previewPointers.size === 2){
-        pinchStartDistance = distanceBetweenPointers();
-        pinchStartScale = previewScale;
-        box.setPointerCapture?.(ev.pointerId);
+        pinchStartDistance = previewPointerDistance();
+        pinchStartZoom = previewZoom;
       }
     }, {passive:false});
 
@@ -1157,9 +1149,9 @@ Entregables:
 
       if(previewPointers.size === 2){
         ev.preventDefault();
-        const d = distanceBetweenPointers();
+        const d = previewPointerDistance();
         if(pinchStartDistance > 0){
-          setPreviewScale(pinchStartScale * (d / pinchStartDistance));
+          setPreviewZoom(pinchStartZoom * (d / pinchStartDistance));
         }
       }
     }, {passive:false});
@@ -1167,21 +1159,11 @@ Entregables:
     ['pointerup','pointercancel','pointerleave'].forEach(type => {
       box.addEventListener(type, (ev) => {
         previewPointers.delete(ev.pointerId);
-        if(previewPointers.size < 2){
-          pinchStartDistance = 0;
-        }
-      });
+        if(previewPointers.size < 2) pinchStartDistance = 0;
+      }, {passive:false});
     });
 
-    box.addEventListener('wheel', (ev) => {
-      if(!ev.ctrlKey) return;
-      ev.preventDefault();
-      zoomPreview(ev.deltaY < 0 ? 0.08 : -0.08);
-    }, {passive:false});
-
-    window.addEventListener('resize', () => {
-      fitPreviewToBox();
-    });
+    window.addEventListener('resize', fitPreviewToBox);
   }
 
   window.downloadHist = (id) => {
@@ -1210,6 +1192,7 @@ Entregables:
     zoomPreview,
     resetPreviewZoom,
     fitPreviewToBox,
+    syncPriceFromInputs,
     captureFormState,
     applyQuoteToForm,
     restoreFormState,
@@ -1244,8 +1227,9 @@ Entregables:
     document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
 
-    document.getElementById('i-price').addEventListener('input', renderPreview);
-    document.getElementById('i-qty').addEventListener('input', renderPreview);
+    document.getElementById('i-price').addEventListener('input', () => { syncPriceFromInputs(); renderPreview(); });
+    document.getElementById('i-qty').addEventListener('input', () => { syncPriceFromInputs(); renderPreview(); });
+    document.getElementById('i-name').addEventListener('input', () => { if(document.getElementById('i-price').value !== '') syncPriceFromInputs(); renderPreview(); });
 
     updateClientsUI();
     renderPreview();

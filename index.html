@@ -177,9 +177,10 @@
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
       padding: 20px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: flex-start;
       touch-action: pan-x pan-y;
+      -webkit-overflow-scrolling: touch;
     }
 
     #pdf-canvas {
@@ -187,6 +188,7 @@
       min-width: 0;
       display: block;
       margin: 0 auto;
+      flex: 0 0 auto;
     }
 
     .a4 {
@@ -318,6 +320,16 @@
       font-size: 8pt;
       font-weight: 800;
       text-transform: uppercase;
+    }
+
+    .item-price-line {
+      margin-top: 2mm;
+      padding-top: 1.5mm;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8pt;
+      font-weight: 800;
+      color: #111827;
+      text-align: right;
     }
 
     .deliverables {
@@ -631,25 +643,38 @@
 
     const priceEl = document.getElementById('i-price');
     const qtyEl = document.getElementById('i-qty');
-    if(!priceEl || !qtyEl) return;
+    const nameEl = document.getElementById('i-name');
+    if(!priceEl || !qtyEl || !nameEl) return;
+
+    const rawPrice = String(priceEl.value ?? '').trim();
+
+    // Si el precio está vacío, NO sobreescribe el ítem actual.
+    // Esto evita que se borren precios recién agregados o que vuelva un precio antiguo.
+    if(rawPrice === '') return;
 
     const qty = Number(qtyEl.value || 1);
-    const price = Number(priceEl.value || 0);
+    const price = Number(rawPrice || 0);
 
     if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
+      items[editingItemIdx].name = nameEl.value.trim() || items[editingItemIdx].name || DEFAULT_ITEM_TEXT;
       items[editingItemIdx].qty = qty;
       items[editingItemIdx].price = price;
       items[editingItemIdx].total = Math.round(qty * price * 100) / 100;
       return;
     }
 
+    // Solo actualiza el ítem único si el editor está mostrando ese mismo ítem.
+    // Así, al escribir un ítem nuevo, no modifica el ítem anterior por accidente.
     if(items.length === 1){
-      items[0].qty = qty;
-      items[0].price = price;
-      items[0].total = Math.round(qty * price * 100) / 100;
+      const editorName = nameEl.value.trim();
+      const itemName = String(items[0].name || '').trim();
+      if(editorName === itemName){
+        items[0].qty = qty;
+        items[0].price = price;
+        items[0].total = Math.round(qty * price * 100) / 100;
+      }
     }
   }
-
   function captureFormState() {
     return {
       editingId,
@@ -802,7 +827,21 @@
     page.className = 'a4';
 
     const quoteItems = q.items.length ? q.items : [defaultItem()];
-    const parsed = parseService(quoteItems[0].name);
+    const servicesHTML = quoteItems.map((it, idx) => {
+      const parsed = parseService(it.name);
+      return `
+        <div class="pdf-card">
+          <div class="bar">Servicio profesional ${idx + 1}</div>
+          <div class="service-body">
+            <h4>Alcance técnico</h4>
+            <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
+            <h4 style="margin-top:2.5mm">Entregables</h4>
+            <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
+            <div class="item-price-line">Valor neto ítem: ${amount(it.total, q.currency)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
 
     page.innerHTML = `
       ${headerHTML()}
@@ -831,14 +870,7 @@
         <div class="bar blue">Descripción del servicio</div>
         <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
       </div>
-      <div class="pdf-card">
-        <div class="bar">Servicio profesional</div>
-        <div class="service-body"><h4>Alcance técnico</h4><p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p></div>
-      </div>
-      <div class="pdf-card">
-        <div class="bar">Servicio profesional · entregables</div>
-        <div class="service-body"><h4>Entregables</h4><div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div></div>
-      </div>
+      ${servicesHTML}
       <div class="payment">
         <div class="pdf-card">
           <div class="bar blue">Condiciones y datos de pago</div>
@@ -1134,6 +1166,8 @@
     page.style.transform = `scale(${previewZoom})`;
     canvas.style.width = `${naturalW * previewZoom}px`;
     canvas.style.height = `${naturalH * previewZoom}px`;
+    canvas.style.marginLeft = (naturalW * previewZoom) < box.clientWidth ? 'auto' : '0';
+    canvas.style.marginRight = (naturalW * previewZoom) < box.clientWidth ? 'auto' : '0';
   }
 
   function setupPreviewTouchZoom() {
@@ -1175,6 +1209,8 @@
         page.style.transform = `scale(${previewZoom})`;
         canvas.style.width = `${page.offsetWidth * previewZoom}px`;
         canvas.style.height = `${page.offsetHeight * previewZoom}px`;
+        canvas.style.marginLeft = '0';
+        canvas.style.marginRight = '0';
       }
     }, { passive: false });
   }
@@ -1347,26 +1383,36 @@
       pdfPara(q.serviceDesc||DEFAULT_SERVICE_DESC,8.5,4.2);
 
       const quoteItems = q.items.length ? q.items : [defaultItem()];
-      const parsed = parseService(quoteItems[0].name);
 
-      sectionTitle('SERVICIO PROFESIONAL');
+      quoteItems.forEach((it, idx) => {
+        const parsed = parseService(it.name);
 
-      pdfFont(7.5,'bold',[180,83,9]);
-      pdf.text('ALCANCE TÉCNICO',ML+3,pdfY);
-      pdfY+=4.5;
+        sectionTitle(`SERVICIO PROFESIONAL ${idx + 1}`);
 
-      pdfPara(parsed.scope,8.5,4.2);
+        pdfFont(7.5,'bold',[180,83,9]);
+        pdf.text('ALCANCE TÉCNICO',ML+3,pdfY);
+        pdfY+=4.5;
 
-      sectionTitle('SERVICIO PROFESIONAL · ENTREGABLES');
+        pdfPara(parsed.scope,8.5,4.2);
 
-      for(const d of parsed.deliverables){
-        ensureSpace(5);
-        pdfFont(8,'normal',G);
-        pdf.text(`• ${d}`,ML+5,pdfY);
-        pdfY+=4;
-      }
+        pdfFont(7.5,'bold',[180,83,9]);
+        pdf.text('ENTREGABLES',ML+3,pdfY);
+        pdfY+=4.5;
 
-      pdfY+=4;
+        for(const d of parsed.deliverables){
+          ensureSpace(5);
+          pdfFont(8,'normal',G);
+          pdf.text(`• ${d}`,ML+5,pdfY);
+          pdfY+=4;
+        }
+
+        ensureSpace(7);
+        pdfFont(8,'bold',[22,30,46]);
+        pdf.text(`Valor neto ítem: ${amount(it.total, q.currency)}`, W-MR, pdfY, {align:'right'});
+        pdfY += 6;
+      });
+
+      pdfY+=2;
 
       const hPay=42, totalW=68, infoW=CW-totalW-gapBox;
 

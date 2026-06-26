@@ -1340,9 +1340,11 @@
       }
 
       const c = (window.clientes || []).find(cli => cli.name === q.client) || selectedClient() || {name:q.client};
+      const pdfItemsCount = (q.items && q.items.length) ? q.items.length : 1;
+      const singleItemMode = pdfItemsCount === 1;
 
       const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
-      const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
+      const W=210, H=297, ML=14, MR=14, MT=13, MB=10, CW=W-ML-MR;
       const G=[30,41,59], B=[245,158,11], S=[100,116,139], L=[203,213,225];
       let pdfY=MT;
 
@@ -1386,7 +1388,7 @@
         pdfFont(7.5,'normal',S);
         pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,pdfY+26,{align:'right'});
 
-        pdfY+=32;
+        pdfY += singleItemMode ? 28 : 32;
         pdf.setDrawColor(...B);
         pdf.setLineWidth(.6);
         pdf.line(ML,pdfY,W-MR,pdfY);
@@ -1400,7 +1402,7 @@
       }
 
       function ensureSpace(mm){
-        if(pdfY + mm > H - MB - 8) newPage();
+        if(pdfY + mm > H - MB) newPage();
       }
 
       function sectionTitle(title, amber=false){
@@ -1483,16 +1485,16 @@
       pdfY+=hBox+6;
 
       sectionTitle('DESCRIPCIÓN DEL SERVICIO', true);
-      pdfPara(q.serviceDesc||DEFAULT_SERVICE_DESC,8.5,4.2);
+      pdfPara(q.serviceDesc||DEFAULT_SERVICE_DESC, singleItemMode ? 8.0 : 8.5, singleItemMode ? 3.75 : 4.2);
 
       const quoteItems = q.items.length ? q.items : [defaultItem()];
 
       for(const [idx, it] of quoteItems.entries()){
         const parsed = parseService(it.name);
-        sectionTitle(`SERVICIO PROFESIONAL · ÍTEM ${idx + 1}`);
+        sectionTitle(singleItemMode ? 'SERVICIO PROFESIONAL' : `SERVICIO PROFESIONAL · ÍTEM ${idx + 1}`);
 
         const pTitle = itemTitle(it, idx);
-        if(pTitle !== `Ítem ${idx + 1}`){
+        if(!singleItemMode && pTitle !== `Ítem ${idx + 1}`){
           const titleLines = pdfLines(pTitle.toUpperCase(), CW-6);
           for(const tl of titleLines){
             ensureSpace(5);
@@ -1503,43 +1505,43 @@
           pdfY += 1;
         }
 
-        pdfPara(parsed.scope,8.5,4.2);
+        pdfPara(parsed.scope, singleItemMode ? 7.9 : 8.5, singleItemMode ? 3.65 : 4.2);
 
         if(parsed.deliverables && parsed.deliverables.length){
-          ensureSpace(8);
-          pdfFont(7.5,'bold',[180,83,9]);
+          ensureSpace(singleItemMode ? 6 : 8);
+          pdfFont(7.3,'bold',[180,83,9]);
           pdf.text('ENTREGABLES', ML+3, pdfY);
-          pdfY += 4.5;
+          pdfY += singleItemMode ? 3.8 : 4.5;
           for(const d of parsed.deliverables){
             const dLines = pdfLines(`• ${d}`, CW-10);
             for(const dl of dLines){
-              ensureSpace(5);
-              pdfFont(8,'normal',G);
+              ensureSpace(4.5);
+              pdfFont(singleItemMode ? 7.7 : 8,'normal',G);
               pdf.text(dl,ML+5,pdfY);
-              pdfY+=4;
+              pdfY += singleItemMode ? 3.45 : 4;
             }
           }
         }
 
-        ensureSpace(7);
-        pdfFont(8,'bold',G);
+        ensureSpace(6);
+        pdfFont(singleItemMode ? 7.6 : 8,'bold',G);
         const itemAmountLines = pdfLines(`Cantidad: ${Number(it.qty || 1).toLocaleString('es-CL')} · Valor neto: ${amount(it.total || 0, q.currency)}`, CW-6);
         for(const il of itemAmountLines){
-          ensureSpace(5);
+          ensureSpace(4.5);
           pdf.text(il, ML+3, pdfY);
-          pdfY += 4.5;
+          pdfY += singleItemMode ? 3.9 : 4.5;
         }
-        pdfY += 1.5;
+        pdfY += singleItemMode ? 0.5 : 1.5;
       }
 
-      pdfY+=2;
+      pdfY += singleItemMode ? 0 : 2;
 
       if(String(q.notes || '').trim()){
         sectionTitle('OBSERVACIONES', true);
-        pdfPara(q.notes, 8.2, 4.1);
+        pdfPara(q.notes, singleItemMode ? 7.8 : 8.2, singleItemMode ? 3.6 : 4.1);
       }
 
-      const hPay=44, totalW=68, infoW=CW-totalW-gapBox;
+      const hPay = singleItemMode ? 39 : 44, totalW=68, infoW=CW-totalW-gapBox;
 
       ensureSpace(hPay+8);
 
@@ -1599,22 +1601,22 @@
 
       rE('TOTAL SERVICIO',q.total,true);
 
-      pdfY=top+hPay+8;
+      pdfY = top + hPay + (singleItemMode ? 4 : 8);
 
-      ensureSpace(24);
+      ensureSpace(singleItemMode ? 19 : 24);
 
       pdfFont(7.5,'normal',G);
       pdf.text('Atentamente,',W/2,pdfY,{align:'center'});
-      pdfY+=6;
+      pdfY += singleItemMode ? 4.5 : 6;
 
       pdf.setDrawColor(22,30,46);
       pdf.line(W/2-25,pdfY,W/2+25,pdfY);
-      pdfY+=4;
+      pdfY += singleItemMode ? 3.2 : 4;
 
-      pdfFont(8,'bold',G);
+      pdfFont(singleItemMode ? 7.5 : 8,'bold',G);
       pdf.text('ROBIN PINTO SERRANO',W/2,pdfY,{align:'center'});
 
-      pdfFont(6.5,'normal',S);
+      pdfFont(singleItemMode ? 6.1 : 6.5,'normal',S);
       pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,pdfY+4,{align:'center'});
 
       pdfFoot();

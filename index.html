@@ -627,6 +627,58 @@
     });
   }
 
+  function cloneData(obj){
+    return JSON.parse(JSON.stringify(obj || {}));
+  }
+
+  function recalcQuoteTotals(q){
+    q.items = normalizeItems(q.items && q.items.length ? q.items : [defaultItem()]);
+    q.neto = q.items.reduce((s, it) => s + Number(it.total || 0), 0);
+    q.iva = Math.round(q.neto * 0.19);
+    q.total = q.neto + q.iva;
+    return q;
+  }
+
+  function forceVisibleSingleItemPrice(q){
+    q = cloneData(q);
+
+    const priceEl = document.getElementById('i-price');
+    const qtyEl = document.getElementById('i-qty');
+    const nameEl = document.getElementById('i-name');
+
+    q.items = normalizeItems(q.items && q.items.length ? q.items : [defaultItem()]);
+
+    /*
+      Regla blindada contra el precio pegado:
+      Si la cotización que se está guardando/generando tiene UN SOLO ítem,
+      el PDF y Firebase toman sí o sí el precio visible del editor.
+      Así ningún objeto antiguo de Firebase puede arrastrar un precio anterior.
+    */
+    if(q.items.length === 1 && priceEl && qtyEl && String(priceEl.value || '').trim() !== ''){
+      const visiblePrice = Math.max(0, Number(priceEl.value || 0));
+      const visibleQty = Math.max(1, Number(qtyEl.value || 1));
+      q.items[0].name = (nameEl?.value || q.items[0].name || DEFAULT_ITEM_TEXT).trim();
+      q.items[0].qty = visibleQty;
+      q.items[0].price = visiblePrice;
+      q.items[0].total = Math.round(visiblePrice * visibleQty * 100) / 100;
+    }
+
+    return recalcQuoteTotals(q);
+  }
+
+  function makePdfSafeQuote(baseQuote, forceVisiblePrice = false){
+    let q = cloneData(baseQuote || currentQuote());
+    q.items = normalizeItems(q.items && q.items.length ? q.items : [defaultItem()]);
+
+    if(forceVisiblePrice){
+      q = forceVisibleSingleItemPrice(q);
+    } else {
+      q = recalcQuoteTotals(q);
+    }
+
+    return q;
+  }
+
   function syncPriceFromEditor(){
     if(suppressPriceSync) return;
 
@@ -635,15 +687,16 @@
     const nameEl = document.getElementById('i-name');
     if(!priceEl || !qtyEl) return;
 
+    const priceFieldHasValue = String(priceEl.value || '').trim() !== '';
     const qty = Math.max(1, Number(qtyEl.value || 1));
     const price = Math.max(0, Number(priceEl.value || 0));
 
     /*
       Regla definitiva del precio:
       - Si estás editando un ítem, el campo visible actualiza ese ítem.
-      - Si solo existe el ítem base/default, el campo visible actualiza ese ítem.
-      - Si ya hay varios ítems y no estás editando, el campo visible NO pisa los ítems existentes;
-        se usa solo para el próximo ítem al presionar Agregar / Actualizar.
+      - Si solo existe un ítem y el campo precio tiene valor visible, ese valor manda.
+      - Si el campo quedó vacío después de Agregar ítem, NO se pisa el precio guardado.
+      - Si ya hay varios ítems y no estás editando, el campo visible NO pisa los ítems existentes.
     */
     if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
       items[editingItemIdx].name = (nameEl?.value || items[editingItemIdx].name || DEFAULT_ITEM_TEXT).trim();
@@ -653,10 +706,7 @@
       return;
     }
 
-    // Regla crítica: si existe UN SOLO ítem, el precio visible manda siempre.
-    // Esto evita que una cotización cargada desde Firebase, aunque venga con isDefault:false,
-    // arrastre un precio antiguo al generar el PDF.
-    if(items.length === 1 && items[0]){
+    if(items.length === 1 && items[0] && priceFieldHasValue){
       items[0].name = (nameEl?.value || items[0].name || DEFAULT_ITEM_TEXT).trim();
       items[0].qty = qty;
       items[0].price = price;
@@ -744,6 +794,9 @@
   }
 
   function currentQuote(){
+    // Si hay un solo ítem, el editor visible manda siempre.
+    // Si hay varios ítems, solo se sincroniza cuando se está editando un ítem concreto.
+    syncPriceFromEditor();
     items = normalizeItems(items);
 
     const normalized = items;
@@ -1143,7 +1196,8 @@
 
       // Se congela una única versión de la cotización ya sincronizada.
       // Esta misma copia se guarda en Firebase y también se usa para dibujar el PDF.
-      const freshQuote = currentQuote();
+      // forceVisibleSingleItemPrice() evita que vuelva a entrar el precio antiguo de Firebase.
+      const freshQuote = forceVisibleSingleItemPrice(currentQuote());
       const data={...freshQuote, folio:f, ref:freshQuote.ref||('AER-'+f), createdAt:new Date().toISOString()};
 
       if(window.fb?.db){
@@ -1247,7 +1301,12 @@
         await new Promise(r=>setTimeout(r,50));
       }
 
-      const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
+      const q = quoteOverride
+        ? makePdfSafeQuote(quoteOverride, true)
+        : historyId
+          ? makePdfSafeQuote(quoteById(historyId), false)
+          : makePdfSafeQuote(currentQuote(), true);
+
       const c = (window.clientes || []).find(cli => cli.name === q.client) || selectedClient() || {name:q.client};
 
       const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});

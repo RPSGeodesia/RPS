@@ -30,6 +30,7 @@
       overflow-x: hidden;
       background: var(--bg);
       color: var(--text);
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -83,7 +84,7 @@
       width: min(100%, 1420px);
       margin: 0 auto;
       display: grid;
-      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
       gap: 28px;
       align-items: start;
     }
@@ -171,24 +172,21 @@
       height: calc(100vh - 118px);
       min-height: 620px;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
       background: linear-gradient(180deg, rgba(17, 24, 39, 0.85), rgba(7, 10, 18, 0.85));
       border: 1px solid rgba(245, 158, 11, 0.2);
       border-radius: 26px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
       padding: 20px;
-      display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
-      touch-action: pan-x pan-y;
-      -webkit-overflow-scrolling: touch;
+      display: block;
+      touch-action: pan-x pan-y pinch-zoom;
     }
 
     #pdf-canvas {
-      width: auto;
-      min-width: 0;
+      width: max-content;
+      min-width: max-content;
       display: block;
       margin: 0 auto;
-      flex: 0 0 auto;
     }
 
     .a4 {
@@ -322,16 +320,6 @@
       text-transform: uppercase;
     }
 
-    .item-price-line {
-      margin-top: 2mm;
-      padding-top: 1.5mm;
-      border-top: 1px solid #e2e8f0;
-      font-size: 8pt;
-      font-weight: 800;
-      color: #111827;
-      text-align: right;
-    }
-
     .deliverables {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -431,7 +419,7 @@
 
     @media (max-width: 1100px) {
       .layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 18px;
       }
 
@@ -643,38 +631,25 @@
 
     const priceEl = document.getElementById('i-price');
     const qtyEl = document.getElementById('i-qty');
-    const nameEl = document.getElementById('i-name');
-    if(!priceEl || !qtyEl || !nameEl) return;
-
-    const rawPrice = String(priceEl.value ?? '').trim();
-
-    // Si el precio está vacío, NO sobreescribe el ítem actual.
-    // Esto evita que se borren precios recién agregados o que vuelva un precio antiguo.
-    if(rawPrice === '') return;
+    if(!priceEl || !qtyEl) return;
 
     const qty = Number(qtyEl.value || 1);
-    const price = Number(rawPrice || 0);
+    const price = Number(priceEl.value || 0);
 
     if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
-      items[editingItemIdx].name = nameEl.value.trim() || items[editingItemIdx].name || DEFAULT_ITEM_TEXT;
       items[editingItemIdx].qty = qty;
       items[editingItemIdx].price = price;
       items[editingItemIdx].total = Math.round(qty * price * 100) / 100;
       return;
     }
 
-    // Solo actualiza el ítem único si el editor está mostrando ese mismo ítem.
-    // Así, al escribir un ítem nuevo, no modifica el ítem anterior por accidente.
     if(items.length === 1){
-      const editorName = nameEl.value.trim();
-      const itemName = String(items[0].name || '').trim();
-      if(editorName === itemName){
-        items[0].qty = qty;
-        items[0].price = price;
-        items[0].total = Math.round(qty * price * 100) / 100;
-      }
+      items[0].qty = qty;
+      items[0].price = price;
+      items[0].total = Math.round(qty * price * 100) / 100;
     }
   }
+
   function captureFormState() {
     return {
       editingId,
@@ -753,7 +728,6 @@
   }
 
   function currentQuote(){
-    syncPriceFromEditor();
     items = normalizeItems(items);
 
     const normalized = items;
@@ -802,6 +776,30 @@
     return {scope, deliverables};
   }
 
+  function itemTitle(it, index){
+    const firstLine = String(it?.name || '').split('\n').map(x => x.trim()).find(Boolean);
+    return firstLine || `Ítem ${index + 1}`;
+  }
+
+  function previewItemsHTML(list, currency){
+    return (list || []).map((it, idx) => {
+      const parsed = parseService(it.name || '');
+      const deliverables = parsed.deliverables || [];
+      return `
+        <div class="pdf-card">
+          <div class="bar">Servicio profesional · ítem ${idx + 1}</div>
+          <div class="service-body">
+            <h4>${esc(itemTitle(it, idx))}</h4>
+            <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
+            ${deliverables.length ? `<h4 style="margin-top:2mm">Entregables</h4><div class="deliverables">${deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>` : ''}
+            <p style="margin-top:2mm"><b>Cantidad:</b> ${Number(it.qty || 1).toLocaleString('es-CL')} · <b>Valor neto:</b> ${amount(it.total || 0, currency)}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+
   function updateLivePrice() {
     syncPriceFromEditor();
     renderPreview();
@@ -827,21 +825,7 @@
     page.className = 'a4';
 
     const quoteItems = q.items.length ? q.items : [defaultItem()];
-    const servicesHTML = quoteItems.map((it, idx) => {
-      const parsed = parseService(it.name);
-      return `
-        <div class="pdf-card">
-          <div class="bar">Servicio profesional ${idx + 1}</div>
-          <div class="service-body">
-            <h4>Alcance técnico</h4>
-            <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
-            <h4 style="margin-top:2.5mm">Entregables</h4>
-            <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
-            <div class="item-price-line">Valor neto ítem: ${amount(it.total, q.currency)}</div>
-          </div>
-        </div>
-      `;
-    }).join('');
+    const parsed = parseService(quoteItems[0].name);
 
     page.innerHTML = `
       ${headerHTML()}
@@ -870,7 +854,7 @@
         <div class="bar blue">Descripción del servicio</div>
         <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
       </div>
-      ${servicesHTML}
+      ${previewItemsHTML(quoteItems, q.currency)}
       <div class="payment">
         <div class="pdf-card">
           <div class="bar blue">Condiciones y datos de pago</div>
@@ -1114,7 +1098,7 @@
   }
 
   async function saveAndSend(){
-    syncPriceFromEditor();
+    if(editingItemIdx !== null && editingItemIdx >= 0) syncPriceFromEditor();
 
     const q = currentQuote();
     if(!q.client) return alert('Falta seleccionar cliente.');
@@ -1157,17 +1141,17 @@
     page.style.transform = 'scale(1)';
     page.style.transformOrigin = 'top left';
 
-    const available = Math.max(260, box.clientWidth - 24);
     const naturalW = page.offsetWidth || 794;
     const naturalH = page.offsetHeight || 1123;
+    const available = Math.max(260, box.clientWidth - 28);
 
-    previewZoom = Math.min(1, Math.max(0.32, available / naturalW));
+    previewZoom = Math.min(1, Math.max(0.30, available / naturalW));
 
     page.style.transform = `scale(${previewZoom})`;
-    canvas.style.width = `${naturalW * previewZoom}px`;
-    canvas.style.height = `${naturalH * previewZoom}px`;
-    canvas.style.marginLeft = (naturalW * previewZoom) < box.clientWidth ? 'auto' : '0';
-    canvas.style.marginRight = (naturalW * previewZoom) < box.clientWidth ? 'auto' : '0';
+    canvas.style.width = `${Math.ceil(naturalW * previewZoom)}px`;
+    canvas.style.height = `${Math.ceil(naturalH * previewZoom)}px`;
+    canvas.style.marginLeft = previewZoom < 1 ? 'auto' : '0';
+    canvas.style.marginRight = previewZoom < 1 ? 'auto' : '0';
   }
 
   function setupPreviewTouchZoom() {
@@ -1207,8 +1191,8 @@
 
         page.style.transformOrigin = 'top left';
         page.style.transform = `scale(${previewZoom})`;
-        canvas.style.width = `${page.offsetWidth * previewZoom}px`;
-        canvas.style.height = `${page.offsetHeight * previewZoom}px`;
+        canvas.style.width = `${Math.ceil(page.offsetWidth * previewZoom)}px`;
+        canvas.style.height = `${Math.ceil(page.offsetHeight * previewZoom)}px`;
         canvas.style.marginLeft = '0';
         canvas.style.marginRight = '0';
       }
@@ -1384,33 +1368,34 @@
 
       const quoteItems = q.items.length ? q.items : [defaultItem()];
 
-      quoteItems.forEach((it, idx) => {
+      for(const [idx, it] of quoteItems.entries()){
         const parsed = parseService(it.name);
-
-        sectionTitle(`SERVICIO PROFESIONAL ${idx + 1}`);
+        sectionTitle(`SERVICIO PROFESIONAL · ÍTEM ${idx + 1}`);
 
         pdfFont(7.5,'bold',[180,83,9]);
-        pdf.text('ALCANCE TÉCNICO',ML+3,pdfY);
-        pdfY+=4.5;
+        pdf.text(pdfLines(itemTitle(it, idx).toUpperCase(), CW-6), ML+3, pdfY);
+        pdfY += 4.5;
 
         pdfPara(parsed.scope,8.5,4.2);
 
-        pdfFont(7.5,'bold',[180,83,9]);
-        pdf.text('ENTREGABLES',ML+3,pdfY);
-        pdfY+=4.5;
-
-        for(const d of parsed.deliverables){
-          ensureSpace(5);
-          pdfFont(8,'normal',G);
-          pdf.text(`• ${d}`,ML+5,pdfY);
-          pdfY+=4;
+        if(parsed.deliverables && parsed.deliverables.length){
+          ensureSpace(8);
+          pdfFont(7.5,'bold',[180,83,9]);
+          pdf.text('ENTREGABLES', ML+3, pdfY);
+          pdfY += 4.5;
+          for(const d of parsed.deliverables){
+            ensureSpace(5);
+            pdfFont(8,'normal',G);
+            pdf.text(`• ${d}`,ML+5,pdfY);
+            pdfY+=4;
+          }
         }
 
         ensureSpace(7);
-        pdfFont(8,'bold',[22,30,46]);
-        pdf.text(`Valor neto ítem: ${amount(it.total, q.currency)}`, W-MR, pdfY, {align:'right'});
+        pdfFont(8,'bold',G);
+        pdf.text(`Cantidad: ${Number(it.qty || 1).toLocaleString('es-CL')} · Valor neto: ${amount(it.total || 0, q.currency)}`, ML+3, pdfY);
         pdfY += 6;
-      });
+      }
 
       pdfY+=2;
 

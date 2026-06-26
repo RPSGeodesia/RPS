@@ -1174,11 +1174,12 @@
   }
 
   async function saveAndSend(){
-    // Antes de guardar o generar PDF, se sincroniza SIEMPRE el precio visible
-    // con el ítem actual cuando corresponde. Esto evita arrastres de Firebase/historial.
+    // Sincroniza el precio visible antes de guardar.
+    // IMPORTANTE: el PDF NO recibirá el objeto guardado en Firebase, porque ahí puede venir
+    // un valor viejo arrastrado. El PDF se generará desde currentQuote(), igual que el preliminar.
     syncPriceFromEditor();
 
-    const q = currentQuote();
+    const q = forceVisibleSingleItemPrice(currentQuote());
     if(!q.client) return alert('Falta seleccionar cliente.');
 
     let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
@@ -1194,18 +1195,26 @@
         });
       }
 
-      // Se congela una única versión de la cotización ya sincronizada.
-      // Esta misma copia se guarda en Firebase y también se usa para dibujar el PDF.
-      // forceVisibleSingleItemPrice() evita que vuelva a entrar el precio antiguo de Firebase.
-      const freshQuote = forceVisibleSingleItemPrice(currentQuote());
-      const data={...freshQuote, folio:f, ref:freshQuote.ref||('AER-'+f), createdAt:new Date().toISOString()};
+      const data = {
+        ...forceVisibleSingleItemPrice(currentQuote()),
+        folio: f,
+        ref: q.ref || ('AER-' + f),
+        createdAt: new Date().toISOString()
+      };
+
+      // Deja el folio/ref definitivo visible en el formulario antes de crear el PDF.
+      window.currentFolio = f;
+      document.getElementById('q-ref').value = data.ref;
 
       if(window.fb?.db){
         if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
         else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
       }
 
-      await generateAndSharePDF(null, data);
+      // AQUÍ ESTABA EL ERROR: antes se pasaba "data" al PDF, y ese objeto podía arrastrar
+      // el valor viejo. Ahora el PDF se genera sin quoteOverride: usa currentQuote() vivo,
+      // exactamente igual que el preliminar.
+      await generateAndSharePDF();
     } catch(e) {
       console.error(e);
       alert('Error al procesar la transacción.');
@@ -1288,43 +1297,22 @@
     let originalState = null;
 
     try {
-      if(quoteOverride){
-        // IMPORTANTE: cuando se genera desde Guardar y enviar, NO se vuelve a aplicar
-        // la cotización al formulario. El PDF debe usar exactamente la copia congelada
-        // que viene desde saveAndSend(), no datos viejos del historial/Firebase.
-      } else if(historyId){
+      let q;
+
+      if(historyId){
         const h = quoteById(historyId);
         if(!h) return alert('No se encontró la cotización.');
 
         originalState = captureFormState();
         applyQuoteToForm(h, false);
         await new Promise(r=>setTimeout(r,50));
-      }
-
-      let q;
-      if (quoteOverride) {
-        /*
-          CORRECCIÓN DEFINITIVA DEL PRECIO EN PDF:
-          Cuando se viene desde "Guardar y enviar PDF", el PDF NO debe tomar
-          items/neto/iva/total desde quoteOverride ni desde Firebase, porque ahí
-          podía venir arrastrado el valor antiguo (valor antiguo guardado). El preliminar está
-          bien porque lee el formulario vivo; por eso el PDF ahora usa la misma
-          fuente viva: currentQuote(). Solo conserva folio/ref/fecha de creación
-          desde la copia guardada.
-        */
-        const live = makePdfSafeQuote(currentQuote(), true);
-        q = {
-          ...cloneData(quoteOverride),
-          ...live,
-          folio: quoteOverride.folio || live.folio,
-          ref: quoteOverride.ref || live.ref,
-          createdAt: quoteOverride.createdAt || live.createdAt
-        };
-        q = recalcQuoteTotals(q);
-      } else if (historyId) {
-        q = makePdfSafeQuote(quoteById(historyId), false);
+        q = makePdfSafeQuote(h, false);
       } else {
-        q = makePdfSafeQuote(currentQuote(), true);
+        // RUTA NORMAL: Guardar/enviar o descargar la cotización actual.
+        // El PDF usa la misma fuente que el preliminar: el formulario vivo + items actuales.
+        // No usa quoteOverride, no usa Firebase y no usa historial para items/neto/iva/total.
+        syncPriceFromEditor();
+        q = forceVisibleSingleItemPrice(currentQuote());
       }
 
       const c = (window.clientes || []).find(cli => cli.name === q.client) || selectedClient() || {name:q.client};

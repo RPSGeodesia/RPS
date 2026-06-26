@@ -10,100 +10,104 @@
 
   <style>
     :root {
-      --bg:#07111f;
-      --panel:#111c2b;
-      --panel2:#172437;
-      --line:#2d3f55;
-      --blue:#155e9f;
-      --blue2:#0f172a;
-      --cyan:#7dd3fc;
-      --text:#f8fafc;
-      --muted:#94a3b8;
-      --paper:#ffffff;
-      --ink:#0f172a;
+      --bg: #061615;
+      --panel: #0b2422;
+      --panel2: #103330;
+      --line: #1b4d49;
+      --emerald: #10b981;
+      --emerald-dark: #047857;
+      --cyan: #06b6d4;
+      --text: #f0fdfa;
+      --muted: #6ee7b7;
+      --paper: #ffffff;
+      --ink: #0f172a;
     }
 
-    * { box-sizing:border-box; }
-    html, body { width:100%; max-width:100%; overflow-x:hidden; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     body {
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(125,211,252,.16), transparent 34%),
-        linear-gradient(145deg,#07111f,#091827 48%,#041018);
-      color:var(--text);
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: 
+        radial-gradient(circle at 10% 0%, rgba(16, 185, 129, 0.12), transparent 35%),
+        linear-gradient(145deg, #061615, #08211e 50%, #030f0e);
+      color: var(--text);
     }
 
     .topnav {
-      position:sticky; top:0; z-index:20;
-      display:grid; grid-template-columns:1fr 1fr 1fr;
-      background:rgba(5,10,18,.92);
-      border-bottom:1px solid rgba(125,211,252,.22);
-      backdrop-filter:blur(12px);
+      position: sticky; top: 0; z-index: 20;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      background: rgba(4, 15, 14, 0.94);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+      backdrop-filter: blur(12px);
     }
     .topnav button {
-      border:0; background:transparent; color:rgba(248,250,252,.48);
-      font-weight:900; text-transform:uppercase; letter-spacing:.05em;
-      padding:18px 10px; font-size:13px;
-      border-bottom:3px solid transparent;
+      border: 0; background: transparent; color: rgba(240, 253, 250, 0.5);
+      font-weight: 900; text-transform: uppercase; letter-spacing: .05em;
+      padding: 18px 10px; font-size: 13px;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
     }
-    .topnav button.active { color:var(--cyan); border-color:var(--cyan); }
+    .topnav button.active { color: var(--emerald); border-color: var(--emerald); background: rgba(16, 185, 129, 0.05); }
 
-    .tab { display:none; padding:18px; }
-    .tab.active { display:block; }
+    .tab { display: none; padding: 18px; }
+    .tab.active { display: block; }
 
     .layout {
-      width:100%;
-      max-width:1420px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:minmax(340px,430px) minmax(0,1fr);
-      gap:28px;
-      align-items:start;
+      width: 100%;
+      max-width: 1420px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
     }
 
     .card {
-      background:linear-gradient(180deg,rgba(17,28,43,.97),rgba(10,21,34,.97));
-      border:1px solid rgba(125,211,252,.18);
-      border-radius:24px;
-      padding:22px;
-      box-shadow:0 24px 70px rgba(0,0,0,.25);
+      background: linear-gradient(180deg, rgba(11, 36, 34, 0.98), rgba(6, 22, 21, 0.98));
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.4);
     }
-    .stack > * + * { margin-top:16px; }
+    .stack > * + * { margin-top: 16px; }
 
     .input {
-      width:100%; min-width:0;
-      background:#0a1524;
-      border:1px solid rgba(148,163,184,.30);
-      color:#fff;
-      border-radius:16px;
-      padding:15px 16px;
-      font-size:16px;
-      line-height:1.35;
-      outline:none;
+      width: 100%; min-width: 0;
+      background: #041211;
+      border: 1px solid rgba(110, 231, 183, 0.25);
+      color: #fff;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.4;
+      outline: none;
+      transition: all 0.25s ease;
     }
-    textarea.input { min-height:145px; resize:vertical; white-space:pre-wrap; }
-    .input::placeholder { color:rgba(148,163,184,.75); }
+    textarea.input { min-height: 145px; resize: vertical; white-space: pre-wrap; }
+    .input::placeholder { color: rgba(110, 231, 183, 0.4); }
     .input:focus {
-      border-color:var(--cyan);
-      box-shadow:0 0 0 4px rgba(125,211,252,.16);
+      border-color: var(--emerald);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
     }
 
     .btn {
-      width:100%; border:0; border-radius:18px; padding:17px 20px;
-      font-weight:900; text-transform:uppercase; cursor:pointer;
-      background:linear-gradient(135deg,#7dd3fc,#2563eb);
-      color:#06111f;
-      box-shadow:0 18px 44px rgba(37,99,235,.25);
+      width: 100%; border: 0; border-radius: 18px; padding: 17px 20px;
+      font-weight: 900; text-transform: uppercase; cursor: pointer;
+      background: linear-gradient(135deg, #6ee7b7, #059669);
+      color: #030f0e;
+      box-shadow: 0 12px 35px rgba(5, 150, 105, 0.3);
+      transition: all 0.25s ease;
     }
-    .btn.green { background:linear-gradient(135deg,#34d399,#10b981); color:#041018; }
-    .btn.small { padding:12px 14px; border-radius:14px; font-size:12px; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(5, 150, 105, 0.4); }
+    .btn.green { background: linear-gradient(135deg, #34d399, #10b981); color: #020617; }
+    .btn.small { padding: 12px 14px; border-radius: 14px; font-size: 12px; }
 
     .item-row, .list-row {
-      background:rgba(15,23,42,.72);
-      border:1px solid rgba(125,211,252,.14);
-      border-radius:16px;
-      padding:14px;
+      background: rgba(4, 18, 17, 0.7);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      border-radius: 16px;
+      padding: 14px;
     }
 
     #previewBox {
@@ -111,12 +115,11 @@
       height: calc(100vh - 118px);
       min-height: 620px;
       overflow: auto;
-      background: linear-gradient(180deg,rgba(17,28,43,.84),rgba(6,16,28,.84));
-      border: 1px solid rgba(125,211,252,.18);
+      background: linear-gradient(180deg, rgba(11, 36, 34, 0.85), rgba(4, 14, 13, 0.85));
+      border: 1px solid rgba(16, 185, 129, 0.2);
       border-radius: 26px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.30);
-      padding: 12px;
-      display: block;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+      padding: 20px;
     }
 
     #pdf-canvas {
@@ -125,122 +128,101 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 8mm;
     }
 
     .a4 {
       width: 100%;
-      aspect-ratio: 210 / 297;
-      height: auto;
+      height: 297mm;
       background: white;
-      color: var(--ink);
-      padding: 6% 5%;
-      box-shadow: 0 18px 45px rgba(0,0,0,.38);
+      color: #1e293b;
+      padding: 16mm 14mm;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      font-family: Arial, sans-serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       box-sizing: border-box;
     }
 
     .pdf-header {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 4mm;
       align-items: start;
+      border-bottom: 2px solid #10b981;
+      padding-bottom: 4mm;
     }
-    .brand {
-      display:flex; align-items:flex-start; gap:4mm;
-    }
-    .brand img {
-      width:24mm; max-height:15mm; object-fit:contain;
-    }
-    .brand h1 { margin:0; font-size:11pt; line-height:1.05; font-weight: bold; color: #0f172a; }
-    .brand p { margin:1mm 0 0; font-size:7pt; color:#64748b; line-height:1.15; }
+    .brand h1 { margin: 0; font-size: 14pt; font-weight: 800; color: #062221; tracking: -0.02em; }
+    .brand p { margin: 1mm 0 0; font-size: 7.5pt; color: #475569; line-height: 1.3; }
 
-    .quoteBox { text-align:right; }
+    .quoteBox { text-align: right; }
     .quoteTag {
-      display:inline-block; background:#0f172a; color:white;
-      padding:2mm 3mm; border-radius:4px; font-size:6.5pt; font-weight:900;
-      text-transform:uppercase;
+      display: inline-block; background: #047857; color: white;
+      padding: 1.5mm 3mm; border-radius: 4px; font-size: 7pt; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .quoteNum { margin-top:2mm; font-size:14pt; font-weight:900; color: #0f172a; }
-    .quoteDate { font-size:7pt; color:#64748b; }
-
-    .blueLine { border-top:.55mm solid #1f5f9f; margin: 2mm 0; }
+    .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #062221; }
+    .quoteDate { font-size: 7.5pt; color: #64748b; }
 
     .grid2 {
-      display:grid; grid-template-columns: 1fr 1fr; gap:4mm;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 5mm;
     }
     .pdf-card {
-      border:.25mm solid #d5dfea; border-radius:5px; overflow:hidden; background:white;
+      border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: white;
     }
     .bar {
-      background:#0f172a; color:white; font-size:6.5pt; font-weight:900;
-      text-transform:uppercase; padding:2mm 3mm;
+      background: #062221; color: white; font-size: 7pt; font-weight: 800;
+      text-transform: uppercase; padding: 2mm 3mm; letter-spacing: 0.5px;
     }
-    .bar.blue { background:#1f5f9f; }
-    .pdf-card-body { padding:2.5mm; font-size:7.5pt; line-height:1.25; color: #334155; }
-    .pdf-card-body h3 { margin:0 0 1.5mm; font-size:8pt; font-weight: bold; color: #0f172a; }
-    .pdf-card-body p { margin:0 0 1mm; }
+    .bar.blue { background: #10b981; color: #062221; }
+    .pdf-card-body { padding: 3mm; font-size: 8pt; line-height: 1.35; color: #334155; }
+    .pdf-card-body h3 { margin: 0 0 1.5mm; font-size: 8.5pt; font-weight: 800; color: #062221; }
+    .pdf-card-body p { margin: 0 0 1mm; }
 
-    .desc p, .service-body p {
-      font-size:8.5pt; line-height:1.25; margin:2mm 3mm;
-      white-space: pre-wrap; color: #334155;
-    }
-
-    .service-body { padding:2.5mm; }
-    .service-body h4 {
-      margin:0 0 1.5mm; color:#1f5f9f; font-size:7.5pt; text-transform:uppercase; font-weight: bold;
-    }
+    .desc, .service-body { padding: 3mm; font-size: 8.5pt; line-height: 1.4; color: #334155; }
+    .desc p { white-space: pre-wrap; }
+    .service-body h4 { margin: 0 0 1.5mm; color: #047857; font-size: 8pt; font-weight: 800; text-transform: uppercase; }
+    .service-body p { white-space: pre-wrap; margin: 0; }
+    
     .deliverables {
-      display:grid; grid-template-columns:1fr 1fr; gap:1mm 4mm;
-      font-size:8pt; line-height:1.15; color: #334155;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 4mm;
+      font-size: 8pt; color: #334155; margin-top: 1mm;
     }
 
     .payment {
-      display:grid; grid-template-columns: 1.2fr 1fr; gap:4mm;
+      display: grid; grid-template-columns: 1.2fr 1fr; gap: 5mm; margin-top: 4mm;
     }
     .paymentCols {
-      display:grid; grid-template-columns:1fr 1fr; gap:3mm; padding:2mm;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; padding: 1mm;
     }
-    .paymentCols h4 {
-      margin:0 0 1.2mm; font-size:6.5pt; color:#1f5f9f; text-transform:uppercase; font-weight: bold;
-    }
-    .paymentCols p { margin:0 0 .8mm; font-size:7pt; line-height:1.15; color: #334155; }
+    .paymentCols h4 { margin: 0 0 1.2mm; font-size: 7pt; color: #047857; font-weight: 800; text-transform: uppercase; }
+    .paymentCols p { margin: 0 0 0.8mm; font-size: 7.5pt; line-height: 1.25; color: #475569; }
 
     .economic {
-      border:.3mm solid #bfd0df; border-radius:6px; background:#f8fbfd; overflow:hidden;
+      border: 1px solid #a7f3d0; border-radius: 6px; background: #f0fdf4; overflow: hidden;
     }
     .economic .head {
-      background:#0f172a; color:white; padding:2mm 3mm; font-size:6.5pt; font-weight:900; text-transform:uppercase;
+      background: #062221; color: white; padding: 2mm 3mm; font-size: 7pt; font-weight: 800; text-transform: uppercase;
     }
     .econRow {
-      display:flex; justify-content:space-between; gap:3mm;
-      padding:1.5mm 3mm 0; font-size:7.5pt; color:#64748b;
+      display: flex; justify-content: space-between; gap: 3mm;
+      padding: 2mm 3mm 0; font-size: 8pt; color: #475569;
     }
-    .econRow strong { color:#0f172a; }
-    .economic hr { border:0; border-top:.25mm solid #d5dfea; margin:1.5mm 3mm 1mm; }
-    .grand span { color:#0f172a; font-weight:900; text-transform:uppercase; }
-    .grand strong { font-size:12pt; color:#1f5f9f; font-weight: bold; }
+    .econRow strong { color: #062221; }
+    .economic hr { border: 0; border-top: 1px solid #cbd5e1; margin: 2mm 3mm 1.5mm; }
+    .grand span { color: #062221; font-weight: 800; text-transform: uppercase; }
+    .grand strong { font-size: 13pt; color: #047857; font-weight: 800; }
 
     .signature {
-      text-align:center; font-size:7pt; color: #334155; margin-top: 2mm;
+      text-align: center; font-size: 7.5pt; color: #334155; margin-top: 4mm;
     }
-    .sigLine { width:45mm; margin:4mm auto 1mm; border-top:.25mm solid #0f172a; }
+    .sigLine { width: 45mm; margin: 5mm auto 1mm; border-top: 1px solid #062221; }
+    
     .footer {
-      border-top:.3mm solid #1f5f9f; padding-top:1.5mm;
-      text-align:center; color:#64748b; font-size:5.5pt; margin-top: auto;
+      border-top: 1px solid #10b981; padding-top: 2mm; margin-top: auto;
+      text-align: center; color: #64748b; font-size: 6pt;
     }
 
-    @media (max-width:1023px) {
-      .layout { display:block; }
-      #previewBox { margin-top:18px; height:72vh; min-height:520px; }
-      .tab { padding:12px; }
-      .card { padding:18px; border-radius:22px; }
-    }
-  
-    .list-row button{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:10px;padding:7px 9px;font-weight:800;}
+    .list-row button { background: #143e3b; color: #a7f3d0; border: 1px solid #1b4d49; border-radius: 10px; padding: 7px 9px; font-weight: 800; }
   </style>
 </head>
 
@@ -286,7 +268,7 @@
         <div class="card stack">
           <div class="grid grid-cols-2 gap-3">
             <input id="q-validity" class="input" value="15 días" oninput="renderPreview()">
-            <input id="q-delivery" class="input" value="Según coordination" oninput="renderPreview()">
+            <input id="q-delivery" class="input" value="Según coordinación" oninput="renderPreview()">
           </div>
           <textarea id="q-conditions" class="input" oninput="renderPreview()">50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.</textarea>
           <textarea id="q-notes" class="input" placeholder="Observaciones adicionales" oninput="renderPreview()"></textarea>
@@ -318,7 +300,7 @@
         <input id="c-email" class="input" placeholder="Email">
         <input id="c-address" class="input" placeholder="Dirección">
         <button class="btn" onclick="saveClient()">Guardar cliente</button>
-        <button class="btn small" style="background:#334155;color:white" onclick="clearClientForm()">Cancelar edición</button>
+        <button class="btn small" style="background:#1b4d49;color:white" onclick="clearClientForm()">Cancelar edición</button>
       </div>
       <div id="clients-list" class="stack"></div>
     </div>
@@ -361,8 +343,6 @@
 </script>
 
 <script>
-  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
     legalName:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.',
@@ -520,7 +500,6 @@ Entregables:
       return `
         <header class="pdf-header">
           <div class="brand">
-            <img src="${RPS_LOGO_DATA}">
             <div>
               <h1>${COMPANY.name}</h1>
               <p>Servicios topográficos y geodésicos</p>
@@ -532,8 +511,7 @@ Entregables:
             <div class="quoteNum">N° ${esc(quoteCode(q))}</div>
             <div class="quoteDate">Fecha: ${fmtDate(q.date)}</div>
           </div>
-        </header>
-        <div class="blueLine"></div>`;
+        </header>`;
     }
 
     function footerHTML(){
@@ -631,7 +609,7 @@ Entregables:
     const box = document.getElementById('items-list');
     box.innerHTML = items.map((it,i)=>`<div class="item-row flex justify-between gap-3 items-center">
       <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
-      <small class="text-cyan-300 font-bold">${amount(it.total,currentQuote().currency)}</small>
+      <small class="text-emerald-300 font-bold">${amount(it.total,currentQuote().currency)}</small>
       <div class="flex gap-2">
          <button onclick="editItem(${i})">✏️</button>
          <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; renderPreview();">✕</button>
@@ -837,191 +815,185 @@ Entregables:
   
   document.getElementById('i-price').addEventListener('input', renderPreview);
   document.getElementById('i-qty').addEventListener('input', renderPreview);
-</script>
 
-<script>
-async function generateAndSharePDF(historyId=null, quoteOverride=null){
-  const JsPDF = window.jspdf?.jsPDF;
-  if(!JsPDF) return alert('No se cargó jsPDF.');
+  // MÓDULO JS-PDF SIN ENLACES ROTOS NI ERRORES DE LLAVES
+  async function generateAndSharePDF(historyId=null, quoteOverride=null){
+    const JsPDF = window.jspdf?.jsPDF;
+    if(!JsPDF) return alert('No se cargó jsPDF.');
 
-  let originalState = null;
+    let originalState = null;
 
-  if(quoteOverride){
-    originalState = captureFormState();
-    applyQuoteToForm(quoteOverride, false);
-    renderPreview();
-    await new Promise(r=>setTimeout(r,80));
-  }else if(historyId){
-    const h = quoteById(historyId);
-    if(!h) return alert('No se encontró la cotización.');
-    originalState = captureFormState();
-    applyQuoteToForm(h, false);
-    renderPreview();
-    await new Promise(r=>setTimeout(r,80));
-  }else{
-    renderPreview();
-    await new Promise(r=>setTimeout(r,50));
-  }
+    if(quoteOverride){
+      originalState = captureFormState();
+      applyQuoteToForm(quoteOverride, false);
+      renderPreview();
+      await new Promise(r=>setTimeout(r,80));
+    }else if(historyId){
+      const h = quoteById(historyId);
+      if(!h) return alert('No se encontró la cotización.');
+      originalState = captureFormState();
+      applyQuoteToForm(h, false);
+      renderPreview();
+      await new Promise(r=>setTimeout(r,80));
+    }else{
+      renderPreview();
+      await new Promise(r=>setTimeout(r,50));
+    }
 
-  const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
-  const c = selectedClient();
+    const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
+    const c = selectedClient();
 
-  const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
+    const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
 
-  const W=210, H=297, ML=12, MR=12, MT=15, MB=15, CW=W-ML-MR;
-  const G=[15,23,42], B=[31,95,159], S=[100,116,139], L=[213,223,234];
-  let y=MT;
+    const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
+    const G=[30,41,59], B=[16,185,129], S=[100,116,139], L=[203,213,225];
+    let y=MT;
 
-  function font(size, style='normal', color=G){
-    pdf.setFont('helvetica', style);
-    pdf.setFontSize(size);
-    pdf.setTextColor(...color);
-  }
+    function font(size, style='normal', color=G){
+      pdf.setFont('helvetica', style);
+      pdf.setFontSize(size);
+      pdf.setTextColor(...color);
+    }
 
-  function lines(text, w){ return pdf.splitTextToSize(String(text ?? ''), w); }
+    function lines(text, w){ return pdf.splitTextToSize(String(text ?? ''), w); }
 
-  function foot(){
-    pdf.setDrawColor(...B); pdf.setLineWidth(.3);
-    pdf.line(ML,H-9,W-MR,H-9);
-    font(5.4,'normal',S);
-    pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW});
-  }
+    function foot(){
+      pdf.setDrawColor(...B); pdf.setLineWidth(.3);
+      pdf.line(ML,H-9,W-MR,H-9);
+      font(6,'normal',S);
+      pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW});
+    }
 
-  function head(){
-    y=MT;
-    try{
-      if(typeof RPS_LOGO_DATA==='string' && RPS_LOGO_DATA.startsWith('data:image')){
-        pdf.addImage(RPS_LOGO_DATA,'PNG',ML,y,38,22,undefined,'FAST');
+    function head(){
+      y=MT;
+      font(14,'bold',[6,34,33]); pdf.text(COMPANY.name,ML,y+5);
+      font(7.5,'normal',S);
+      pdf.text('Servicios topográficos y geodésicos',ML,y+10);
+      pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML,y+14);
+
+      pdf.setFillColor(4,120,87);
+      pdf.roundedRect(W-MR-48,y,48,10,1,1,'F');
+      font(7,'bold',[255,255,255]);
+      pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+6.5,{align:'center'});
+      font(15,'bold',[6,34,33]); pdf.text(`N° ${quoteCode(q)}`,W-MR,y+21,{align:'right'});
+      font(7.5,'normal',S); pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+26,{align:'right'});
+      y+=32; pdf.setDrawColor(...B); pdf.setLineWidth(.6); pdf.line(ML,y,W-MR,y); y+=6;
+    }
+
+    function para(text, size=8.5, lh=4.2){
+      const arr=lines(text,CW-6);
+      for(const ln of arr){
+        font(size,'normal',G);
+        pdf.text(ln,ML+3,y);
+        y+=lh;
       }
-    }catch(e){}
-    font(12,'bold',G); pdf.text(COMPANY.name,ML+45,y+7);
-    font(7,'normal',S);
-    pdf.text('Servicios topográficos y geodésicos',ML+45,y+12);
-    pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML+45,y+16);
-
-    pdf.setFillColor(15,23,42);
-    pdf.roundedRect(W-MR-48,y,48,11,1.5,1.5,'F');
-    font(6.5,'bold',[255,255,255]);
-    pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+7,{align:'center'});
-    font(15,'bold',G); pdf.text(`N° ${quoteCode(q)}`,W-MR,y+23,{align:'right'});
-    font(7,'normal',S); pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+28,{align:'right'});
-    y+=36; pdf.setDrawColor(...B); pdf.setLineWidth(.7); pdf.line(ML,y,W-MR,y); y+=6;
-  }
-
-  function para(text, size=8.6, lh=4.0){
-    const arr=lines(text,CW-8);
-    for(const ln of arr){
-      font(size='normal',G);
-      pdf.text(ln,ML+4,y);
-      y+=lh;
+      y+=2;
     }
-    y+=3;
-  }
 
-  function info(){
-    const h=34, leftW=78, gap=5, rx=ML+leftW+gap, rw=CW-leftW-gap;
-    pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
-    pdf.roundedRect(ML,y,leftW,h,1.5,1.5,'FD');
-    pdf.roundedRect(rx,y,rw,h,1.5,1.5,'FD');
-    pdf.setFillColor(15,23,42); pdf.roundedRect(ML,y,leftW,7,1.5,1.5,'F');
-    pdf.setFillColor(...B); pdf.roundedRect(rx,y,rw,7,1.5,1.5,'F');
-    font(6.6,'bold',[255,255,255]);
-    pdf.text('EN ATENCIÓN A',ML+3,y+4.8);
-    pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.8);
-    font(7.5,'bold',G); pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+13);
-    font(6.8,'normal',S);
-    pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+21);
-    pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+26);
-    pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+32);
+    function info(){
+      const h=34, leftW=88, gap=6, rx=ML+leftW+gap, rw=CW-leftW-gap;
+      pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
+      pdf.roundedRect(ML,y,leftW,h,1,1,'FD');
+      pdf.roundedRect(rx,y,rw,h,1,1,'FD');
+      pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,leftW,6,1,1,'F');
+      pdf.setFillColor(...B); pdf.roundedRect(rx,y,rw,6,1,1,'F');
+      font(6.5,'bold',[255,255,255]);
+      pdf.text('EN ATENCIÓN A',ML+3,y+4.2);
+      pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.2);
+      font(8,'bold',[6,34,33]); pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+12);
+      font(7.5,'normal',G);
+      pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+19);
+      pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+24);
+      pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+30);
 
-    let yy=y+13;
-    function row(label,val){
-      font(6.6,'bold',S); pdf.text(label,rx+3,yy);
-      font(6.8,'normal',G); pdf.text(lines(val||'—',rw-30),rx+27,yy);
-      yy+=4.8;
+      let yy=y+12;
+      function row(label,val){
+        font(7,'bold',S); pdf.text(label,rx+3,yy);
+        font(7.5,'normal',G); pdf.text(lines(val||'—',rw-24),rx+24,yy);
+        yy+=4.5;
+      }
+      row('Proyecto:',q.project||'Servicio técnico');
+      row('Ubicación:',q.location||'Por definir');
+      row('Validez:',q.validity||'15 días');
+      row('Entrega:',q.delivery||'Según coordinación');
+      row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
+      y+=h+6;
     }
-    row('Proyecto:',q.project||'Servicio técnico');
-    row('Ubicación:',q.location||'Por definir');
-    row('Validez:',q.validity||'15 días');
-    row('Entrega:',q.delivery||'Según coordinación');
-    row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
-    y+=h+6;
-  }
 
-  function payment(){
-    const top=y,h=43,gap=6,totalW=68,infoW=CW-totalW-gap;
-    pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
-    pdf.roundedRect(ML,top,infoW,h,1.5,1.5,'FD');
-    pdf.setFillColor(241,247,251); pdf.roundedRect(ML,top,infoW,7,1.5,1.5,'F');
-    font(6.6,'bold',[15,23,42]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+4,top+5);
-    const colW=(infoW-10)/2, x2=ML+6+colW+4;
-    font(6.5,'bold',B); pdf.text('Condiciones comerciales',ML+4,top+14);
-    font(6.4,'normal',G); pdf.text(lines(q.conditions||'',colW),ML+4,top+19);
-    font(6.5,'bold',B); pdf.text('Transferencia bancaria',x2,top+14);
-    font(6.2,'normal',S);
-    pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+19);
+    function payment(){
+      const top=y,h=42,gap=6,totalW=68,infoW=CW-totalW-gap;
+      pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
+      pdf.roundedRect(ML,top,infoW,h,1,1,'FD');
+      pdf.setFillColor(240,253,244); pdf.roundedRect(ML,top,infoW,6,1,1,'F');
+      font(6.5,'bold',[6,34,33]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2);
+      const colW=(infoW-8)/2, x2=ML+4+colW+2;
+      font(7,'bold',[4,120,87]); pdf.text('Condiciones comerciales',ML+3,top+13);
+      font(7.5,'normal',G); pdf.text(lines(q.conditions||'',colW),ML+3,top+18);
+      font(7,'bold',[4,120,87]); pdf.text('Transferencia bancaria',x2,top+13);
+      font(7,'normal',G);
+      pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
 
-    const tx=ML+infoW+gap;
-    pdf.setDrawColor(191,208,223); pdf.setFillColor(248,250,252);
-    pdf.roundedRect(tx,top,totalW,h,1.8,1.8,'FD');
-    pdf.setFillColor(15,23,42); pdf.roundedRect(tx,top,totalW,8,1.8,1.8,'F');
-    font(6.6,'bold',[255,255,255]); pdf.text('RESUMEN ECONÓMICO',tx+4,top+5.5);
-    let yy=top+16;
-    function r(label,val,total=false){
-      font(total?8:7.2,total?'bold':'normal',total?B:S);
-      pdf.text(label,tx+4,yy);
-      font(total?10.5:7.6,total?'bold':'normal',total?B:G);
-      pdf.text(amount(val,q.currency),tx+totalW-4,yy,{align:'right'});
-      yy+=total?8:6;
+      const tx=ML+infoW+gap;
+      pdf.setDrawColor(167,243,208); pdf.setFillColor(240,25df,244);
+      pdf.roundedRect(tx,top,totalW,h,1,1,'FD');
+      pdf.setFillColor(6,34,33); pdf.roundedRect(tx,top,totalW,6,1,1,'F');
+      font(6.5,'bold',[255,255,255]); pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);
+      let yy=top+14;
+      function r(label,val,total=false){
+        font(total?8:7.5,total?'bold':'normal',total?[4,120,87]:S);
+        pdf.text(label,tx+3,yy);
+        font(total?11:8,total?'bold':'normal',total?[4,120,87]:G);
+        pdf.text(amount(val,q.currency),tx+totalW-3,yy,{align:'right'});
+        yy+=total?7:5.5;
+      }
+      r('Valor neto',q.neto); r('IVA 19%',q.iva);
+      pdf.setDrawColor(...L); pdf.line(tx+3,yy-2,tx+totalW-3,yy-2);
+      r('TOTAL SERVICIO',q.total,true);
+      y=top+h+6;
     }
-    r('Valor neto',q.neto); r('IVA 19%',q.iva);
-    pdf.setDrawColor(...L); pdf.line(tx+4,yy-2,tx+totalW-4,yy-2);
-    r('TOTAL SERVICIO',q.total,true);
-    y=top+h+8;
+
+    head();
+    info();
+    
+    pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,CW,6,1,1,'F');
+    font(6.5,'bold',[255,255,255]); pdf.text('DESCRIPCIÓN DEL SERVICIO',ML+3,y+4.2); y+=8;
+    para(q.serviceDesc||DEFAULT_SERVICE_DESC,8.5,4.2); y+=2;
+
+    const quoteItems = q.items.length ? q.items : [defaultItem()];
+    const parsed = parseService(quoteItems[0].name);
+
+    pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,CW,6,1,1,'F');
+    font(6.5,'bold',[255,255,255]); pdf.text('SERVICIO PROFESIONAL',ML+3,y+4.2); y+=8;
+    font(7.5,'bold',[4,120,87]); pdf.text('ALCANCE TÉCNICO',ML+3,y); y+=4.5;
+    para(parsed.scope,8.5,4.2); y+=2;
+
+    pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,CW,6,1,1,'F');
+    font(6.5,'bold',[255,255,255]); pdf.text('SERVICIO PROFESIONAL · ENTREGABLES',ML+3,y+4.2); y+=8;
+    font(8,'normal',G);
+    for(const d of parsed.deliverables){ pdf.text(`• ${d}`,ML+5,y); y+=4; }
+    y+=4;
+
+    payment();
+    
+    font(7.5,'normal',G); pdf.text('Atentamente,',W/2,y,{align:'center'}); y+=6;
+    pdf.setDrawColor([6,34,33]); pdf.line(W/2-25,y,W/2+25,y); y+=4;
+    font(8,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.5;
+    font(6.5,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
+
+    foot();
+    
+    pdf.save(`COT_${quoteCode(q)}.pdf`);
+
+    if(originalState){
+      restoreFormState(originalState);
+      renderPreview();
+    }
   }
 
-  head();
-  info();
-  
-  pdf.setFillColor(31,95,159); pdf.roundedRect(ML,y,CW,7,1.2,1.2,'F');
-  font(6.8,'bold',[255,255,255]); pdf.text('DESCRIPCIÓN DEL SERVICIO',ML+3,y+4.8); y+=9;
-  para(q.serviceDesc||DEFAULT_SERVICE_DESC,8.6,3.9); y+=3;
-
-  const quoteItems = q.items.length ? q.items : [defaultItem()];
-  const parsed = parseService(quoteItems[0].name);
-
-  pdf.setFillColor(15,23,42); pdf.roundedRect(ML,y,CW,7,1.2,1.2,'F');
-  font(6.8,'bold',[255,255,255]); pdf.text('SERVICIO PROFESIONAL',ML+3,y+4.8); y+=9;
-  font(7,'bold',B); pdf.text('ALCANCE TÉCNICO',ML+4,y); y+=5;
-  para(parsed.scope,8.4,3.9); y+=3;
-
-  pdf.setFillColor(15,23,42); pdf.roundedRect(ML,y,CW,7,1.2,1.2,'F');
-  font(6.8,'bold',[255,255,255]); pdf.text('SERVICIO PROFESIONAL · ENTREGABLES',ML+3,y+4.8); y+=9;
-  font(8.1,'normal',G);
-  for(const d of parsed.deliverables){ pdf.text(`• ${d}`,ML+6,y); y+=4.2; }
-  y+=4;
-
-  payment();
-  
-  font(6.8,'normal',G); pdf.text('Atentamente,',W/2,y,{align:'center'}); y+=6;
-  pdf.setDrawColor(...G); pdf.line(W/2-25,y,W/2+27,y); y+=4;
-  font(7.2,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.5;
-  font(6,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
-
-  foot();
-  
-  pdf.save(`COT_${quoteCode(q)}.pdf`);
-
-  if(originalState){
-    restoreFormState(originalState);
+  window.onload = function() {
+    updateClientsUI();
     renderPreview();
-  }
-}
-
-window.onload = function() {
-  updateClientsUI();
-  renderPreview();
-};
+  };
 </script>
 </body>
 </html>

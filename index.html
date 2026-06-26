@@ -1,235 +1,123 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover">
-  <title>RPS Topografía & Geodesia | Cotizador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>RPS Topografía & Geodesia | Professional Suite</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root {
-      --bg: #061615;
-      --panel: #0b2422;
-      --panel2: #103330;
-      --line: #1b4d49;
-      --emerald: #10b981;
-      --emerald-dark: #047857;
-      --cyan: #06b6d4;
-      --text: #f0fdfa;
-      --muted: #6ee7b7;
-      --paper: #ffffff;
-      --ink: #0f172a;
+      --bg: #0a0f1a;
+      --panel: #161e2e;
+      --panel2: #1f2937;
+      --accent: #f59e0b; /* Amber Gold */
+      --accent-dark: #b45309;
+      --text: #f9fafb;
+      --muted: #94a3b8;
+      --border: rgba(245, 158, 11, 0.3);
     }
 
-    * { box-sizing: border-box; }
-    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; height: 100%; overflow-x: hidden; background: var(--bg); color: var(--text); }
+    
     body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: 
-        radial-gradient(circle at 10% 0%, rgba(16, 185, 129, 0.12), transparent 35%),
-        linear-gradient(145deg, #061615, #08211e 50%, #030f0e);
-      color: var(--text);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-image: 
+        radial-gradient(circle at 0% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(30, 58, 138, 0.1) 0%, transparent 40%);
     }
 
+    /* Navegación Premium */
     .topnav {
-      position: sticky; top: 0; z-index: 20;
+      position: sticky; top: 0; z-index: 50;
       display: grid; grid-template-columns: 1fr 1fr 1fr;
-      background: rgba(4, 15, 14, 0.94);
-      border-bottom: 1px solid rgba(16, 185, 129, 0.25);
-      backdrop-filter: blur(12px);
+      background: rgba(10, 15, 26, 0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(15px);
     }
     .topnav button {
-      border: 0; background: transparent; color: rgba(240, 253, 250, 0.5);
-      font-weight: 900; text-transform: uppercase; letter-spacing: .05em;
-      padding: 18px 10px; font-size: 13px;
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s ease;
+      padding: 20px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); transition: all 0.4s;
     }
-    .topnav button.active { color: var(--emerald); border-color: var(--emerald); background: rgba(16, 185, 129, 0.05); }
+    .topnav button.active { color: var(--accent); background: rgba(245, 158, 11, 0.05); }
 
-    .tab { display: none; padding: 18px; }
+    .tab { display: none; padding: 20px; animation: fadeIn 0.5s ease forwards; }
     .tab.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .layout {
-      width: 100%;
-      max-width: 1420px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
-      gap: 28px;
-      align-items: start;
+      display: grid; grid-template-columns: 420px 1fr; gap: 30px;
+      max-width: 1600px; margin: 0 auto; align-items: start;
     }
 
+    /* Cards y UI */
     .card {
-      background: linear-gradient(180deg, rgba(11, 36, 34, 0.98), rgba(6, 22, 21, 0.98));
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: 0 24px 70px rgba(0,0,0,0.4);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
-    .stack > * + * { margin-top: 16px; }
+    .stack > * + * { margin-top: 18px; }
 
     .input {
-      width: 100%; min-width: 0;
-      background: #041211;
-      border: 1px solid rgba(110, 231, 183, 0.25);
-      color: #fff;
-      border-radius: 16px;
-      padding: 15px 16px;
-      font-size: 16px;
-      line-height: 1.4;
-      outline: none;
-      transition: all 0.25s ease;
+      width: 100%; background: #0d111c; border: 1px solid rgba(148, 163, 184, 0.2);
+      color: #fff; border-radius: 12px; padding: 14px 16px; font-size: 15px; outline: none;
+      transition: all 0.3s;
     }
-    textarea.input { min-height: 145px; resize: vertical; white-space: pre-wrap; }
-    .input::placeholder { color: rgba(110, 231, 183, 0.4); }
-    .input:focus {
-      border-color: var(--emerald);
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
-    }
+    .input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15); }
+    textarea.input { min-height: 120px; }
 
     .btn {
-      width: 100%; border: 0; border-radius: 18px; padding: 17px 20px;
-      font-weight: 900; text-transform: uppercase; cursor: pointer;
-      background: linear-gradient(135deg, #6ee7b7, #059669);
-      color: #030f0e;
-      box-shadow: 0 12px 35px rgba(5, 150, 105, 0.3);
-      transition: all 0.25s ease;
+      width: 100%; border-radius: 14px; padding: 16px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;
+      background: linear-gradient(135deg, var(--accent), #d97706); color: #000;
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25);
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(5, 150, 105, 0.4); }
-    .btn.green { background: linear-gradient(135deg, #34d399, #10b981); color: #020617; }
-    .btn.small { padding: 12px 14px; border-radius: 14px; font-size: 12px; }
+    .btn:active { transform: scale(0.98); }
+    .btn.green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2); }
 
-    .item-row, .list-row {
-      background: rgba(4, 18, 17, 0.7);
-      border: 1px solid rgba(16, 185, 129, 0.15);
-      border-radius: 16px;
-      padding: 14px;
-    }
-
+    /* PRELIMINAR - ZOOM NATIVO */
     #previewBox {
-      width: 100%;
-      height: calc(100vh - 118px);
-      min-height: 620px;
-      overflow: auto;
-      background: linear-gradient(180deg, rgba(11, 36, 34, 0.85), rgba(4, 14, 13, 0.85));
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: 26px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.4);
-      padding: 20px;
+      width: 100%; height: calc(100vh - 120px);
+      background: #111827; border-radius: 24px;
+      border: 1px solid var(--border);
+      overflow: auto; /* IMPORTANTE: Permite zoom nativo con dedos */
+      display: flex; justify-content: center; padding: 40px 20px;
     }
 
     #pdf-canvas {
-      width: 100%;
-      max-width: 210mm;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
+      width: 100%; max-width: 800px; /* Tamaño base para preview */
+      display: flex; flex-direction: column;
     }
 
     .a4 {
-      width: 100%;
-      height: 297mm;
-      background: white;
-      color: #1e293b;
-      padding: 16mm 14mm;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      box-sizing: border-box;
+      width: 100%; aspect-ratio: 210/297; background: white; color: #1f2937;
+      padding: 12mm; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      display: flex; flex-direction: column; box-sizing: border-box;
+      font-size: 10pt; line-height: 1.4;
     }
 
-    .pdf-header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: start;
-      border-bottom: 2px solid #10b981;
-      padding-bottom: 4mm;
-    }
-    .brand h1 { margin: 0; font-size: 14pt; font-weight: 800; color: #062221; tracking: -0.02em; }
-    .brand p { margin: 1mm 0 0; font-size: 7.5pt; color: #475569; line-height: 1.3; }
+    /* Estilos PDF Internos */
+    .pdf-h { border-bottom: 2px solid #f59e0b; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+    .pdf-body-card { border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+    .pdf-bar { background: #1f2937; color: white; padding: 6px 12px; font-size: 8pt; font-weight: bold; text-transform: uppercase; }
+    .pdf-bar.gold { background: #f59e0b; color: #000; }
+    .pdf-content { padding: 10px 12px; }
 
-    .quoteBox { text-align: right; }
-    .quoteTag {
-      display: inline-block; background: #047857; color: white;
-      padding: 1.5mm 3mm; border-radius: 4px; font-size: 7pt; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.5px;
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      #previewBox { height: 60vh; }
     }
-    .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #062221; }
-    .quoteTag + .quoteNum { margin-top: 2mm; }
-    .quoteDate { font-size: 7.5pt; color: #64748b; }
-
-    .grid2 {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 5mm;
-    }
-    .pdf-card {
-      border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: white;
-    }
-    .bar {
-      background: #062221; color: white; font-size: 7pt; font-weight: 800;
-      text-transform: uppercase; padding: 2mm 3mm; letter-spacing: 0.5px;
-    }
-    .bar.blue { background: #10b981; color: #062221; }
-    .pdf-card-body { padding: 3mm; font-size: 8pt; line-height: 1.35; color: #334155; }
-    .pdf-card-body h3 { margin: 0 0 1.5mm; font-size: 8.5pt; font-weight: 800; color: #062221; }
-    .pdf-card-body p { margin: 0 0 1mm; }
-
-    .desc, .service-body { padding: 3mm; font-size: 8.5pt; line-height: 1.4; color: #334155; }
-    .desc p { white-space: pre-wrap; }
-    .service-body h4 { margin: 0 0 1.5mm; color: #047857; font-size: 8pt; font-weight: 800; text-transform: uppercase; }
-    .service-body p { white-space: pre-wrap; margin: 0; }
-    
-    .deliverables {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 4mm;
-      font-size: 8pt; color: #334155; margin-top: 1mm;
-    }
-
-    .payment {
-      display: grid; grid-template-columns: 1.2fr 1fr; gap: 5mm; margin-top: 4mm;
-    }
-    .paymentCols {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; padding: 1mm;
-    }
-    .paymentCols h4 { margin: 0 0 1.2mm; font-size: 7pt; color: #047857; font-weight: 800; text-transform: uppercase; }
-    .paymentCols p { margin: 0 0 0.8mm; font-size: 7.5pt; line-height: 1.25; color: #475569; }
-
-    .economic {
-      border: 1px solid #a7f3d0; border-radius: 6px; background: #f0fdf4; overflow: hidden;
-    }
-    .economic .head {
-      background: #062221; color: white; padding: 2mm 3mm; font-size: 7pt; font-weight: 800; text-transform: uppercase;
-    }
-    .econRow {
-      display: flex; justify-content: space-between; gap: 3mm;
-      padding: 2mm 3mm 0; font-size: 8pt; color: #475569;
-    }
-    .econRow strong { color: #062221; }
-    .economic hr { border: 0; border-top: 1px solid #cbd5e1; margin: 2mm 3mm 1.5mm; }
-    .grand span { color: #062221; font-weight: 800; text-transform: uppercase; }
-    .grand strong { font-size: 13pt; color: #047857; font-weight: 800; }
-
-    .signature {
-      text-align: center; font-size: 7.5pt; color: #334155; margin-top: 4mm;
-    }
-    .sigLine { width: 45mm; margin: 5mm auto 1mm; border-top: 1px solid #062221; }
-    
-    .footer {
-      border-top: 1px solid #10b981; padding-top: 2mm; margin-top: auto;
-      text-align: center; color: #64748b; font-size: 6pt;
-    }
-
-    .list-row button { background: #143e3b; color: #a7f3d0; border: 1px solid #1b4d49; border-radius: 10px; padding: 7px 9px; font-weight: 800; }
   </style>
 </head>
-
 <body>
+
   <nav class="topnav">
-    <button id="tab-edit-btn" class="active" onclick="navTo('edit')">Cotizador técnico</button>
+    <button id="tab-edit-btn" class="active" onclick="navTo('edit')">Cotizador</button>
     <button id="tab-hist-btn" onclick="navTo('hist')">Historial</button>
     <button id="tab-clients-btn" onclick="navTo('clients')">Clientes</button>
   </nav>
@@ -240,42 +128,28 @@
         <div class="card stack">
           <div class="grid grid-cols-2 gap-3">
             <input id="q-date" type="date" class="input" oninput="renderPreview()">
-            <input id="q-ref" type="text" class="input" placeholder="AER-1000" oninput="renderPreview()">
+            <input id="q-ref" type="text" class="input" placeholder="Referencia" oninput="renderPreview()">
           </div>
-          <select id="q-currency" class="input" onchange="renderPreview()">
-            <option value="CLP">Pesos chilenos (CLP)</option>
-            <option value="UF">Unidad de Fomento (UF)</option>
-          </select>
           <select id="q-client" class="input" onchange="handleClientSelect()">
-            <option value="">Seleccionar cliente</option>
-            <option value="NEW">➕ Nuevo cliente</option>
+            <option value="">Seleccionar Cliente</option>
+            <option value="NEW">➕ Nuevo Cliente</option>
           </select>
-          <input id="q-project" class="input" placeholder="Proyecto / referencia del servicio" oninput="renderPreview()">
-          <input id="q-location" class="input" placeholder="Ubicación / comuna del proyecto" oninput="renderPreview()">
-          <textarea id="q-desc" class="input" oninput="renderPreview()"></textarea>
+          <input id="q-project" class="input" placeholder="Nombre del Proyecto" oninput="renderPreview()">
+          <textarea id="q-desc" class="input" placeholder="Descripción General" oninput="renderPreview()"></textarea>
         </div>
 
         <div class="card stack">
-          <textarea id="i-name" class="input" placeholder="Detalle técnico del servicio"></textarea>
-          <div class="grid grid-cols-[80px_1fr] gap-3">
-            <input id="i-qty" type="number" class="input text-center" value="1">
-            <input id="i-price" type="number" class="input" placeholder="Precio neto">
-          </div>
-          <button class="btn small" onclick="addItem()">Agregar / Actualizar ítem</button>
-        </div>
-
-        <div id="items-list" class="stack"></div>
-
-        <div class="card stack">
+          <textarea id="i-name" class="input" placeholder="Detalle técnico del ítem"></textarea>
           <div class="grid grid-cols-2 gap-3">
-            <input id="q-validity" class="input" value="15 días" oninput="renderPreview()">
-            <input id="q-delivery" class="input" value="Según coordinación" oninput="renderPreview()">
+            <input id="i-qty" type="number" class="input" value="1" oninput="renderPreview()">
+            <input id="i-price" type="number" class="input" placeholder="Precio Neto" oninput="renderPreview()">
           </div>
-          <textarea id="q-conditions" class="input" oninput="renderPreview()">50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.</textarea>
-          <textarea id="q-notes" class="input" placeholder="Observaciones adicionales" oninput="renderPreview()"></textarea>
+          <button class="btn" onclick="addItem()">Guardar / Actualizar Ítem</button>
         </div>
 
-        <button class="btn green" onclick="saveAndSend()">Guardar y enviar PDF</button>
+        <div id="items-list" class="flex flex-col gap-3"></div>
+
+        <button class="btn green" onclick="saveAndSend()">Guardar y Descargar PDF</button>
       </div>
 
       <div id="previewBox">
@@ -285,716 +159,279 @@
   </section>
 
   <section id="tab-hist" class="tab">
-    <div class="max-w-3xl mx-auto stack">
-      <input id="search-hist" class="input" placeholder="Buscar cotización..." oninput="renderHistory()">
-      <div id="history-list" class="stack"></div>
+    <div class="max-w-4xl mx-auto stack">
+      <div id="history-list" class="grid gap-4"></div>
     </div>
   </section>
 
   <section id="tab-clients" class="tab">
-    <div class="max-w-xl mx-auto stack">
-      <div class="card stack">
-        <input id="c-id" type="hidden">
-        <input id="c-name" class="input" placeholder="Nombre / Empresa">
-        <input id="c-rut" class="input" placeholder="RUT">
-        <input id="c-phone" class="input" placeholder="Teléfono / WhatsApp">
-        <input id="c-email" class="input" placeholder="Email">
-        <input id="c-address" class="input" placeholder="Dirección">
-        <button class="btn" onclick="saveClient()">Guardar cliente</button>
-        <button class="btn small" style="background:#1b4d49;color:white" onclick="clearClientForm()">Cancelar edición</button>
-      </div>
-      <div id="clients-list" class="stack"></div>
+    <div class="max-w-2xl mx-auto card stack">
+      <input id="c-name" class="input" placeholder="Nombre Empresa / Cliente">
+      <input id="c-rut" class="input" placeholder="RUT">
+      <input id="c-email" class="input" placeholder="Email">
+      <button class="btn" onclick="saveClient()">Guardar Cliente</button>
+      <div id="clients-list" class="mt-6 flex flex-col gap-3"></div>
     </div>
   </section>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, setDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-      apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
-      authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
-      projectId: "registro-de-gastos-a21e8",
-      storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
-      messagingSenderId: "947355933583",
-      appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
-    };
+    apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
+    authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
+    projectId: "registro-de-gastos-a21e8",
+    storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
+    messagingSenderId: "947355933583",
+    appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
+  };
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  window.fb = { db, collection, addDoc, setDoc, doc };
 
-  window.fb = { db, collection, addDoc, setDoc, deleteDoc, doc, runTransaction };
-
-  window.clientes = [];
-  window.historial = [];
-  window.nextFolio = 1000;
-
-  onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
-    window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
-  });
-
+  // Listeners
   onSnapshot(collection(db, "rps_clientes"), snap => {
-    window.clientes = snap.docs.map(d => ({id:d.id, ...d.data()}));
-    if(typeof updateClientsUI === 'function') updateClientsUI();
+    window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    updateClientsUI();
   });
 
   onSnapshot(collection(db, "rps_cotizaciones"), snap => {
-    window.historial = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
-    if(typeof renderHistory === 'function') renderHistory();
+    window.historial = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b)=> b.date?.localeCompare(a.date));
+    renderHistory();
   });
 </script>
 
 <script>
-  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+  // Datos y Estado
+  let items = [];
+  let editingIdx = null;
+  const DEFAULT_DESC = "Levantamiento topográfico georreferenciado mediante sistema GNSS de alta precisión.";
 
-  const COMPANY = {
-    name:'RPS TOPOGRAFÍA & GEODESIA',
-    legalName:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.',
-    rut:'77.444.231-6',
-    address:'Av. Jaime Guzmán 659 - A3, Isla de Maipo',
-    comuna:'Isla de Maipo',
-    email:'contacto@rpsgeodesia.com',
-    phone:'949207665',
-    bank:'Banco Estado',
-    account:'Cta Vista Banco Estado N° 36772581224',
-    holder:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.'
-  };
-
-  const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
-
-  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
-
-Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
-
-Incluye planificación de vuelo dron, captura aerofotogramétrica and postproceso de información técnica.
-
-Entregables:
-• Plano topográfico
-• Informe técnico
-• Nube de puntos densa
-• Ortomosaico`;
-
-  let items = [defaultItem()];
-  let editingId = null;
-  let editingClientId = null;
-  let editingItemIdx = null; 
-
-  function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
-  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  function money(n){ return '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL'); }
-  function amount(n,currency='CLP'){ return currency==='UF' ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2})+' UF' : money(n); }
-  function fmtDate(d){ if(!d) return ''; const [y,m,day]=String(d).split('-'); return `${day}-${m}-${y}`; }
-  function quoteCode(q){ return q?.ref || ('AER-' + (q?.folio || window.nextFolio || 1000)); }
-
-  function normalizeItems(arr){
-    return (arr || []).map(it => {
-      const qty = Number(it?.qty || 1);
-      const price = Number(it?.price || 0);
-      return {...it, qty, price, total: Math.round(price*qty*100)/100};
-    });
+  function navTo(t) {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.topnav button').forEach(x => x.classList.remove('active'));
+    document.getElementById('tab-'+t).classList.add('active');
+    document.getElementById('tab-'+t+'-btn').classList.add('active');
   }
 
-  function captureFormState() {
-    return {
-      editingId,
-      currentFolio: window.currentFolio,
-      items: JSON.parse(JSON.stringify(items)),
-      date: document.getElementById('q-date').value,
-      ref: document.getElementById('q-ref').value,
-      currency: document.getElementById('q-currency').value,
-      client: document.getElementById('q-client').value,
-      project: document.getElementById('q-project').value,
-      location: document.getElementById('q-location').value,
-      desc: document.getElementById('q-desc').value,
-      validity: document.getElementById('q-validity').value,
-      delivery: document.getElementById('q-delivery').value,
-      conditions: document.getElementById('q-conditions').value,
-      notes: document.getElementById('q-notes').value
-    };
-  }
+  function addItem() {
+    const n = document.getElementById('i-name').value;
+    const q = Number(document.getElementById('i-qty').value);
+    const p = Number(document.getElementById('i-price').value);
+    if(!n || !p) return alert("Completa el detalle y precio");
 
-  function applyQuoteToForm(h, triggerRender = true) {
-    editingId = h.id;
-    window.currentFolio = Number(h.folio || 1000);
-    items = normalizeItems((h.items && h.items.length) ? h.items : [defaultItem()]);
-    document.getElementById('q-date').value = h.date || '';
-    document.getElementById('q-ref').value = h.ref || ('AER-' + (h.folio || 1000));
-    document.getElementById('q-currency').value = h.currency || 'CLP';
-    document.getElementById('q-client').value = h.client || '';
-    document.getElementById('q-project').value = h.project || '';
-    document.getElementById('q-location').value = h.location || '';
-    document.getElementById('q-desc').value = h.serviceDesc || DEFAULT_SERVICE_DESC;
-    document.getElementById('q-validity').value = h.validity || '15 días';
-    document.getElementById('q-delivery').value = h.delivery || 'Según coordinación';
-    document.getElementById('q-conditions').value = h.conditions || '';
-    document.getElementById('q-notes').value = h.notes || '';
-    if (triggerRender) renderPreview();
-  }
+    const obj = { name: n, qty: q, price: p, total: q * p };
+    if(editingIdx !== null) { items[editingIdx] = obj; editingIdx = null; }
+    else { items.push(obj); }
 
-  function restoreFormState(state) {
-    editingId = state.editingId;
-    window.currentFolio = state.currentFolio;
-    items = state.items;
-    document.getElementById('q-date').value = state.date;
-    document.getElementById('q-ref').value = state.ref;
-    document.getElementById('q-currency').value = state.currency;
-    document.getElementById('q-client').value = state.client;
-    document.getElementById('q-project').value = state.project;
-    document.getElementById('q-location').value = state.location;
-    document.getElementById('q-desc').value = state.desc;
-    document.getElementById('q-validity').value = state.validity;
-    document.getElementById('q-delivery').value = state.delivery;
-    document.getElementById('q-conditions').value = state.conditions;
-    document.getElementById('q-notes').value = state.notes;
-  }
-
-  function currentQuote(){
-    const normalized = normalizeItems(items);
-    let neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
-    
-    const manualPriceInput = document.getElementById('i-price');
-    if (manualPriceInput && manualPriceInput.value !== "" && normalized.length === 1 && normalized[0].isDefault) {
-      const mQty = Number(document.getElementById('i-qty').value || 1);
-      const mPrice = Number(manualPriceInput.value || 0);
-      neto = mQty * mPrice;
-    }
-
-    const iva = Math.round(neto*.19);
-    return {
-      folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
-      date: document.getElementById('q-date').value,
-      ref: document.getElementById('q-ref').value,
-      currency: document.getElementById('q-currency').value,
-      client: document.getElementById('q-client').value,
-      project: document.getElementById('q-project').value,
-      location: document.getElementById('q-location').value,
-      serviceDesc: document.getElementById('q-desc').value || DEFAULT_SERVICE_DESC,
-      validity: document.getElementById('q-validity').value,
-      delivery: document.getElementById('q-delivery').value,
-      conditions: document.getElementById('q-conditions').value,
-      notes: document.getElementById('q-notes').value,
-      items: normalized, neto, iva, total: neto+iva
-    };
-  }
-
-  function selectedClient(){
-    const name = document.getElementById('q-client').value;
-    return (window.clientes || []).find(c=>c.name===name) || {name};
-  }
-
-  function parseService(txt){
-    const raw = String(txt||'').trim();
-    const parts = raw.split(/Entregables\s*:/i);
-    const scope = (parts[0] || raw).trim();
-    let deliverables = [];
-    if(parts[1]) deliverables = parts[1].split(/\n|•|-/).map(x=>x.trim()).filter(Boolean);
-    if(!deliverables.length) deliverables = ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
-    return {scope, deliverables};
-  }
-
-  function renderPreview(){
-    const q = currentQuote();
-    const c = selectedClient();
-    const canvas = document.getElementById('pdf-canvas');
-    if(!canvas) return;
-
-    canvas.innerHTML = '';
-    
-    function headerHTML(){
-      return `
-        <header class="pdf-header">
-          <div class="brand">
-            <div>
-              <h1>${COMPANY.name}</h1>
-              <p>Servicios topográficos y geodésicos</p>
-              <p>${COMPANY.email} · Fono: ${COMPANY.phone}</p>
-            </div>
-          </div>
-          <div class="quoteBox">
-            <div class="quoteTag">Cotización técnica</div>
-            <div class="quoteNum">N° ${esc(quoteCode(q))}</div>
-            <div class="quoteDate">Fecha: ${fmtDate(q.date)}</div>
-          </div>
-        </header>`;
-    }
-
-    function footerHTML(){
-      return `<footer class="footer rps-page-footer">${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}</footer>`;
-    }
-
-    const page = document.createElement('div');
-    page.className = 'a4';
-    
-    let quoteItems = q.items.length ? q.items : [defaultItem()];
-    if (quoteItems.length === 1 && quoteItems[0].isDefault && document.getElementById('i-price').value !== "") {
-      quoteItems[0].price = Number(document.getElementById('i-price').value || 0);
-      quoteItems[0].total = quoteItems[0].price * Number(document.getElementById('i-qty').value || 1);
-    }
-
-    const it = quoteItems[0];
-    const parsed = parseService(it.name);
-
-    page.innerHTML = `
-      ${headerHTML()}
-      <div class="grid2">
-        <div class="pdf-card">
-          <div class="bar">En atención a</div>
-          <div class="pdf-card-body">
-            <h3>${esc((c.name||'---').toUpperCase())}</h3>
-            <p>RUT: ${esc(c.rut||'—')}</p>
-            <p>Dirección: ${esc(c.address||'—')}</p>
-            <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
-          </div>
-        </div>
-        <div class="pdf-card">
-          <div class="bar blue">Antecedentes del proyecto</div>
-          <div class="pdf-card-body">
-            <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
-            <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
-            <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
-            <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
-            <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="pdf-card">
-        <div class="bar blue">Descripción del servicio</div>
-        <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
-      </div>
-
-      <div class="pdf-card">
-        <div class="bar">Servicio profesional</div>
-        <div class="service-body">
-          <h4>Alcance técnico</h4>
-          <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
-        </div>
-      </div>
-
-      <div class="pdf-card">
-        <div class="bar">Servicio profesional · entregables</div>
-        <div class="service-body">
-          <h4>Entregables</h4>
-          <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
-        </div>
-      </div>
-
-      <div class="payment">
-        <div class="pdf-card">
-          <div class="bar blue">Condiciones y datos de pago</div>
-          <div class="paymentCols">
-            <div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div>
-            <div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div>
-          </div>
-        </div>
-        <div class="economic">
-          <div class="head">Resumen económico</div>
-          <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
-          <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
-          <hr>
-          <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
-        </div>
-      </div>
-
-      <div class="signature">
-        <div>Atentamente,</div>
-        <div class="sigLine"></div>
-        <b>ROBIN PINTO SERRANO</b><br>
-        <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
-      </div>
-      ${footerHTML()}
-    `;
-    
-    canvas.appendChild(page);
-    renderItems();
-  }
-
-  function renderItems(){
-    const box = document.getElementById('items-list');
-    box.innerHTML = items.map((it,i)=>`<div class="item-row flex justify-between gap-3 items-center">
-      <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
-      <small class="text-emerald-300 font-bold">${amount(it.total,currentQuote().currency)}</small>
-      <div class="flex gap-2">
-         <button onclick="editItem(${i})">✏️</button>
-         <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; renderPreview();">✕</button>
-      </div>
-    </div>`).join('');
-  }
-
-  function addItem(){
-    const name = document.getElementById('i-name').value.trim();
-    const qty = Number(document.getElementById('i-qty').value||1);
-    const price = Number(document.getElementById('i-price').value||0);
-    if(!name) return alert('Ingresa el detalle técnico del servicio.');
-    
-    const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
-    
-    if(editingItemIdx !== null && editingItemIdx >= 0) {
-      items[editingItemIdx] = newItem;
-      editingItemIdx = null; 
-    } else {
-      const onlyDefault = items.length===1 && items[0].isDefault;
-      if(onlyDefault) items[0]=newItem; else items.push(newItem);
-    }
-    
-    document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-    document.getElementById('i-qty').value = 1;
-    document.getElementById('i-price').value = '';
+    document.getElementById('i-name').value = "";
+    document.getElementById('i-price').value = "";
     renderPreview();
   }
 
-  function editItem(i){
+  function renderPreview() {
+    const qDate = document.getElementById('q-date').value;
+    const qRef = document.getElementById('q-ref').value || "COT-001";
+    const qProj = document.getElementById('q-project').value || "Proyecto Topográfico";
+    const qDesc = document.getElementById('q-desc').value || "Sin descripción";
+    const clientName = document.getElementById('q-client').value || "---";
+
+    const neto = items.reduce((s, i) => s + i.total, 0);
+    const iva = Math.round(neto * 0.19);
+    const total = neto + iva;
+
+    const canvas = document.getElementById('pdf-canvas');
+    canvas.innerHTML = `
+      <div class="a4">
+        <div class="pdf-h">
+          <div>
+            <h1 style="font-size:16pt; font-weight:bold; color:#111827">RPS TOPOGRAFÍA</h1>
+            <p style="font-size:8pt; color:#6b7280">Ingeniería, Geodesia y Fotogrametría</p>
+          </div>
+          <div style="text-align:right">
+            <span class="quoteTag">Cotización Técnica</span>
+            <div class="quoteNum">${qRef}</div>
+            <div class="quoteDate">Fecha: ${qDate}</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="pdf-body-card">
+            <div class="pdf-bar">En atención a</div>
+            <div class="pdf-content">
+              <h3>${clientName.toUpperCase()}</h3>
+              <p>Proyecto: ${qProj}</p>
+            </div>
+          </div>
+          <div class="pdf-body-card">
+            <div class="pdf-bar gold">Resumen Económico</div>
+            <div class="pdf-content">
+              <div style="display:flex; justify-content:space-between"><span>Neto:</span><strong>$${neto.toLocaleString('es-CL')}</strong></div>
+              <div style="display:flex; justify-content:space-between"><span>Total:</span><strong>$${total.toLocaleString('es-CL')}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pdf-body-card">
+          <div class="pdf-bar">Alcance del Servicio</div>
+          <div class="desc"><p>${qDesc}</p></div>
+        </div>
+
+        <div class="pdf-body-card">
+          <div class="pdf-bar">Desglose de Ítems</div>
+          <div class="pdf-content">
+            ${items.map(i => `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:5px 0">
+              <span>${i.name} (x${i.qty})</span><strong>$${i.total.toLocaleString('es-CL')}</strong>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <div class="signature">
+          <div class="sigLine"></div>
+          <b>Robin Pinto Serrano</b><br>
+          <span style="font-size:7pt">Ingeniero Industrial / Topógrafo</span>
+        </div>
+      </div>
+    `;
+    updateItemsUI();
+  }
+
+  function updateItemsUI() {
+    const list = document.getElementById('items-list');
+    list.innerHTML = items.map((it, i) => `
+      <div class="item-row flex justify-between items-center">
+        <span class="truncate w-40 font-bold">${it.name}</span>
+        <span class="text-accent font-bold">$${it.total.toLocaleString('es-CL')}</span>
+        <div class="flex gap-2">
+          <button onclick="editIt(${i})">✏️</button>
+          <button onclick="items.splice(${i},1);renderPreview();">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function editIt(i) {
     const it = items[i];
     document.getElementById('i-name').value = it.name;
     document.getElementById('i-qty').value = it.qty;
     document.getElementById('i-price').value = it.price;
-    editingItemIdx = i; 
+    editingIdx = i;
   }
 
-  function navTo(tab){
-    ['edit','hist','clients'].forEach(t=>{
-      document.getElementById('tab-'+t).classList.toggle('active',t===tab);
-      document.getElementById('tab-'+t+'-btn').classList.toggle('active',t===tab);
-    });
-    if(tab==='clients') updateClientsUI();
-    if(tab==='hist') renderHistory();
-  }
+  async function saveAndSend() {
+    const qRef = document.getElementById('q-ref').value;
+    const qProj = document.getElementById('q-project').value;
+    const client = document.getElementById('q-client').value;
+    
+    if(!client || items.length === 0) return alert("Falta cliente o ítems");
 
-  function handleClientSelect(){
-    if(document.getElementById('q-client').value==='NEW') navTo('clients');
-    renderPreview();
-  }
-
-  async function saveClient(){
-    const id = document.getElementById('c-id').value || editingClientId;
     const data = {
-      id: id || ('local_'+Date.now()),
-      name:document.getElementById('c-name').value.trim().toUpperCase(),
-      rut:document.getElementById('c-rut').value.trim(),
-      phone:document.getElementById('c-phone').value.trim(),
-      email:document.getElementById('c-email').value.trim(),
-      address:document.getElementById('c-address').value.trim()
+      ref: qRef, project: qProj, client: client,
+      date: document.getElementById('q-date').value,
+      items: items,
+      total: items.reduce((s,i) => s + i.total, 0) * 1.19
     };
-    if(!data.name) return alert('Ingresa el nombre del cliente.');
 
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name);
-    local.push(data);
-    localStorage.setItem('rps_clientes_local',JSON.stringify(local));
-    window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
+    try {
+      await fb.addDoc(fb.collection(fb.db, "rps_cotizaciones"), data);
+      generatePDF(data);
+    } catch(e) { alert("Error al guardar"); }
+  }
 
-    try{
-      if(window.fb?.db){
-        if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
-        else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
-      }
-    }catch(e){ console.warn(e); }
+  function generatePDF(d) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFillColor(10, 15, 26);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setTextColor(245, 158, 11);
+    doc.setFontSize(22);
+    doc.text("RPS TOPOGRAFÍA", 15, 25);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text(`N° REF: ${d.ref}`, 195, 20, {align: 'right'});
+    doc.text(`FECHA: ${d.date}`, 195, 28, {align: 'right'});
 
-    clearClientForm();
-    updateClientsUI();
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(14);
+    doc.text("COTIZACIÓN DE SERVICIOS PROFESIONALES", 105, 55, {align: 'center'});
+    
+    doc.setFontSize(11);
+    doc.text(`CLIENTE: ${d.client}`, 15, 75);
+    doc.text(`PROYECTO: ${d.project}`, 15, 82);
+
+    let y = 100;
+    doc.setFillColor(243, 244, 246);
+    doc.rect(15, y, 180, 8, 'F');
+    doc.text("DETALLE", 20, y+6);
+    doc.text("TOTAL", 170, y+6);
+    
+    y += 15;
+    d.items.forEach(it => {
+      doc.text(it.name, 20, y);
+      doc.text(`$${it.total.toLocaleString('es-CL')}`, 170, y);
+      y += 10;
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`TOTAL FINAL (IVA INC.): $${Math.round(d.total).toLocaleString('es-CL')}`, 195, y+20, {align: 'right'});
+
+    doc.save(`RPS_${d.ref}.pdf`);
+  }
+
+  function handleClientSelect() {
+    if(document.getElementById('q-client').value === 'NEW') navTo('clients');
+    renderPreview();
+  }
+
+  async function saveClient() {
+    const n = document.getElementById('c-name').value;
+    if(!n) return;
+    await fb.addDoc(fb.collection(fb.db, "rps_clientes"), {name: n, rut: document.getElementById('c-rut').value});
+    document.getElementById('c-name').value = "";
     navTo('edit');
-    document.getElementById('q-client').value=data.name;
-    renderPreview();
   }
 
-  function clearClientForm(){
-    editingClientId = null;
-    ['c-id','c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value='');
-  }
-
-  function editClient(id){
-    const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
-    if(!c) return;
-    editingClientId = c.id;
-    document.getElementById('c-id').value = c.id || '';
-    document.getElementById('c-name').value = c.name || '';
-    document.getElementById('c-rut').value = c.rut || '';
-    document.getElementById('c-phone').value = c.phone || '';
-    document.getElementById('c-email').value = c.email || '';
-    document.getElementById('c-address').value = c.address || '';
-    navTo('clients');
-  }
-
-  async function deleteClient(id){
-    const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
-    if(!c) return;
-    if(!confirm('¿Eliminar este cliente?')) return;
-
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id) && x.name!==c.name);
-    localStorage.setItem('rps_clientes_local',JSON.stringify(local));
-    window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id) && x.name!==c.name);
-
-    try{
-      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
-    }catch(e){ console.warn(e); }
-
-    updateClientsUI();
-    renderPreview();
-  }
-
-  function updateClientsUI(){
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]');
-    const merged = [...(window.clientes||[]),...local].filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i).sort((a,b)=>a.name.localeCompare(b.name));
-    window.clientes = merged;
+  function updateClientsUI() {
     const sel = document.getElementById('q-client');
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-    if(cur) sel.value=cur;
-    document.getElementById('clients-list').innerHTML = merged.length ? merged.map(c=>`
-      <div class="list-row">
-        <div class="flex justify-between gap-3 items-start">
-          <div class="min-w-0">
-            <b>${esc(c.name)}</b><br>
-            <small>${esc(c.rut||'')} · ${esc(c.phone||c.email||'')}</small><br>
-            <small>${esc(c.address||'')}</small>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button title="Editar" onclick="editClient('${c.id}')">✏️</button>
-            <button title="Eliminar" onclick="deleteClient('${c.id}')">🗑️</button>
-          </div>
+    const val = sel.value;
+    sel.innerHTML = '<option value="">Seleccionar Cliente</option><option value="NEW">➕ Nuevo Cliente</option>' + 
+      window.clientes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    sel.value = val;
+
+    document.getElementById('clients-list').innerHTML = window.clientes.map(c => `
+      <div class="list-row flex justify-between">
+        <b>${c.name}</b>
+        <span>${c.rut || ''}</span>
+      </div>
+    `).join('');
+  }
+
+  function renderHistory() {
+    document.getElementById('history-list').innerHTML = window.historial.map(h => `
+      <div class="card flex justify-between items-center">
+        <div>
+          <b class="text-accent">${h.ref}</b> - ${h.client}<br>
+          <small class="text-muted">${h.project}</small>
         </div>
-      </div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
-  }
-
-  function renderHistory(){
-    const q = document.getElementById('search-hist').value.toLowerCase();
-    const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
-    document.getElementById('history-list').innerHTML = data.length ? data.map(h=>`
-      <div class="list-row">
-        <div class="flex justify-between gap-3 items-start">
-          <div class="min-w-0">
-            <b>${esc(h.ref||('AER-'+h.folio))}</b><br>
-            <small>${esc(h.client||'Sin cliente')} · ${amount(h.total,h.currency)}</small><br>
-            <small>${esc(h.project||'Servicio técnico')}</small>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button title="Ver" onclick="viewQuote('${h.id}')">🔍</button>
-            <button title="Editar" onclick="editQuote('${h.id}')">✏️</button>
-            <button title="PDF" onclick="generateAndSharePDF('${h.id}')">PDF</button>
-            <button title="Eliminar" onclick="deleteQuote('${h.id}')">🗑️</button>
-          </div>
+        <div class="flex gap-3">
+          <button class="btn small" style="width:auto" onclick='downloadHist("${h.id}")'>PDF</button>
         </div>
-      </div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
+      </div>
+    `).join('');
   }
 
-  function quoteById(id){ return (window.historial||[]).find(h=>h.id===id); }
+  window.downloadHist = (id) => {
+    const h = window.historial.find(x => x.id === id);
+    generatePDF(h);
+  };
 
-  function editQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
-  function viewQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
-
-  async function deleteQuote(id){
-    if(!confirm('¿Eliminar esta cotización del historial?')) return;
-    try{
-      if(window.fb?.db) await fb.deleteDoc(fb.doc(fb.db,'rps_cotizaciones',id));
-      window.historial = (window.historial||[]).filter(h=>h.id!==id);
-      renderHistory();
-    }catch(e){ console.error(e); alert('No se pudo eliminar: ' + (e.message || e)); }
-  }
-
-  async function saveAndSend(){
-    const q = currentQuote();
-    if(!q.client) return alert('Falta seleccionar o crear cliente.');
-    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
-    try{
-      if(!editingId && window.fb?.runTransaction){
-        await fb.runTransaction(fb.db,async(t)=>{
-          const r=fb.doc(fb.db,'config','rps_cotizador_v1');
-          const s=await t.get(r);
-          f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000;
-          s.exists()?t.update(r,{lastFolio:f+1}):t.set(r,{lastFolio:f+1});
-        });
-      }
-      const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
-      if(window.fb?.db){
-        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
-        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
-      }
-      await generateAndSharePDF();
-    }catch(e){ console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
-  }
-
-  document.getElementById('q-date').valueAsDate = new Date();
-  document.getElementById('q-ref').value = 'AER-1000';
-  document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
-  document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-  
-  document.getElementById('i-price').addEventListener('input', renderPreview);
-  document.getElementById('i-qty').addEventListener('input', renderPreview);
-
-  // MÓDULO JS-PDF CORREGIDO (Error de color '25df' resuelto a '253' para evitar congelamiento)
-  async function generateAndSharePDF(historyId=null, quoteOverride=null){
-    const JsPDF = window.jspdf?.jsPDF;
-    if(!JsPDF) return alert('No se cargó jsPDF.');
-
-    let originalState = null;
-
-    if(quoteOverride){
-      originalState = captureFormState();
-      applyQuoteToForm(quoteOverride, false);
-      renderPreview();
-      await new Promise(r=>setTimeout(r,80));
-    }else if(historyId){
-      const h = quoteById(historyId);
-      if(!h) return alert('No se encontró la cotización.');
-      originalState = captureFormState();
-      applyQuoteToForm(h, false);
-      renderPreview();
-      await new Promise(r=>setTimeout(r,80));
-    }else{
-      renderPreview();
-      await new Promise(r=>setTimeout(r,50));
-    }
-
-    const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
-    const c = selectedClient();
-
-    const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
-
-    const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
-    const G=[30,41,59], B=[16,185,129], S=[100,116,139], L=[203,213,225];
-    let y=MT;
-
-    function font(size, style='normal', color=G){
-      pdf.setFont('helvetica', style);
-      pdf.setFontSize(size);
-      pdf.setTextColor(...color);
-    }
-
-    function lines(text, w){ return pdf.splitTextToSize(String(text ?? ''), w); }
-
-    function foot(){
-      pdf.setDrawColor(...B); pdf.setLineWidth(.3);
-      pdf.line(ML,H-9,W-MR,H-9);
-      font(6,'normal',S);
-      pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW});
-    }
-
-    function head(){
-      y=MT;
-      font(14,'bold',[6,34,33]); pdf.text(COMPANY.name,ML,y+5);
-      font(7.5,'normal',S);
-      pdf.text('Servicios topográficos y geodésicos',ML,y+10);
-      pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML,y+14);
-
-      pdf.setFillColor(4,120,87);
-      pdf.roundedRect(W-MR-48,y,48,10,1,1,'F');
-      font(7,'bold',[255,255,255]);
-      pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+6.5,{align:'center'});
-      font(15,'bold',[6,34,33]); pdf.text(`N° ${quoteCode(q)}`,W-MR,y+21,{align:'right'});
-      font(7.5,'normal',S); pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+26,{align:'right'});
-      y+=32; pdf.setDrawColor(...B); pdf.setLineWidth(.6); pdf.line(ML,y,W-MR,y); y+=6;
-    }
-
-    function para(text, size=8.5, lh=4.2){
-      const arr=lines(text,CW-6);
-      for(const ln of arr){
-        font(size,'normal',G);
-        pdf.text(ln,ML+3,y);
-        y+=lh;
-      }
-      y+=2;
-    }
-
-    function info(){
-      const h=34, leftW=88, gap=6, rx=ML+leftW+gap, rw=CW-leftW-gap;
-      pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
-      pdf.roundedRect(ML,y,leftW,h,1,1,'FD');
-      pdf.roundedRect(rx,y,rw,h,1,1,'FD');
-      pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,leftW,6,1,1,'F');
-      pdf.setFillColor(...B); pdf.roundedRect(rx,y,rw,6,1,1,'F');
-      font(6.5,'bold',[255,255,255]);
-      pdf.text('EN ATENCIÓN A',ML+3,y+4.2);
-      pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.2);
-      font(8,'bold',[6,34,33]); pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+12);
-      font(7.5,'normal',G);
-      pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+19);
-      pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+24);
-      pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+30);
-
-      let yy=y+12;
-      function row(label,val){
-        font(7,'bold',S); pdf.text(label,rx+3,yy);
-        font(7.5,'normal',G); pdf.text(lines(val||'—',rw-24),rx+24,yy);
-        yy+=4.5;
-      }
-      row('Proyecto:',q.project||'Servicio técnico');
-      row('Ubicación:',q.location||'Por definir');
-      row('Validez:',q.validity||'15 días');
-      row('Entrega:',q.delivery||'Según coordinación');
-      row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
-      y+=h+6;
-    }
-
-    function payment(){
-      const top=y,h=42,gap=6,totalW=68,infoW=CW-totalW-gap;
-      pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
-      pdf.roundedRect(ML,top,infoW,h,1,1,'FD');
-      pdf.setFillColor(240,253,244); pdf.roundedRect(ML,top,infoW,6,1,1,'F');
-      font(6.5,'bold',[6,34,33]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2);
-      const colW=(infoW-8)/2, x2=ML+4+colW+2;
-      font(7,'bold',[4,120,87]); pdf.text('Condiciones comerciales',ML+3,top+13);
-      font(7.5,'normal',G); pdf.text(lines(q.conditions||'',colW),ML+3,top+18);
-      font(7,'bold',[4,120,87]); pdf.text('Transferencia bancaria',x2,top+13);
-      font(7,'normal',G);
-      pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
-
-      const tx=ML+infoW+gap;
-      pdf.setDrawColor(167,243,208); pdf.setFillColor(240,253,244);
-      pdf.roundedRect(tx,top,totalW,h,1,1,'FD');
-      pdf.setFillColor(6,34,33); pdf.roundedRect(tx,top,totalW,6,1,1,'F');
-      font(6.5,'bold',[255,255,255]); pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);
-      let yy=top+14;
-      function r(label,val,total=false){
-        font(total?8:7.5,total?'bold':'normal',total?[4,120,87]:S);
-        pdf.text(label,tx+3,yy);
-        font(total?11:8,total?'bold':'normal',total?[4,120,87]:G);
-        pdf.text(amount(val,q.currency),tx+totalW-3,yy,{align:'right'});
-        yy+=total?7:5.5;
-      }
-      r('Valor neto',q.neto); r('IVA 19%',q.iva);
-      pdf.setDrawColor(...L); pdf.line(tx+3,yy-2,tx+totalW-3,yy-2);
-      r('TOTAL SERVICIO',q.total,true);
-      y=top+h+6;
-    }
-
-    head();
-    info();
-    
-    pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,CW,6,1,1,'F');
-    font(6.5,'bold',[255,255,255]); pdf.text('DESCRIPCIÓN DEL SERVICIO',ML+3,y+4.2); y+=8;
-    para(q.serviceDesc||DEFAULT_SERVICE_DESC,8.5,4.2); y+=2;
-
-    const quoteItems = q.items.length ? q.items : [defaultItem()];
-    const parsed = parseService(quoteItems[0].name);
-
-    pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,CW,6,1,1,'F');
-    font(6.5,'bold',[255,255,255]); pdf.text('SERVICIO PROFESIONAL',ML+3,y+4.2); y+=8;
-    font(7.5,'bold',[4,120,87]); pdf.text('ALCANCE TÉCNICO',ML+3,y); y+=4.5;
-    para(parsed.scope,8.5,4.2); y+=2;
-
-    pdf.setFillColor(6,34,33); pdf.roundedRect(ML,y,CW,6,1,1,'F');
-    font(6.5,'bold',[255,255,255]); pdf.text('SERVICIO PROFESIONAL · ENTREGABLES',ML+3,y+4.2); y+=8;
-    font(8,'normal',G);
-    for(const d of parsed.deliverables){ pdf.text(`• ${d}`,ML+5,y); y+=4; }
-    y+=4;
-
-    payment();
-    
-    font(7.5,'normal',G); pdf.text('Atentamente,',W/2,y,{align:'center'}); y+=6;
-    pdf.setDrawColor([6,34,33]); pdf.line(W/2-25,y,W/2+25,y); y+=4;
-    font(8,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.5;
-    font(6.5,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
-
-    foot();
-    
-    pdf.save(`COT_${quoteCode(q)}.pdf`);
-
-    if(originalState){
-      restoreFormState(originalState);
-      renderPreview();
-    }
-  }
-
-  window.onload = function() {
-    updateClientsUI();
+  window.onload = () => {
+    document.getElementById('q-date').valueAsDate = new Date();
     renderPreview();
   };
 </script>

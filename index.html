@@ -24,30 +24,45 @@
 
     * { box-sizing: border-box; }
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: 
+      background:
         radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.08), transparent 35%),
         linear-gradient(145deg, #090d16, #111827 50%, #030712);
       color: var(--text);
     }
 
     .topnav {
-      position: sticky; top: 0; z-index: 20;
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       background: rgba(10, 15, 26, 0.95);
       border-bottom: 1px solid rgba(245, 158, 11, 0.25);
       backdrop-filter: blur(12px);
     }
+
     .topnav button {
-      border: 0; background: transparent; color: rgba(249, 250, 251, 0.5);
-      font-weight: 900; text-transform: uppercase; letter-spacing: .05em;
-      padding: 18px 10px; font-size: 13px;
+      border: 0;
+      background: transparent;
+      color: rgba(249, 250, 251, 0.5);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 18px 10px;
+      font-size: 13px;
       border-bottom: 3px solid transparent;
       transition: all 0.3s ease;
     }
-    .topnav button.active { color: var(--amber); border-color: var(--amber); background: rgba(245, 158, 11, 0.05); }
+
+    .topnav button.active {
+      color: var(--amber);
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, 0.05);
+    }
 
     .tab { display: none; padding: 18px; }
     .tab.active { display: block; }
@@ -69,10 +84,12 @@
       padding: 22px;
       box-shadow: 0 24px 70px rgba(0,0,0,0.5);
     }
+
     .stack > * + * { margin-top: 16px; }
 
     .input {
-      width: 100%; min-width: 0;
+      width: 100%;
+      min-width: 0;
       background: #070a12;
       border: 1px solid rgba(245, 158, 11, 0.2);
       color: #fff;
@@ -83,24 +100,50 @@
       outline: none;
       transition: all 0.25s ease;
     }
-    textarea.input { min-height: 145px; resize: vertical; white-space: pre-wrap; }
+
+    textarea.input {
+      min-height: 145px;
+      resize: vertical;
+      white-space: pre-wrap;
+    }
+
     .input::placeholder { color: rgba(148, 163, 184, 0.5); }
+
     .input:focus {
       border-color: var(--amber);
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
     }
 
     .btn {
-      width: 100%; border: 0; border-radius: 18px; padding: 17px 20px;
-      font-weight: 900; text-transform: uppercase; cursor: pointer;
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 17px 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
       background: linear-gradient(135deg, #f59e0b, #d97706);
       color: #050b14;
       box-shadow: 0 12px 35px rgba(245, 158, 11, 0.25);
       transition: all 0.25s ease;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(245, 158, 11, 0.35); }
-    .btn.green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 12px 35px rgba(16, 185, 129, 0.25); }
-    .btn.small { padding: 12px 14px; border-radius: 14px; font-size: 12px; }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 40px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn.green {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn.small {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+    }
 
     .item-row, .list-row {
       background: rgba(10, 15, 26, 0.7);
@@ -119,6 +162,8 @@
       border-radius: 26px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
       padding: 20px;
+      touch-action: pan-x pan-y pinch-zoom;
+      -webkit-overflow-scrolling: touch;
     }
 
     #pdf-canvas {
@@ -127,6 +172,8 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
+      gap: 14px;
+      touch-action: pan-x pan-y pinch-zoom;
     }
 
     .a4 {
@@ -141,6 +188,7 @@
       justify-content: space-between;
       font-family: Arial, sans-serif;
       box-sizing: border-box;
+      overflow: hidden;
     }
 
     .pdf-header {
@@ -150,80 +198,261 @@
       border-bottom: 2px solid #f59e0b;
       padding-bottom: 4mm;
     }
-    .brand h1 { margin: 0; font-size: 14pt; font-weight: 800; color: #111827; tracking: -0.02em; }
-    .brand p { margin: 1mm 0 0; font-size: 7.5pt; color: #475569; line-height: 1.3; }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 14pt;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      margin: 1mm 0 0;
+      font-size: 7.5pt;
+      color: #475569;
+      line-height: 1.3;
+    }
 
     .quoteBox { text-align: right; }
-    .quoteTag {
-      display: inline-block; background: #111827; color: #f59e0b;
-      padding: 1.5mm 3mm; border-radius: 4px; font-size: 7pt; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #111827; }
-    .quoteDate { font-size: 7.5pt; color: #64748b; }
 
-    .blueLine { border-top: .55mm solid #f59e0b; }
+    .quoteTag {
+      display: inline-block;
+      background: #111827;
+      color: #f59e0b;
+      padding: 1.5mm 3mm;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quoteNum {
+      margin-top: 2mm;
+      font-size: 15pt;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .quoteDate {
+      font-size: 7.5pt;
+      color: #64748b;
+    }
 
     .grid2 {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 4mm;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5mm;
+      margin-top: 4mm;
     }
+
     .pdf-card {
-      border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+      background: white;
+      margin-top: 4mm;
     }
+
+    .grid2 .pdf-card { margin-top: 0; }
+
     .bar {
-      background: #111827; color: #f59e0b; font-size: 7pt; font-weight: 800;
-      text-transform: uppercase; padding: 2mm 3mm; letter-spacing: 0.5px;
+      background: #111827;
+      color: #f59e0b;
+      font-size: 7pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2mm 3mm;
+      letter-spacing: 0.5px;
     }
-    .bar.blue { background: #f59e0b; color: #111827; }
-    .pdf-card-body { padding: 3mm; font-size: 8pt; line-height: 1.35; color: #334155; }
-    .pdf-card-body h3 { margin: 0 0 1.5mm; font-size: 8.5pt; font-weight: 800; color: #111827; }
+
+    .bar.blue {
+      background: #f59e0b;
+      color: #111827;
+    }
+
+    .pdf-card-body {
+      padding: 3mm;
+      font-size: 8pt;
+      line-height: 1.35;
+      color: #334155;
+    }
+
+    .pdf-card-body h3 {
+      margin: 0 0 1.5mm;
+      font-size: 8.5pt;
+      font-weight: 800;
+      color: #111827;
+    }
+
     .pdf-card-body p { margin: 0 0 1mm; }
 
-    .desc, .service-body { padding: 3mm; font-size: 8.5pt; line-height: 1.4; color: #334155; }
-    .desc p { white-space: pre-wrap; }
-    .service-body h4 { margin: 0 0 1.5mm; color: #b45309; font-size: 8pt; font-weight: 800; text-transform: uppercase; }
-    .service-body p { white-space: pre-wrap; margin: 0; }
-    
+    .desc, .service-body {
+      padding: 3mm;
+      font-size: 8.5pt;
+      line-height: 1.4;
+      color: #334155;
+    }
+
+    .desc p { white-space: pre-wrap; margin: 0; }
+
+    .service-body h4 {
+      margin: 0 0 1.5mm;
+      color: #b45309;
+      font-size: 8pt;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .service-body p {
+      white-space: pre-wrap;
+      margin: 0;
+    }
+
     .deliverables {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 4mm;
-      font-size: 8pt; color: #334155; margin-top: 1mm;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1mm 4mm;
+      font-size: 8pt;
+      color: #334155;
+      margin-top: 1mm;
     }
 
     .payment {
-      display: grid; grid-template-columns: 1.2fr 1fr; gap: 5mm; margin-top: 4mm;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 5mm;
+      margin-top: 4mm;
     }
+
+    .payment .pdf-card { margin-top: 0; }
+
     .paymentCols {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; padding: 1mm;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3mm;
+      padding: 3mm;
     }
-    .paymentCols h4 { margin: 0 0 1.2mm; font-size: 7pt; color: #b45309; font-weight: 800; text-transform: uppercase; }
-    .paymentCols p { margin: 0 0 0.8mm; font-size: 7.5pt; line-height: 1.25; color: #475569; }
+
+    .paymentCols h4 {
+      margin: 0 0 1.2mm;
+      font-size: 7pt;
+      color: #b45309;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .paymentCols p {
+      margin: 0 0 0.8mm;
+      font-size: 7.5pt;
+      line-height: 1.25;
+      color: #475569;
+    }
 
     .economic {
-      border: 1px solid #fde68a; border-radius: 6px; background: #fffdf5; overflow: hidden;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      background: #fffdf5;
+      overflow: hidden;
     }
+
     .economic .head {
-      background: #111827; color: #f59e0b; padding: 2mm 3mm; font-size: 7pt; font-weight: 800; text-transform: uppercase;
+      background: #111827;
+      color: #f59e0b;
+      padding: 2mm 3mm;
+      font-size: 7pt;
+      font-weight: 800;
+      text-transform: uppercase;
     }
+
     .econRow {
-      display: flex; justify-content: space-between; gap: 3mm;
-      padding: 2mm 3mm 0; font-size: 8pt; color: #475569;
+      display: flex;
+      justify-content: space-between;
+      gap: 3mm;
+      padding: 2mm 3mm 0;
+      font-size: 8pt;
+      color: #475569;
     }
+
     .econRow strong { color: #111827; }
-    .economic hr { border: 0; border-top: 1px solid #cbd5e1; margin: 2mm 3mm 1.5mm; }
-    .grand span { color: #111827; font-weight: 800; text-transform: uppercase; }
-    .grand strong { font-size: 13pt; color: #b45309; font-weight: 800; }
+
+    .economic hr {
+      border: 0;
+      border-top: 1px solid #cbd5e1;
+      margin: 2mm 3mm 1.5mm;
+    }
+
+    .grand span {
+      color: #111827;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .grand strong {
+      font-size: 13pt;
+      color: #b45309;
+      font-weight: 800;
+    }
 
     .signature {
-      text-align: center; font-size: 7.5pt; color: #334155; margin-top: 4mm;
-    }
-    .sigLine { width: 45mm; margin: 5mm auto 1mm; border-top: 1px solid #111827; }
-    
-    .footer {
-      border-top: 1px solid #f59e0b; padding-top: 2mm; margin-top: auto;
-      text-align: center; color: #64748b; font-size: 6pt;
+      text-align: center;
+      font-size: 7.5pt;
+      color: #334155;
+      margin-top: 4mm;
     }
 
-    .list-row button { background: #1f2937; color: #fde68a; border: 1px solid #374151; border-radius: 10px; padding: 7px 9px; font-weight: 800; }
+    .sigLine {
+      width: 45mm;
+      margin: 5mm auto 1mm;
+      border-top: 1px solid #111827;
+    }
+
+    .footer {
+      border-top: 1px solid #f59e0b;
+      padding-top: 2mm;
+      margin-top: auto;
+      text-align: center;
+      color: #64748b;
+      font-size: 6pt;
+    }
+
+    .list-row button,
+    .item-row button {
+      background: #1f2937;
+      color: #fde68a;
+      border: 1px solid #374151;
+      border-radius: 10px;
+      padding: 7px 9px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      .tab { padding: 12px; }
+
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      #previewBox {
+        height: auto;
+        min-height: 70vh;
+        overflow: auto;
+        padding: 14px;
+      }
+
+      #pdf-canvas {
+        width: max-content;
+        max-width: none;
+        margin: 0;
+      }
+
+      .a4 {
+        width: 210mm;
+        min-width: 210mm;
+      }
+    }
   </style>
 </head>
 
@@ -242,14 +471,17 @@
             <input id="q-date" type="date" class="input" oninput="renderPreview()">
             <input id="q-ref" type="text" class="input" placeholder="AER-1000" oninput="renderPreview()">
           </div>
+
           <select id="q-currency" class="input" onchange="renderPreview()">
             <option value="CLP">Pesos chilenos (CLP)</option>
             <option value="UF">Unidad de Fomento (UF)</option>
           </select>
+
           <select id="q-client" class="input" onchange="handleClientSelect()">
             <option value="">Seleccionar cliente</option>
             <option value="NEW">➕ Nuevo cliente</option>
           </select>
+
           <input id="q-project" class="input" placeholder="Proyecto / referencia del servicio" oninput="renderPreview()">
           <input id="q-location" class="input" placeholder="Ubicación / comuna del proyecto" oninput="renderPreview()">
           <textarea id="q-desc" class="input" oninput="renderPreview()"></textarea>
@@ -312,39 +544,18 @@
   import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-      apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
-      authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
-      projectId: "registro-de-gastos-a21e8",
-      storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
-      messagingSenderId: "947355933583",
-      appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
-    };
+    apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
+    authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
+    projectId: "registro-de-gastos-a21e8",
+    storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
+    messagingSenderId: "947355933583",
+    appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
+  };
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
   window.fb = { db, collection, addDoc, setDoc, deleteDoc, doc, runTransaction };
-
-  window.clientes = [];
-  window.historial = [];
-  window.nextFolio = 1000;
-
-  onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
-    window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
-  });
-
-  onSnapshot(collection(db, "rps_clientes"), snap => {
-    window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    if(typeof updateClientsUI === 'function') updateClientsUI();
-  });
-
-  onSnapshot(collection(db, "rps_cotizaciones"), snap => {
-    window.historial = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
-    if(typeof renderHistory === 'function') renderHistory();
-  });
-</script>
-
-<script>
-  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
@@ -365,7 +576,7 @@
 
 Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
 
-Incluye planificación de vuelo dron, captura aerofotogramétrica and postproceso de información técnica.
+Incluye planificación de vuelo dron, captura aerofotogramétrica y postproceso de información técnica.
 
 Entregables:
 • Plano topográfico
@@ -373,23 +584,55 @@ Entregables:
 • Nube de puntos densa
 • Ortomosaico`;
 
+  window.clientes = [];
+  window.historial = [];
+  window.nextFolio = 1000;
+  window.currentFolio = null;
+
   let items = [defaultItem()];
   let editingId = null;
   let editingClientId = null;
-  let editingItemIdx = null; 
+  let editingItemIdx = null;
 
-  function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
-  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  function money(n){ return '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL'); }
-  function amount(n,currency='CLP'){ return currency==='UF' ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2})+' UF' : money(n); }
-  function fmtDate(d){ if(!d) return ''; const [y,m,day]=String(d).split('-'); return `${day}-${m}-${y}`; }
-  function quoteCode(q){ return q?.ref || ('AER-' + (q?.folio || window.nextFolio || 1000)); }
+  function defaultItem(){
+    return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true};
+  }
+
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m]));
+  }
+
+  function money(n){
+    return '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL');
+  }
+
+  function amount(n,currency='CLP'){
+    return currency === 'UF'
+      ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2}) + ' UF'
+      : money(n);
+  }
+
+  function fmtDate(d){
+    if(!d) return '';
+    const [y,m,day] = String(d).split('-');
+    return `${day}-${m}-${y}`;
+  }
+
+  function quoteCode(q){
+    return q?.ref || ('AER-' + (q?.folio || window.nextFolio || 1000));
+  }
 
   function normalizeItems(arr){
     return (arr || []).map(it => {
       const qty = Number(it?.qty || 1);
       const price = Number(it?.price || 0);
-      return {...it, qty, price, total: Math.round(price*qty*100)/100};
+      return {...it, qty, price, total: Math.round(price * qty * 100) / 100};
     });
   }
 
@@ -413,9 +656,12 @@ Entregables:
   }
 
   function applyQuoteToForm(h, triggerRender = true) {
-    editingId = h.id;
+    if(!h) return;
+
+    editingId = h.id || null;
     window.currentFolio = Number(h.folio || 1000);
     items = normalizeItems((h.items && h.items.length) ? h.items : [defaultItem()]);
+
     document.getElementById('q-date').value = h.date || '';
     document.getElementById('q-ref').value = h.ref || ('AER-' + (h.folio || 1000));
     document.getElementById('q-currency').value = h.currency || 'CLP';
@@ -427,6 +673,7 @@ Entregables:
     document.getElementById('q-delivery').value = h.delivery || 'Según coordinación';
     document.getElementById('q-conditions').value = h.conditions || '';
     document.getElementById('q-notes').value = h.notes || '';
+
     if (triggerRender) renderPreview();
   }
 
@@ -434,6 +681,7 @@ Entregables:
     editingId = state.editingId;
     window.currentFolio = state.currentFolio;
     items = state.items;
+
     document.getElementById('q-date').value = state.date;
     document.getElementById('q-ref').value = state.ref;
     document.getElementById('q-currency').value = state.currency;
@@ -448,17 +696,28 @@ Entregables:
   }
 
   function currentQuote(){
-    const normalized = normalizeItems(items);
-    let neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
-    
+    let normalized = normalizeItems(items);
+
     const manualPriceInput = document.getElementById('i-price');
-    if (manualPriceInput && manualPriceInput.value !== "" && normalized.length === 1 && normalized[0].isDefault) {
+    if (
+      manualPriceInput &&
+      manualPriceInput.value !== "" &&
+      normalized.length === 1 &&
+      normalized[0].isDefault
+    ) {
       const mQty = Number(document.getElementById('i-qty').value || 1);
       const mPrice = Number(manualPriceInput.value || 0);
-      neto = mQty * mPrice;
+      normalized = [{
+        ...normalized[0],
+        qty: mQty,
+        price: mPrice,
+        total: Math.round(mQty * mPrice * 100) / 100
+      }];
     }
 
-    const iva = Math.round(neto*.19);
+    const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
+    const iva = Math.round(neto * .19);
+
     return {
       folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
       date: document.getElementById('q-date').value,
@@ -472,7 +731,10 @@ Entregables:
       delivery: document.getElementById('q-delivery').value,
       conditions: document.getElementById('q-conditions').value,
       notes: document.getElementById('q-notes').value,
-      items: normalized, neto, iva, total: neto+iva
+      items: normalized,
+      neto,
+      iva,
+      total: neto + iva
     };
   }
 
@@ -486,8 +748,18 @@ Entregables:
     const parts = raw.split(/Entregables\s*:/i);
     const scope = (parts[0] || raw).trim();
     let deliverables = [];
-    if(parts[1]) deliverables = parts[1].split(/\n|•|-/).map(x=>x.trim()).filter(Boolean);
-    if(!deliverables.length) deliverables = ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
+
+    if(parts[1]) {
+      deliverables = parts[1]
+        .split(/\n|•|-/)
+        .map(x=>x.trim())
+        .filter(Boolean);
+    }
+
+    if(!deliverables.length) {
+      deliverables = ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
+    }
+
     return {scope, deliverables};
   }
 
@@ -498,7 +770,7 @@ Entregables:
     if(!canvas) return;
 
     canvas.innerHTML = '';
-    
+
     function headerHTML(){
       return `
         <header class="pdf-header">
@@ -523,131 +795,162 @@ Entregables:
 
     const page = document.createElement('div');
     page.className = 'a4';
-    
-    let quoteItems = q.items.length ? q.items : [defaultItem()];
-    if (quoteItems.length === 1 && quoteItems[0].isDefault && document.getElementById('i-price').value !== "") {
-      quoteItems[0].price = Number(document.getElementById('i-price').value || 0);
-      quoteItems[0].total = quoteItems[0].price * Number(document.getElementById('i-qty').value || 1);
-    }
 
+    const quoteItems = q.items.length ? q.items : [defaultItem()];
     const it = quoteItems[0];
     const parsed = parseService(it.name);
 
     page.innerHTML = `
       ${headerHTML()}
-      <div class="grid2">
-        <div class="pdf-card">
-          <div class="bar">En atención a</div>
-          <div class="pdf-card-body">
-            <h3>${esc((c.name||'---').toUpperCase())}</h3>
-            <p>RUT: ${esc(c.rut||'—')}</p>
-            <p>Dirección: ${esc(c.address||'—')}</p>
-            <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
+
+      <main>
+        <div class="grid2">
+          <div class="pdf-card">
+            <div class="bar">En atención a</div>
+            <div class="pdf-card-body">
+              <h3>${esc((c.name||'---').toUpperCase())}</h3>
+              <p>RUT: ${esc(c.rut||'—')}</p>
+              <p>Dirección: ${esc(c.address||'—')}</p>
+              <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
+            </div>
+          </div>
+
+          <div class="pdf-card">
+            <div class="bar blue">Antecedentes del proyecto</div>
+            <div class="pdf-card-body">
+              <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
+              <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
+              <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
+              <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
+              <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
+            </div>
           </div>
         </div>
+
         <div class="pdf-card">
-          <div class="bar blue">Antecedentes del proyecto</div>
-          <div class="pdf-card-body">
-            <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
-            <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
-            <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
-            <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
-            <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
+          <div class="bar blue">Descripción del servicio</div>
+          <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
+        </div>
+
+        <div class="pdf-card">
+          <div class="bar">Servicio profesional</div>
+          <div class="service-body">
+            <h4>Alcance técnico</h4>
+            <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
           </div>
         </div>
-      </div>
-      
-      <div class="pdf-card">
-        <div class="bar blue">Descripción del servicio</div>
-        <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
-      </div>
 
-      <div class="pdf-card">
-        <div class="bar">Servicio profesional</div>
-        <div class="service-body">
-          <h4>Alcance técnico</h4>
-          <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
-        </div>
-      </div>
-
-      <div class="pdf-card">
-        <div class="bar">Servicio profesional · entregables</div>
-        <div class="service-body">
-          <h4>Entregables</h4>
-          <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
-        </div>
-      </div>
-
-      <div class="payment">
         <div class="pdf-card">
-          <div class="bar blue">Condiciones y datos de pago</div>
-          <div class="paymentCols">
-            <div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div>
-            <div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div>
+          <div class="bar">Servicio profesional · entregables</div>
+          <div class="service-body">
+            <h4>Entregables</h4>
+            <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
           </div>
         </div>
-        <div class="economic">
-          <div class="head">Resumen económico</div>
-          <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
-          <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
-          <hr>
-          <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
-        </div>
-      </div>
 
-      <div class="signature">
-        <div>Atentamente,</div>
-        <div class="sigLine"></div>
-        <b>ROBIN PINTO SERRANO</b><br>
-        <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
-      </div>
+        <div class="payment">
+          <div class="pdf-card">
+            <div class="bar blue">Condiciones y datos de pago</div>
+            <div class="paymentCols">
+              <div>
+                <h4>Condiciones comerciales</h4>
+                <p>${esc(q.conditions).replace(/\n/g,'<br>')}</p>
+              </div>
+              <div>
+                <h4>Transferencia bancaria</h4>
+                <p><b>${COMPANY.holder}</b></p>
+                <p>RUT: ${COMPANY.rut}</p>
+                <p>${COMPANY.bank}</p>
+                <p>${COMPANY.account}</p>
+                <p>${COMPANY.email}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="economic">
+            <div class="head">Resumen económico</div>
+            <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
+            <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
+            <hr>
+            <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
+          </div>
+        </div>
+
+        <div class="signature">
+          <div>Atentamente,</div>
+          <div class="sigLine"></div>
+          <b>ROBIN PINTO SERRANO</b><br>
+          <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
+        </div>
+      </main>
+
       ${footerHTML()}
     `;
-    
+
     canvas.appendChild(page);
     renderItems();
   }
 
   function renderItems(){
     const box = document.getElementById('items-list');
-    box.innerHTML = items.map((it,i)=>`<div class="item-row flex justify-between gap-3 items-center">
-      <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
-      <small class="text-amber-400 font-bold">${amount(it.total,currentQuote().currency)}</small>
-      <div class="flex gap-2">
-         <button onclick="editItem(${i})">✏️</button>
-         <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; renderPreview();">✕</button>
-      </div>
-    </div>`).join('');
+    if(!box) return;
+
+    box.innerHTML = items.map((it,i)=>`
+      <div class="item-row flex justify-between gap-3 items-center">
+        <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
+        <small class="text-amber-400 font-bold">${amount(it.total,currentQuote().currency)}</small>
+        <div class="flex gap-2">
+          <button onclick="editItem(${i})">✏️</button>
+          <button onclick="deleteItem(${i})">✕</button>
+        </div>
+      </div>`).join('');
   }
 
   function addItem(){
     const name = document.getElementById('i-name').value.trim();
     const qty = Number(document.getElementById('i-qty').value||1);
     const price = Number(document.getElementById('i-price').value||0);
+
     if(!name) return alert('Ingresa el detalle técnico del servicio.');
-    
-    const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
-    
+
+    const newItem = {
+      name,
+      qty,
+      price,
+      total: Math.round(qty * price * 100) / 100,
+      isDefault:false
+    };
+
     if(editingItemIdx !== null && editingItemIdx >= 0) {
       items[editingItemIdx] = newItem;
-      editingItemIdx = null; 
+      editingItemIdx = null;
     } else {
-      const onlyDefault = items.length===1 && items[0].isDefault;
-      if(onlyDefault) items[0]=newItem; else items.push(newItem);
+      const onlyDefault = items.length === 1 && items[0].isDefault;
+      if(onlyDefault) items[0] = newItem;
+      else items.push(newItem);
     }
-    
+
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
     document.getElementById('i-qty').value = 1;
     document.getElementById('i-price').value = '';
+
     renderPreview();
   }
 
   function editItem(i){
     const it = items[i];
+    if(!it) return;
+
     document.getElementById('i-name').value = it.name;
     document.getElementById('i-qty').value = it.qty;
     document.getElementById('i-price').value = it.price;
-    editingItemIdx = i; 
+    editingItemIdx = i;
+  }
+
+  function deleteItem(i){
+    items.splice(i,1);
+    if(!items.length) items = [defaultItem()];
+    renderPreview();
   }
 
   function navTo(tab){
@@ -655,54 +958,72 @@ Entregables:
       document.getElementById('tab-'+t).classList.toggle('active',t===tab);
       document.getElementById('tab-'+t+'-btn').classList.toggle('active',t===tab);
     });
+
     if(tab==='clients') updateClientsUI();
     if(tab==='hist') renderHistory();
+    if(tab==='edit') renderPreview();
   }
 
   function handleClientSelect(){
-    if(document.getElementById('q-client').value==='NEW') navTo('clients');
+    if(document.getElementById('q-client').value === 'NEW') navTo('clients');
     renderPreview();
   }
 
   async function saveClient(){
     const id = document.getElementById('c-id').value || editingClientId;
+
     const data = {
       id: id || ('local_'+Date.now()),
-      name:document.getElementById('c-name').value.trim().toUpperCase(),
-      rut:document.getElementById('c-rut').value.trim(),
-      phone:document.getElementById('c-phone').value.trim(),
-      email:document.getElementById('c-email').value.trim(),
-      address:document.getElementById('c-address').value.trim()
+      name: document.getElementById('c-name').value.trim().toUpperCase(),
+      rut: document.getElementById('c-rut').value.trim(),
+      phone: document.getElementById('c-phone').value.trim(),
+      email: document.getElementById('c-email').value.trim(),
+      address: document.getElementById('c-address').value.trim()
     };
+
     if(!data.name) return alert('Ingresa el nombre del cliente.');
 
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name);
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]')
+      .filter(c=>c.id!==data.id && c.name!==data.name);
+
     local.push(data);
     localStorage.setItem('rps_clientes_local',JSON.stringify(local));
-    window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
+
+    window.clientes = [
+      ...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),
+      data
+    ];
 
     try{
       if(window.fb?.db){
-        if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
-        else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
+        if(id && !String(id).startsWith('local_')) {
+          await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
+        } else {
+          await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
+        }
       }
-    }catch(e){ console.warn(e); }
+    }catch(e){
+      console.warn(e);
+    }
 
     clearClientForm();
     updateClientsUI();
     navTo('edit');
-    document.getElementById('q-client').value=data.name;
+
+    document.getElementById('q-client').value = data.name;
     renderPreview();
   }
 
   function clearClientForm(){
     editingClientId = null;
-    ['c-id','c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value='');
+    ['c-id','c-name','c-rut','c-phone','c-email','c-address']
+      .forEach(id=>document.getElementById(id).value='');
   }
 
   function editClient(id){
     const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
     if(!c) return;
+
     editingClientId = c.id;
     document.getElementById('c-id').value = c.id || '';
     document.getElementById('c-name').value = c.name || '';
@@ -710,6 +1031,7 @@ Entregables:
     document.getElementById('c-phone').value = c.phone || '';
     document.getElementById('c-email').value = c.email || '';
     document.getElementById('c-address').value = c.address || '';
+
     navTo('clients');
   }
 
@@ -718,13 +1040,21 @@ Entregables:
     if(!c) return;
     if(!confirm('¿Eliminar este cliente?')) return;
 
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id) && x.name!==c.name);
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]')
+      .filter(x=>String(x.id)!==String(id) && x.name!==c.name);
+
     localStorage.setItem('rps_clientes_local',JSON.stringify(local));
-    window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id) && x.name!==c.name);
+
+    window.clientes = (window.clientes||[])
+      .filter(x=>String(x.id)!==String(id) && x.name!==c.name);
 
     try{
-      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
-    }catch(e){ console.warn(e); }
+      if(window.fb?.db && !String(id).startsWith('local_')) {
+        await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
+      }
+    }catch(e){
+      console.warn(e);
+    }
 
     updateClientsUI();
     renderPreview();
@@ -732,13 +1062,26 @@ Entregables:
 
   function updateClientsUI(){
     const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]');
-    const merged = [...(window.clientes||[]),...local].filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i).sort((a,b)=>a.name.localeCompare(b.name));
+
+    const merged = [...(window.clientes||[]), ...local]
+      .filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i)
+      .sort((a,b)=>a.name.localeCompare(b.name));
+
     window.clientes = merged;
+
     const sel = document.getElementById('q-client');
     const cur = sel.value;
-    sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-    if(cur) sel.value=cur;
-    document.getElementById('clients-list').innerHTML = merged.length ? merged.map(c=>`
+
+    sel.innerHTML =
+      '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' +
+      merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+
+    if(cur) sel.value = cur;
+
+    const list = document.getElementById('clients-list');
+    if(!list) return;
+
+    list.innerHTML = merged.length ? merged.map(c=>`
       <div class="list-row">
         <div class="flex justify-between gap-3 items-start">
           <div class="min-w-0">
@@ -755,9 +1098,16 @@ Entregables:
   }
 
   function renderHistory(){
-    const q = document.getElementById('search-hist').value.toLowerCase();
-    const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
-    document.getElementById('history-list').innerHTML = data.length ? data.map(h=>`
+    const input = document.getElementById('search-hist');
+    const list = document.getElementById('history-list');
+    if(!input || !list) return;
+
+    const q = input.value.toLowerCase();
+
+    const data = (window.historial||[])
+      .filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
+
+    list.innerHTML = data.length ? data.map(h=>`
       <div class="list-row">
         <div class="flex justify-between gap-3 items-start">
           <div class="min-w-0">
@@ -775,57 +1125,77 @@ Entregables:
       </div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
   }
 
-  function quoteById(id){ return (window.historial||[]).find(h=>h.id===id); }
+  function quoteById(id){
+    return (window.historial||[]).find(h=>h.id===id);
+  }
 
-  function editQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
-  function viewQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
+  function editQuote(id){
+    applyQuoteToForm(quoteById(id));
+    navTo('edit');
+  }
+
+  function viewQuote(id){
+    applyQuoteToForm(quoteById(id));
+    navTo('edit');
+  }
 
   async function deleteQuote(id){
     if(!confirm('¿Eliminar esta cotización del historial?')) return;
+
     try{
       if(window.fb?.db) await fb.deleteDoc(fb.doc(fb.db,'rps_cotizaciones',id));
       window.historial = (window.historial||[]).filter(h=>h.id!==id);
       renderHistory();
-    }catch(e){ console.error(e); alert('No se pudo eliminar: ' + (e.message || e)); }
+    }catch(e){
+      console.error(e);
+      alert('No se pudo eliminar: ' + (e.message || e));
+    }
   }
 
   async function saveAndSend(){
     const q = currentQuote();
+
     if(!q.client) return alert('Falta seleccionar o crear cliente.');
-    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
+
+    let f = editingId
+      ? Number(window.currentFolio || q.folio || 1000)
+      : (window.nextFolio || 1000);
+
     try {
       if(!editingId && window.fb?.runTransaction){
         await fb.runTransaction(fb.db, async (t) => {
           const r = fb.doc(fb.db, 'config', 'rps_cotizador_v1');
           const s = await t.get(r);
-          f = s.exists() ? Math.max(1000, Number(s.data().lastFolio || 1000)) : 1000;
-          if (s.exists()) { t.update(r, {lastFolio: f + 1}); } else { t.set(r, {lastFolio: f + 1}); }
+
+          f = s.exists()
+            ? Math.max(1000, Number(s.data().lastFolio || 1000))
+            : 1000;
+
+          if (s.exists()) t.update(r, {lastFolio: f + 1});
+          else t.set(r, {lastFolio: f + 1});
         });
       }
-      const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
+
+      const data = {
+        ...q,
+        folio: f,
+        ref: q.ref || ('AER-' + f),
+        createdAt: new Date().toISOString()
+      };
+
       if(window.fb?.db){
         if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
         else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
       }
+
       await generateAndSharePDF();
-    } catch(e) { console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
+
+    } catch(e) {
+      console.error(e);
+      alert('No se pudo guardar/enviar: ' + (e.message || e));
+    }
   }
 
-  document.getElementById('q-date').valueAsDate = new Date();
-  document.getElementById('q-ref').value = 'AER-1000';
-  document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
-  document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-  
-  document.getElementById('i-price').addEventListener('input', renderPreview);
-  document.getElementById('i-qty').addEventListener('input', renderPreview);
-
-  window.downloadHist = (id) => {
-    const h = window.historial.find(x => x.id === id);
-    generateAndSharePDF(null, h);
-  };
-</script>
-
-<script>
   async function generateAndSharePDF(historyId=null, quoteOverride=null){
     const JsPDF = window.jspdf?.jsPDF;
     if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -837,14 +1207,15 @@ Entregables:
       applyQuoteToForm(quoteOverride, false);
       renderPreview();
       await new Promise(r=>setTimeout(r,80));
-    }else if(historyId){
+    } else if(historyId){
       const h = quoteById(historyId);
       if(!h) return alert('No se encontró la cotización.');
+
       originalState = captureFormState();
       applyQuoteToForm(h, false);
       renderPreview();
       await new Promise(r=>setTimeout(r,80));
-    }else{
+    } else {
       renderPreview();
       await new Promise(r=>setTimeout(r,50));
     }
@@ -852,11 +1223,17 @@ Entregables:
     const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
     const c = selectedClient();
 
-    const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
+    const pdf = new JsPDF({
+      orientation:'portrait',
+      unit:'mm',
+      format:'a4',
+      compress:true
+    });
 
     const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
     const G=[30,41,59], B=[245,158,11], S=[100,116,139], L=[203,213,225];
-    let y=MT;
+
+    let y = MT;
 
     function font(size, style='normal', color=G){
       pdf.setFont('helvetica', style);
@@ -864,134 +1241,264 @@ Entregables:
       pdf.setTextColor(...color);
     }
 
-    function lines(text, w){ return pdf.splitTextToSize(String(text ?? ''), w); }
+    function lines(text, w){
+      return pdf.splitTextToSize(String(text ?? ''), w);
+    }
+
+    function ensureSpace(needed){
+      if(y + needed > H - MB - 14){
+        foot();
+        pdf.addPage();
+        head();
+      }
+    }
 
     function foot(){
-      pdf.setDrawColor(...B); pdf.setLineWidth(.3);
+      pdf.setDrawColor(...B);
+      pdf.setLineWidth(.3);
       pdf.line(ML,H-9,W-MR,H-9);
+
       font(6,'normal',S);
-      pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW});
+      pdf.text(
+        `${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`,
+        W/2,
+        H-5,
+        {align:'center', maxWidth:CW}
+      );
     }
 
     function head(){
-      y=MT;
-      font(14,'bold',[22,30,46]); pdf.text(COMPANY.name,ML,y+5);
+      y = MT;
+
+      font(14,'bold',[22,30,46]);
+      pdf.text(COMPANY.name,ML,y+5);
+
       font(7.5,'normal',S);
       pdf.text('Servicios topográficos y geodésicos',ML,y+10);
       pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML,y+14);
 
       pdf.setFillColor(22,30,46);
       pdf.roundedRect(W-MR-48,y,48,10,1,1,'F');
+
       font(7,'bold',[245,158,11]);
       pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+6.5,{align:'center'});
-      font(15,'bold',[22,30,46]); pdf.text(`N° ${quoteCode(q)}`,W-MR,y+21,{align:'right'});
-      font(7.5,'normal',S); pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+26,{align:'right'});
-      y+=32; pdf.setDrawColor(...B); pdf.setLineWidth(.6); pdf.line(ML,y,W-MR,y); y+=6;
+
+      font(15,'bold',[22,30,46]);
+      pdf.text(`N° ${quoteCode(q)}`,W-MR,y+21,{align:'right'});
+
+      font(7.5,'normal',S);
+      pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+26,{align:'right'});
+
+      y += 32;
+
+      pdf.setDrawColor(...B);
+      pdf.setLineWidth(.6);
+      pdf.line(ML,y,W-MR,y);
+
+      y += 6;
     }
 
-    function para(text, size=8.5, lh=4.2){
-      const arr=lines(text,CW-6);
-      for(const ln of arr){
-        font(size='normal',G);
-        pdf.text(ln,ML+3,y);
-        y+=lh;
+    function sectionBar(title, fillDark=true){
+      ensureSpace(12);
+
+      if(fillDark) {
+        pdf.setFillColor(22,30,46);
+        font(6.5,'bold',[245,158,11]);
+      } else {
+        pdf.setFillColor(...B);
+        font(6.5,'bold',[22,30,46]);
       }
-      y+=2;
+
+      pdf.roundedRect(ML,y,CW,6,1,1,'F');
+      pdf.text(title,ML+3,y+4.2);
+      y += 8;
+    }
+
+    function para(text, size=8.5, lh=4.2, x=ML+3, maxW=CW-6){
+      const arr = lines(text, maxW);
+
+      for(const ln of arr){
+        ensureSpace(lh + 3);
+        font(size,'normal',G);
+        pdf.text(ln,x,y);
+        y += lh;
+      }
+
+      y += 2;
     }
 
     function info(){
       const h=34, leftW=88, gap=6, rx=ML+leftW+gap, rw=CW-leftW-gap;
-      pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
+
+      ensureSpace(h+8);
+
+      pdf.setDrawColor(...L);
+      pdf.setFillColor(255,255,255);
       pdf.roundedRect(ML,y,leftW,h,1,1,'FD');
       pdf.roundedRect(rx,y,rw,h,1,1,'FD');
-      pdf.setFillColor(22,30,46); pdf.roundedRect(ML,y,leftW,6,1,1,'F');
-      pdf.setFillColor(...B); pdf.roundedRect(rx,y,rw,6,1,1,'F');
+
+      pdf.setFillColor(22,30,46);
+      pdf.roundedRect(ML,y,leftW,6,1,1,'F');
+
+      pdf.setFillColor(...B);
+      pdf.roundedRect(rx,y,rw,6,1,1,'F');
+
       font(6.5,'bold',[245,158,11]);
       pdf.text('EN ATENCIÓN A',ML+3,y+4.2);
+
       font(6.5,'bold',[22,30,46]);
       pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.2);
-      font(8,'bold',[22,30,46]); pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+12);
+
+      font(8,'bold',[22,30,46]);
+      pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+12);
+
       font(7.5,'normal',G);
       pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+19);
       pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+24);
       pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+30);
 
-      let yy=y+12;
+      let yy = y + 12;
+
       function row(label,val){
-        font(7,'bold',S); pdf.text(label,rx+3,yy);
-        font(7.5,'normal',G); pdf.text(lines(val||'—',rw-24),rx+24,yy);
-        yy+=4.5;
+        font(7,'bold',S);
+        pdf.text(label,rx+3,yy);
+
+        font(7.5,'normal',G);
+        pdf.text(lines(val||'—',rw-24),rx+24,yy);
+
+        yy += 4.5;
       }
+
       row('Proyecto:',q.project||'Servicio técnico');
       row('Ubicación:',q.location||'Por definir');
       row('Validez:',q.validity||'15 días');
       row('Entrega:',q.delivery||'Según coordinación');
       row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
-      y+=h+6;
+
+      y += h + 6;
     }
 
     function payment(){
-      const top=y,h=42,gap=6,totalW=68,infoW=CW-totalW-gap;
-      pdf.setDrawColor(...L); pdf.setFillColor(255,255,255);
+      ensureSpace(50);
+
+      const top=y, h=42, gap=6, totalW=68, infoW=CW-totalW-gap;
+
+      pdf.setDrawColor(...L);
+      pdf.setFillColor(255,255,255);
       pdf.roundedRect(ML,top,infoW,h,1,1,'FD');
-      pdf.setFillColor(255,253,245); pdf.roundedRect(ML,top,infoW,6,1,1,'F');
-      font(6.5,'bold',[22,30,46]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2);
-      const colW=(infoW-8)/2, x2=ML+4+colW+2;
-      font(7,'bold',[180,83,9]); pdf.text('Condiciones comerciales',ML+3,top+13);
-      font(7.5,'normal',G); pdf.text(lines(q.conditions||'',colW),ML+3,top+18);
-      font(7,'bold',[180,83,9]); pdf.text('Transferencia bancaria',x2,top+13);
+
+      pdf.setFillColor(255,253,245);
+      pdf.roundedRect(ML,top,infoW,6,1,1,'F');
+
+      font(6.5,'bold',[22,30,46]);
+      pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2);
+
+      const colW=(infoW-8)/2;
+      const x2=ML+4+colW+2;
+
+      font(7,'bold',[180,83,9]);
+      pdf.text('Condiciones comerciales',ML+3,top+13);
+
+      font(7.5,'normal',G);
+      pdf.text(lines(q.conditions||'',colW),ML+3,top+18);
+
+      font(7,'bold',[180,83,9]);
+      pdf.text('Transferencia bancaria',x2,top+13);
+
       font(7,'normal',G);
-      pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
+      pdf.text(
+        lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),
+        x2,
+        top+18
+      );
 
       const tx=ML+infoW+gap;
-      pdf.setDrawColor(253,230,138); pdf.setFillColor(255,253,245);
+
+      pdf.setDrawColor(253,230,138);
+      pdf.setFillColor(255,253,245);
       pdf.roundedRect(tx,top,totalW,h,1,1,'FD');
-      pdf.setFillColor(22,30,46); pdf.roundedRect(tx,top,totalW,6,1,1,'F');
-      font(6.5,'bold',[245,158,11]); pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);
+
+      pdf.setFillColor(22,30,46);
+      pdf.roundedRect(tx,top,totalW,6,1,1,'F');
+
+      font(6.5,'bold',[245,158,11]);
+      pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);
+
       let yy=top+14;
+
       function r(label,val,total=false){
         font(total?8:7.2,total?'bold':'normal',total?[180,83,9]:S);
         pdf.text(label,tx+3,yy);
+
         font(total?11:8,total?'bold':'normal',total?[180,83,9]:G);
         pdf.text(amount(val,q.currency),tx+totalW-3,yy,{align:'right'});
-        yy+=total?7:5.5;
+
+        yy += total ? 7 : 5.5;
       }
-      r('Valor neto',q.neto); r('IVA 19%',q.iva);
-      pdf.setDrawColor(...L); pdf.line(tx+3,yy-2,tx+totalW-3,yy-2);
+
+      r('Valor neto',q.neto);
+      r('IVA 19%',q.iva);
+
+      pdf.setDrawColor(...L);
+      pdf.line(tx+3,yy-2,tx+totalW-3,yy-2);
+
       r('TOTAL SERVICIO',q.total,true);
-      y=top+h+6;
+
+      y = top + h + 6;
     }
 
     head();
     info();
-    
-    pdf.setFillColor(22,30,46); pdf.roundedRect(ML,y,CW,6,1,1,'F');
-    font(6.5,'bold',[245,158,11]); pdf.text('DESCRIPCIÓN DEL SERVICIO',ML+3,y+4.2); y+=8;
-    para(q.serviceDesc||DEFAULT_SERVICE_DESC,8.5,4.2); y+=2;
+
+    sectionBar('DESCRIPCIÓN DEL SERVICIO', false);
+    para(q.serviceDesc || DEFAULT_SERVICE_DESC, 8.5, 4.2);
+    y += 2;
 
     const quoteItems = q.items.length ? q.items : [defaultItem()];
     const parsed = parseService(quoteItems[0].name);
 
-    pdf.setFillColor(22,30,46); pdf.roundedRect(ML,y,CW,6,1,1,'F');
-    font(6.5,'bold',[245,158,11]); pdf.text('SERVICIO PROFESIONAL',ML+3,y+4.2); y+=8;
-    font(7.5,'bold',[180,83,9]); pdf.text('ALCANCE TÉCNICO',ML+3,y); y+=4.5;
-    para(parsed.scope,8.5,4.2); y+=2;
+    sectionBar('SERVICIO PROFESIONAL', true);
 
-    pdf.setFillColor(22,30,46); pdf.roundedRect(ML,y,CW,6,1,1,'F');
-    font(6.5,'bold',[245,158,11]); pdf.text('SERVICIO PROFESIONAL · ENTREGABLES',ML+3,y+4.2); y+=8;
-    font(8,'normal',G);
-    for(const d of parsed.deliverables){ pdf.text(`• ${d}`,ML+5,y); y+=4; }
-    y+=4;
+    ensureSpace(10);
+    font(7.5,'bold',[180,83,9]);
+    pdf.text('ALCANCE TÉCNICO',ML+3,y);
+    y += 4.5;
+
+    para(parsed.scope,8.5,4.2);
+    y += 2;
+
+    sectionBar('SERVICIO PROFESIONAL · ENTREGABLES', true);
+
+    for(const d of parsed.deliverables){
+      ensureSpace(6);
+      font(8,'normal',G);
+      pdf.text(`• ${d}`,ML+5,y);
+      y += 4;
+    }
+
+    y += 4;
 
     payment();
-    
-    font(7.5,'normal',G); pdf.text('Atentamente,',W/2,y,{align:'center'}); y+=6;
-    pdf.setDrawColor([22,30,46]); pdf.line(W/2-25,y,W/2+25,y); y+=4;
-    font(8,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'}); y+=3.5;
-    font(6.5,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
+
+    ensureSpace(24);
+
+    font(7.5,'normal',G);
+    pdf.text('Atentamente,',W/2,y,{align:'center'});
+    y += 6;
+
+    pdf.setDrawColor(22,30,46);
+    pdf.line(W/2-25,y,W/2+25,y);
+    y += 4;
+
+    font(8,'bold',G);
+    pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'});
+    y += 3.5;
+
+    font(6.5,'normal',S);
+    pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
 
     foot();
-    
+
     pdf.save(`COT_${quoteCode(q)}.pdf`);
 
     if(originalState){
@@ -1000,10 +1507,79 @@ Entregables:
     }
   }
 
-  window.onload = function() {
+  window.downloadHist = (id) => {
+    const h = window.historial.find(x => x.id === id);
+    generateAndSharePDF(null, h);
+  };
+
+  Object.assign(window, {
+    navTo,
+    renderPreview,
+    handleClientSelect,
+    addItem,
+    editItem,
+    deleteItem,
+    saveClient,
+    clearClientForm,
+    editClient,
+    deleteClient,
+    updateClientsUI,
+    renderHistory,
+    editQuote,
+    viewQuote,
+    deleteQuote,
+    saveAndSend,
+    generateAndSharePDF,
+    captureFormState,
+    applyQuoteToForm,
+    restoreFormState,
+    currentQuote,
+    selectedClient,
+    quoteById,
+    defaultItem,
+    parseService,
+    quoteCode,
+    fmtDate,
+    amount,
+    COMPANY
+  });
+
+  onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
+    window.nextFolio = snap.exists()
+      ? Math.max(1000, Number(snap.data().lastFolio || 1000))
+      : 1000;
+
+    if(!editingId && !document.getElementById('q-ref').value) {
+      document.getElementById('q-ref').value = 'AER-' + window.nextFolio;
+    }
+  });
+
+  onSnapshot(collection(db, "rps_clientes"), snap => {
+    window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
     updateClientsUI();
     renderPreview();
-  };
+  });
+
+  onSnapshot(collection(db, "rps_cotizaciones"), snap => {
+    window.historial = snap.docs
+      .map(d => ({id: d.id, ...d.data()}))
+      .sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
+
+    renderHistory();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('q-date').valueAsDate = new Date();
+    document.getElementById('q-ref').value = 'AER-1000';
+    document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
+    document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
+
+    document.getElementById('i-price').addEventListener('input', renderPreview);
+    document.getElementById('i-qty').addEventListener('input', renderPreview);
+
+    updateClientsUI();
+    renderPreview();
+  });
 </script>
 </body>
 </html>

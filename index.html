@@ -106,7 +106,11 @@
       padding:14px;
     }
 
-    /* Modificado overflow para permitir scroll y zoom nativo completo en dispositivos móviles y de escritorio */
+    #previewContainer {
+      position: relative;
+      width: 100%;
+    }
+
     #previewBox {
       height:calc(100vh - 118px);
       min-height:620px;
@@ -242,6 +246,17 @@
       text-align:center; color:#64748b; font-size:5.2pt;
     }
 
+    .zoom-controls {
+      position: absolute; top: 12px; right: 12px; z-index: 30;
+      display: flex; gap: 6px; background: rgba(15,23,42,0.85);
+      padding: 6px; border-radius: 12px; border: 1px solid rgba(125,211,252,0.3);
+    }
+    .zoom-controls button {
+      background: #1e293b; color: #7dd3fc; font-weight: bold;
+      padding: 4px 10px; border-radius: 8px; font-size: 13px;
+    }
+    .zoom-controls button:hover { background: #334155; }
+
     @media (max-width:1023px) {
       .layout { display:block; }
       #previewBox { margin-top:18px; height:72vh; min-height:520px; }
@@ -304,9 +319,16 @@
         <button class="btn green" onclick="saveAndSend()">Guardar y enviar PDF</button>
       </div>
 
-      <div id="previewBox">
-        <div id="previewScaler">
-          <div id="pdf-canvas"></div>
+      <div id="previewContainer">
+        <div class="zoom-controls">
+          <button onclick="changeZoom(0.1)">➕</button>
+          <button onclick="changeZoom(-0.1)">minus</button>
+          <button onclick="resetZoom()">Restablecer</button>
+        </div>
+        <div id="previewBox">
+          <div id="previewScaler">
+            <div id="pdf-canvas"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -405,6 +427,7 @@ Entregables:
   let editingId = null;
   let editingClientId = null;
   let editingItemIdx = null; 
+  let currentZoomFactor = null; 
 
   function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
   function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -525,7 +548,6 @@ Entregables:
     const canvas = document.getElementById('pdf-canvas');
     if(!canvas) return;
 
-    /* Ajustadas las dimensiones del renderizador para compactar el contenido estrictamente en 1 página */
     const PAGE_LIMIT = 240; 
     const HEADER_UNITS = 10;
 
@@ -705,14 +727,36 @@ Entregables:
   }
 
   function fitPreview(){
+    if (currentZoomFactor !== null) {
+      document.getElementById('previewScaler').style.transform = `scale(${currentZoomFactor})`;
+      return;
+    }
     const box = document.getElementById('previewBox');
     const scaler = document.getElementById('previewScaler');
     if(!box || !scaler) return;
     const pageW = scaler.offsetWidth || 794;
     const pageH = scaler.offsetHeight || 1123;
     const s = Math.min((box.clientWidth-36)/pageW, (box.clientHeight-36)/pageH, 1.15);
-    /* Permitir zoom escalado responsivo completo */
     scaler.style.transform = `scale(${Math.max(.4, s)})`;
+  }
+
+  /* Nuevas funciones para controlar el Zoom Manual en pantalla */
+  function changeZoom(amount) {
+    const scaler = document.getElementById('previewScaler');
+    if (!scaler) return;
+    if (currentZoomFactor === null) {
+      const box = document.getElementById('previewBox');
+      const pageW = scaler.offsetWidth || 794;
+      const pageH = scaler.offsetHeight || 1123;
+      currentZoomFactor = Math.min((box.clientWidth-36)/pageW, (box.clientHeight-36)/pageH, 1.15);
+    }
+    currentZoomFactor = Math.max(0.3, Math.min(2.5, currentZoomFactor + amount));
+    scaler.style.transform = `scale(${currentZoomFactor})`;
+  }
+
+  function resetZoom() {
+    currentZoomFactor = null;
+    fitPreview();
   }
 
   function renderItems(){
@@ -931,7 +975,6 @@ Entregables:
 </script>
 
 <script>
-/* Cierre e inicialización de la función constructora del PDF reparado por completo */
 async function generateAndSharePDF(historyId=null, quoteOverride=null){
   const JsPDF = window.jspdf?.jsPDF;
   if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -1016,7 +1059,7 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
     const arr=lines(text,CW-8);
     for(const ln of arr){
       need(lh+2);
-      font(size,'normal',G);
+      font(size='normal',G);
       pdf.text(ln,ML+4,y);
       y+=lh;
     }

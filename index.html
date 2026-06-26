@@ -248,14 +248,11 @@
 
     .zoom-controls {
       position: absolute; top: 12px; right: 12px; z-index: 30;
-      display: flex; gap: 6px; background: rgba(15,23,42,0.85);
-      padding: 6px; border-radius: 12px; border: 1px solid rgba(125,211,252,0.3);
+      display: flex; items-center: center; gap: 8px; background: rgba(15,23,42,0.9);
+      padding: 8px 12px; border-radius: 14px; border: 1px solid rgba(125,211,252,0.3);
     }
-    .zoom-controls button {
-      background: #1e293b; color: #7dd3fc; font-weight: bold;
-      padding: 4px 10px; border-radius: 8px; font-size: 13px;
-    }
-    .zoom-controls button:hover { background: #334155; }
+    .zoom-controls span { font-size: 11px; font-weight: bold; color: #7dd3fc; text-transform: uppercase; }
+    .zoom-controls input { cursor: pointer; accent-color: #7dd3fc; width: 100px; }
 
     @media (max-width:1023px) {
       .layout { display:block; }
@@ -321,9 +318,8 @@
 
       <div id="previewContainer">
         <div class="zoom-controls">
-          <button onclick="changeZoom(0.1)">➕</button>
-          <button onclick="changeZoom(-0.1)">minus</button>
-          <button onclick="resetZoom()">Restablecer</button>
+          <span>Zoom:</span>
+          <input type="range" id="zoomSlider" min="40" max="200" value="100" oninput="applyManualZoom(this.value)">
         </div>
         <div id="previewBox">
           <div id="previewScaler">
@@ -427,7 +423,7 @@ Entregables:
   let editingId = null;
   let editingClientId = null;
   let editingItemIdx = null; 
-  let currentZoomFactor = null; 
+  let manualScalePercent = null;
 
   function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
   function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -727,36 +723,25 @@ Entregables:
   }
 
   function fitPreview(){
-    if (currentZoomFactor !== null) {
-      document.getElementById('previewScaler').style.transform = `scale(${currentZoomFactor})`;
+    const scaler = document.getElementById('previewScaler');
+    if(!scaler) return;
+    if (manualScalePercent !== null) {
+      scaler.style.transform = `scale(${manualScalePercent / 100})`;
       return;
     }
     const box = document.getElementById('previewBox');
-    const scaler = document.getElementById('previewScaler');
-    if(!box || !scaler) return;
     const pageW = scaler.offsetWidth || 794;
     const pageH = scaler.offsetHeight || 1123;
     const s = Math.min((box.clientWidth-36)/pageW, (box.clientHeight-36)/pageH, 1.15);
     scaler.style.transform = `scale(${Math.max(.4, s)})`;
+    document.getElementById('zoomSlider').value = Math.round(Math.max(.4, s) * 100);
   }
 
-  /* Nuevas funciones para controlar el Zoom Manual en pantalla */
-  function changeZoom(amount) {
+  /* Aplica zoom CSS nativo mediante el deslizador */
+  function applyManualZoom(val) {
+    manualScalePercent = Number(val);
     const scaler = document.getElementById('previewScaler');
-    if (!scaler) return;
-    if (currentZoomFactor === null) {
-      const box = document.getElementById('previewBox');
-      const pageW = scaler.offsetWidth || 794;
-      const pageH = scaler.offsetHeight || 1123;
-      currentZoomFactor = Math.min((box.clientWidth-36)/pageW, (box.clientHeight-36)/pageH, 1.15);
-    }
-    currentZoomFactor = Math.max(0.3, Math.min(2.5, currentZoomFactor + amount));
-    scaler.style.transform = `scale(${currentZoomFactor})`;
-  }
-
-  function resetZoom() {
-    currentZoomFactor = null;
-    fitPreview();
+    if (scaler) scaler.style.transform = `scale(${manualScalePercent / 100})`;
   }
 
   function renderItems(){
@@ -975,6 +960,7 @@ Entregables:
 </script>
 
 <script>
+/* Bloque de código de descarga jsPDF completamente aislado y libre de errores de sintaxis HTML */
 async function generateAndSharePDF(historyId=null, quoteOverride=null){
   const JsPDF = window.jspdf?.jsPDF;
   if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -1164,6 +1150,8 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
   payment();
   sign();
   foot();
+  
+  pdf.save(`COT_${quoteCode(q)}.pdf`);
 
   if(originalState){
     restoreFormState(originalState);

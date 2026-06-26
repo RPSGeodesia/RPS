@@ -593,6 +593,7 @@
   let editingItemIdx = null;
   let previewZoom = 1;
   let suppressPriceSync = false;
+  let editorDirty = false;
 
   function defaultItem(){
     return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true};
@@ -631,19 +632,29 @@
 
     const priceEl = document.getElementById('i-price');
     const qtyEl = document.getElementById('i-qty');
+    const nameEl = document.getElementById('i-name');
     if(!priceEl || !qtyEl) return;
 
-    const qty = Number(qtyEl.value || 1);
-    const price = Number(priceEl.value || 0);
+    const qty = Math.max(1, Number(qtyEl.value || 1));
+    const price = Math.max(0, Number(priceEl.value || 0));
 
+    /*
+      Regla definitiva del precio:
+      - Si estás editando un ítem, el campo visible actualiza ese ítem.
+      - Si solo existe el ítem base/default, el campo visible actualiza ese ítem.
+      - Si ya hay varios ítems y no estás editando, el campo visible NO pisa los ítems existentes;
+        se usa solo para el próximo ítem al presionar Agregar / Actualizar.
+    */
     if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
+      items[editingItemIdx].name = (nameEl?.value || items[editingItemIdx].name || DEFAULT_ITEM_TEXT).trim();
       items[editingItemIdx].qty = qty;
       items[editingItemIdx].price = price;
       items[editingItemIdx].total = Math.round(qty * price * 100) / 100;
       return;
     }
 
-    if(items.length === 1){
+    if(items.length === 1 && items[0]?.isDefault){
+      items[0].name = (nameEl?.value || items[0].name || DEFAULT_ITEM_TEXT).trim();
       items[0].qty = qty;
       items[0].price = price;
       items[0].total = Math.round(qty * price * 100) / 100;
@@ -723,6 +734,7 @@
     document.getElementById('i-price').value = Number(items[0]?.price || 0) ? items[0].price : '';
 
     suppressPriceSync = false;
+    editorDirty = false;
 
     if (triggerRender) renderPreview();
   }
@@ -777,19 +789,23 @@
   }
 
   function itemTitle(it, index){
-    const firstLine = String(it?.name || '').split('\n').map(x => x.trim()).find(Boolean);
-    return firstLine || `Ítem ${index + 1}`;
+    const firstLine = String(it?.name || '').split('\n').map(x => x.trim()).find(Boolean) || '';
+    if(!firstLine) return `Ítem ${index + 1}`;
+    if(firstLine.length > 70) return `Ítem ${index + 1}`;
+    return firstLine;
   }
 
   function previewItemsHTML(list, currency){
     return (list || []).map((it, idx) => {
       const parsed = parseService(it.name || '');
       const deliverables = parsed.deliverables || [];
+      const title = itemTitle(it, idx);
+      const showTitle = title !== `Ítem ${idx + 1}`;
       return `
         <div class="pdf-card">
           <div class="bar">Servicio profesional · ítem ${idx + 1}</div>
           <div class="service-body">
-            <h4>${esc(itemTitle(it, idx))}</h4>
+            ${showTitle ? `<h4>${esc(title)}</h4>` : ''}
             <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
             ${deliverables.length ? `<h4 style="margin-top:2mm">Entregables</h4><div class="deliverables">${deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>` : ''}
             <p style="margin-top:2mm"><b>Cantidad:</b> ${Number(it.qty || 1).toLocaleString('es-CL')} · <b>Valor neto:</b> ${amount(it.total || 0, currency)}</p>
@@ -801,6 +817,7 @@
 
 
   function updateLivePrice() {
+    editorDirty = true;
     syncPriceFromEditor();
     renderPreview();
   }
@@ -921,6 +938,7 @@
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
     document.getElementById('i-qty').value = 1;
     document.getElementById('i-price').value = '';
+    editorDirty = false;
     renderPreview();
   }
 
@@ -933,6 +951,7 @@
     document.getElementById('i-qty').value = it.qty || 1;
     document.getElementById('i-price').value = Number(it.price || 0) ? it.price : '';
     suppressPriceSync = false;
+    editorDirty = false;
 
     editingItemIdx = i;
   }
@@ -1372,9 +1391,12 @@
         const parsed = parseService(it.name);
         sectionTitle(`SERVICIO PROFESIONAL · ÍTEM ${idx + 1}`);
 
-        pdfFont(7.5,'bold',[180,83,9]);
-        pdf.text(pdfLines(itemTitle(it, idx).toUpperCase(), CW-6), ML+3, pdfY);
-        pdfY += 4.5;
+        const pTitle = itemTitle(it, idx);
+        if(pTitle !== `Ítem ${idx + 1}`){
+          pdfFont(7.5,'bold',[180,83,9]);
+          pdf.text(pdfLines(pTitle.toUpperCase(), CW-6), ML+3, pdfY);
+          pdfY += 4.5;
+        }
 
         pdfPara(parsed.scope,8.5,4.2);
 

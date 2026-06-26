@@ -315,7 +315,6 @@
 </script>
 
 <script>
-  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
     legalName:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.',
@@ -351,8 +350,6 @@
       notes: document.getElementById('q-notes').value
     };
   }
-
-  document.getElementById('tab-edit-btn').addEventListener('click', () => { setTimeout(renderPreview, 50); });
 
   function restoreFormState(state) {
     editingId = state.editingId; window.currentFolio = state.currentFolio; items = state.items;
@@ -559,7 +556,7 @@
       const quoteItems = q.items.length ? q.items : [defaultItem()]; const parsed = parseService(quoteItems[0].name);
       pdf.setFillColor(22,30,46); pdf.roundedRect(ML,pdfY,CW,6,1,1,'F'); pdfFont(6.5,'bold',[245,158,11]); pdf.text('SERVICIO PROFESIONAL',ML+3,pdfY+4.2); pdfY+=8; pdfFont(7.5,'bold',[180,83,9]); pdf.text('ALCANCE TÉCNICO',ML+3,pdfY); pdfY+=4.5; pdfPara(parsed.scope,8.5,4.2); pdfY+=2;
       pdf.setFillColor(22,30,46); pdf.roundedRect(ML,pdfY,CW,6,1,1,'F'); pdfFont(6.5,'bold',[245,158,11]); pdf.text('SERVICIO PROFESIONAL · ENTREGABLES',ML+3,pdfY+4.2); pdfY+=8; pdfFont(8,'normal',G); for(const d of parsed.deliverables){ pdf.text(`• ${d}`,ML+5,pdfY); pdfY+=4; } pdfY+=4;
-      const top=pdfY,hPay=42,totalW=68,infoW=CW-totalW-gapBox; const txBox=ML+infoW+gapBox; pdf.setDrawColor(...L); pdf.setFillColor(255,255,255); pdf.roundedRect(ML,top,infoW,hPay,1,1,'FD'); pdf.roundedRect(txBox,top,totalW,hPay,1,1,'FD'); pdf.setFillColor(255,253,245); pdf.roundedRect(ML,top,infoW,6,1,1,'F'); pdfFont(6.5,'bold',[22,30,46]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2); const colW=(infoW-8)/2, x2=ML+4+colW+2; pdfFont(7,'bold',[180,83,9]); pdf.text('Condiciones comerciales',ML+3,top+13); pdfFont(7.5,'normal',G); pdf.text(pdfLines(q.conditions||'',colW),ML+3,top+18); pdfFont(7,'bold',[180,83,9]); pdf.text('Transferencia bancaria',x2,top+13); pdfFont(7,'normal',G); pdf.text(lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
+      const top=pdfY,hPay=42,totalW=68,infoW=CW-totalW-gapBox; const txBox=ML+infoW+gapBox; pdf.setDrawColor(...L); pdf.setFillColor(255,255,255); pdf.roundedRect(ML,top,infoW,hPay,1,1,'FD'); pdf.roundedRect(txBox,top,totalW,hPay,1,1,'FD'); pdf.setFillColor(255,253,245); pdf.roundedRect(ML,top,infoW,6,1,1,'F'); pdfFont(6.5,'bold',[22,30,46]); pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2); const colW=(infoW-8)/2, x2=ML+4+colW+2; pdfFont(7,'bold',[180,83,9]); pdf.text('Condiciones comerciales',ML+3,top+13); pdfFont(7.5,'normal',G); pdf.text(pdfLines(q.conditions||'',colW),ML+3,top+18); pdfFont(7,'bold',[180,83,9]); pdf.text('Transferencia bancaria',x2,top+13); pdfFont(7,'normal',G); pdf.text(pdfLines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
       pdf.setFillColor(22,30,46); pdf.roundedRect(txBox,top,totalW,6,1,1,'F'); pdfFont(6.5,'bold',[245,158,11]); pdf.text('RESUMEN ECONÓMICO',txBox+3,top+4.2); let yyy=top+14; function rE(label,val,total=false){ pdfFont(total?8:7.2,total?'bold':'normal',total?[180,83,9]:S); pdf.text(label,txBox+3,yyy); pdfFont(total?11:8,total?'bold':'normal',total?[180,83,9]:G); pdf.text(amount(val,q.currency),txBox+totalW-3,yyy,{align:'right'}); yyy+=total?7:5.5; }
       rE('Valor neto',q.neto); rE('IVA 19%',q.iva); pdf.setDrawColor(...L); pdf.line(txBox+3,yyy-2,txBox+totalW-3,yyy-2); rE('TOTAL SERVICIO',q.total,true); pdfY=top+hPay+6;
       pdfFont(7.5,'normal',G); pdf.text('Atentamente,',W/2,pdfY,{align:'center'}); pdfY+=6; pdf.setDrawColor([22,30,46]); pdf.line(W/2-25,pdfY,W/2+25,pdfY); pdfY+=4; font(8,'bold',G); pdf.text('ROBIN PINTO SERRANO',W/2,pdfY,{align:'center'}); font(6.5,'normal',S); pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,pdfY+4,{align:'center'});

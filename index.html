@@ -1301,11 +1301,31 @@
         await new Promise(r=>setTimeout(r,50));
       }
 
-      const q = quoteOverride
-        ? makePdfSafeQuote(quoteOverride, true)
-        : historyId
-          ? makePdfSafeQuote(quoteById(historyId), false)
-          : makePdfSafeQuote(currentQuote(), true);
+      let q;
+      if (quoteOverride) {
+        /*
+          CORRECCIÓN DEFINITIVA DEL PRECIO EN PDF:
+          Cuando se viene desde "Guardar y enviar PDF", el PDF NO debe tomar
+          items/neto/iva/total desde quoteOverride ni desde Firebase, porque ahí
+          podía venir arrastrado el valor antiguo (valor antiguo guardado). El preliminar está
+          bien porque lee el formulario vivo; por eso el PDF ahora usa la misma
+          fuente viva: currentQuote(). Solo conserva folio/ref/fecha de creación
+          desde la copia guardada.
+        */
+        const live = makePdfSafeQuote(currentQuote(), true);
+        q = {
+          ...cloneData(quoteOverride),
+          ...live,
+          folio: quoteOverride.folio || live.folio,
+          ref: quoteOverride.ref || live.ref,
+          createdAt: quoteOverride.createdAt || live.createdAt
+        };
+        q = recalcQuoteTotals(q);
+      } else if (historyId) {
+        q = makePdfSafeQuote(quoteById(historyId), false);
+      } else {
+        q = makePdfSafeQuote(currentQuote(), true);
+      }
 
       const c = (window.clientes || []).find(cli => cli.name === q.client) || selectedClient() || {name:q.client};
 

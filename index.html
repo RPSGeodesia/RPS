@@ -789,18 +789,17 @@ Entregables:
     }catch(e){ console.error(e); alert('No se pudo eliminar: ' + (e.message || e)); }
   }
 
-  /* CORREGIDO: Se cerró correctamente el bloque runTransaction para evitar el error de sintaxis que congelaba la app */
   async function saveAndSend(){
     const q = currentQuote();
     if(!q.client) return alert('Falta seleccionar o crear cliente.');
     let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
-    try{
+    try {
       if(!editingId && window.fb?.runTransaction){
-        await fb.runTransaction(fb.db,async(t)=>{
-          const r=fb.doc(fb.db,'config','rps_cotizador_v1');
-          const s=await t.get(r);
-          f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000;
-          if(s.exists()){ t.update(r,{lastFolio:f+1}); } else { t.set(r,{lastFolio:f+1}); }
+        await fb.runTransaction(fb.db, async (t) => {
+          const r = fb.doc(fb.db, 'config', 'rps_cotizador_v1');
+          const s = await t.get(r);
+          f = s.exists() ? Math.max(1000, Number(s.data().lastFolio || 1000)) : 1000;
+          if (s.exists()) { t.update(r, {lastFolio: f + 1}); } else { t.set(r, {lastFolio: f + 1}); }
         });
       }
       const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
@@ -809,7 +808,7 @@ Entregables:
         else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
       }
       await generateAndSharePDF();
-    }catch(e){ console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
+    } catch(e) { console.error(e); alert('No se pudo guardar/enviar: '+(e.message||e)); }
   }
 
   document.getElementById('q-date').valueAsDate = new Date();

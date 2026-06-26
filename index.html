@@ -1117,7 +1117,9 @@
   }
 
   async function saveAndSend(){
-    if(editingItemIdx !== null && editingItemIdx >= 0) syncPriceFromEditor();
+    // Antes de guardar o generar PDF, se sincroniza SIEMPRE el precio visible
+    // con el ítem actual cuando corresponde. Esto evita arrastres de Firebase/historial.
+    syncPriceFromEditor();
 
     const q = currentQuote();
     if(!q.client) return alert('Falta seleccionar cliente.');

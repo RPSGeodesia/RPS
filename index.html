@@ -789,6 +789,7 @@ Entregables:
     }catch(e){ console.error(e); alert('No se pudo eliminar: ' + (e.message || e)); }
   }
 
+  /* CORREGIDO: Se cerró correctamente el bloque runTransaction para evitar el error de sintaxis que congelaba la app */
   async function saveAndSend(){
     const q = currentQuote();
     if(!q.client) return alert('Falta seleccionar o crear cliente.');
@@ -796,10 +797,10 @@ Entregables:
     try{
       if(!editingId && window.fb?.runTransaction){
         await fb.runTransaction(fb.db,async(t)=>{
-          const r=fb.doc(fb.doc(fb.db,'config','rps_cotizador_v1');
+          const r=fb.doc(fb.db,'config','rps_cotizador_v1');
           const s=await t.get(r);
           f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000;
-          s.exists()?t.update(r,{lastFolio:f+1}):t.set(r,{lastFolio:f+1});
+          if(s.exists()){ t.update(r,{lastFolio:f+1}); } else { t.set(r,{lastFolio:f+1}); }
         });
       }
       const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
@@ -892,7 +893,7 @@ Entregables:
     function para(text, size=8.5, lh=4.2){
       const arr=lines(text,CW-6);
       for(const ln of arr){
-        font(size,'normal',G);
+        font(size='normal',G);
         pdf.text(ln,ML+3,y);
         y+=lh;
       }

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>RPS Topografía & Geodesia | Cotizador</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -10,15 +10,14 @@
 
   <style>
     :root {
-      --bg: #061615;
-      --panel: #0b2422;
-      --panel2: #103330;
-      --line: #1b4d49;
-      --emerald: #10b981;
-      --emerald-dark: #047857;
-      --cyan: #06b6d4;
-      --text: #f0fdfa;
-      --muted: #6ee7b7;
+      --bg: #090d16;
+      --panel: #111827;
+      --panel2: #1f2937;
+      --line: #374151;
+      --amber: #f59e0b;
+      --amber-dark: #b45309;
+      --text: #f9fafb;
+      --muted: #94a3b8;
       --paper: #ffffff;
       --ink: #0f172a;
     }
@@ -29,26 +28,26 @@
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: 
-        radial-gradient(circle at 10% 0%, rgba(16, 185, 129, 0.12), transparent 35%),
-        linear-gradient(145deg, #061615, #08211e 50%, #030f0e);
+        radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.08), transparent 35%),
+        linear-gradient(145deg, #090d16, #111827 50%, #030712);
       color: var(--text);
     }
 
     .topnav {
       position: sticky; top: 0; z-index: 20;
       display: grid; grid-template-columns: 1fr 1fr 1fr;
-      background: rgba(4, 15, 14, 0.94);
-      border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+      background: rgba(10, 15, 26, 0.95);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.25);
       backdrop-filter: blur(12px);
     }
     .topnav button {
-      border: 0; background: transparent; color: rgba(240, 253, 250, 0.5);
+      border: 0; background: transparent; color: rgba(249, 250, 251, 0.5);
       font-weight: 900; text-transform: uppercase; letter-spacing: .05em;
       padding: 18px 10px; font-size: 13px;
       border-bottom: 3px solid transparent;
       transition: all 0.3s ease;
     }
-    .topnav button.active { color: var(--emerald); border-color: var(--emerald); background: rgba(16, 185, 129, 0.05); }
+    .topnav button.active { color: var(--amber); border-color: var(--amber); background: rgba(245, 158, 11, 0.05); }
 
     .tab { display: none; padding: 18px; }
     .tab.active { display: block; }
@@ -64,18 +63,18 @@
     }
 
     .card {
-      background: linear-gradient(180deg, rgba(11, 36, 34, 0.98), rgba(6, 22, 21, 0.98));
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.98), rgba(10, 15, 26, 0.98));
+      border: 1px solid rgba(245, 158, 11, 0.2);
       border-radius: 24px;
       padding: 22px;
-      box-shadow: 0 24px 70px rgba(0,0,0,0.4);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.5);
     }
     .stack > * + * { margin-top: 16px; }
 
     .input {
       width: 100%; min-width: 0;
-      background: #041211;
-      border: 1px solid rgba(110, 231, 183, 0.25);
+      background: #070a12;
+      border: 1px solid rgba(245, 158, 11, 0.2);
       color: #fff;
       border-radius: 16px;
       padding: 15px 16px;
@@ -85,17 +84,17 @@
       transition: all 0.25s ease;
     }
     textarea.input { min-height: 145px; resize: vertical; white-space: pre-wrap; }
-    .input::placeholder { color: rgba(110, 231, 183, 0.4); }
+    .input::placeholder { color: rgba(148, 163, 184, 0.5); }
     .input:focus {
-      border-color: var(--emerald);
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+      border-color: var(--amber);
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
     }
 
     .btn {
       width: 100%; border: 0; border-radius: 18px; padding: 17px 20px;
       font-weight: 900; text-transform: uppercase; cursor: pointer;
       background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #051413;
+      color: #050b14;
       box-shadow: 0 12px 35px rgba(245, 158, 11, 0.25);
       transition: all 0.25s ease;
     }
@@ -104,8 +103,8 @@
     .btn.small { padding: 12px 14px; border-radius: 14px; font-size: 12px; }
 
     .item-row, .list-row {
-      background: rgba(4, 18, 17, 0.7);
-      border: 1px solid rgba(16, 185, 129, 0.15);
+      background: rgba(10, 15, 26, 0.7);
+      border: 1px solid rgba(245, 158, 11, 0.15);
       border-radius: 16px;
       padding: 14px;
     }
@@ -115,8 +114,8 @@
       height: calc(100vh - 118px);
       min-height: 620px;
       overflow: auto;
-      background: linear-gradient(180deg, rgba(11, 36, 34, 0.85), rgba(4, 14, 13, 0.85));
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.85), rgba(7, 10, 18, 0.85));
+      border: 1px solid rgba(245, 158, 11, 0.2);
       border-radius: 26px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
       padding: 20px;
@@ -151,16 +150,16 @@
       border-bottom: 2px solid #f59e0b;
       padding-bottom: 4mm;
     }
-    .brand h1 { margin: 0; font-size: 14pt; font-weight: 800; color: #161e2e; tracking: -0.02em; }
+    .brand h1 { margin: 0; font-size: 14pt; font-weight: 800; color: #111827; tracking: -0.02em; }
     .brand p { margin: 1mm 0 0; font-size: 7.5pt; color: #475569; line-height: 1.3; }
 
     .quoteBox { text-align: right; }
     .quoteTag {
-      display: inline-block; background: #161e2e; color: #f59e0b;
+      display: inline-block; background: #111827; color: #f59e0b;
       padding: 1.5mm 3mm; border-radius: 4px; font-size: 7pt; font-weight: 800;
       text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #161e2e; }
+    .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #111827; }
     .quoteDate { font-size: 7.5pt; color: #64748b; }
 
     .blueLine { border-top: .55mm solid #f59e0b; }
@@ -172,12 +171,12 @@
       border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: white;
     }
     .bar {
-      background: #161e2e; color: #f59e0b; font-size: 7pt; font-weight: 800;
+      background: #111827; color: #f59e0b; font-size: 7pt; font-weight: 800;
       text-transform: uppercase; padding: 2mm 3mm; letter-spacing: 0.5px;
     }
-    .bar.blue { background: #f59e0b; color: #161e2e; }
+    .bar.blue { background: #f59e0b; color: #111827; }
     .pdf-card-body { padding: 3mm; font-size: 8pt; line-height: 1.35; color: #334155; }
-    .pdf-card-body h3 { margin: 0 0 1.5mm; font-size: 8.5pt; font-weight: 800; color: #161e2e; }
+    .pdf-card-body h3 { margin: 0 0 1.5mm; font-size: 8.5pt; font-weight: 800; color: #111827; }
     .pdf-card-body p { margin: 0 0 1mm; }
 
     .desc, .service-body { padding: 3mm; font-size: 8.5pt; line-height: 1.4; color: #334155; }
@@ -203,28 +202,28 @@
       border: 1px solid #fde68a; border-radius: 6px; background: #fffdf5; overflow: hidden;
     }
     .economic .head {
-      background: #161e2e; color: #f59e0b; padding: 2mm 3mm; font-size: 7pt; font-weight: 800; text-transform: uppercase;
+      background: #111827; color: #f59e0b; padding: 2mm 3mm; font-size: 7pt; font-weight: 800; text-transform: uppercase;
     }
     .econRow {
       display: flex; justify-content: space-between; gap: 3mm;
       padding: 2mm 3mm 0; font-size: 8pt; color: #475569;
     }
-    .econRow strong { color: #161e2e; }
+    .econRow strong { color: #111827; }
     .economic hr { border: 0; border-top: 1px solid #cbd5e1; margin: 2mm 3mm 1.5mm; }
-    .grand span { color: #161e2e; font-weight: 800; text-transform: uppercase; }
+    .grand span { color: #111827; font-weight: 800; text-transform: uppercase; }
     .grand strong { font-size: 13pt; color: #b45309; font-weight: 800; }
 
     .signature {
       text-align: center; font-size: 7.5pt; color: #334155; margin-top: 4mm;
     }
-    .sigLine { width: 45mm; margin: 5mm auto 1mm; border-top: 1px solid #161e2e; }
+    .sigLine { width: 45mm; margin: 5mm auto 1mm; border-top: 1px solid #111827; }
     
     .footer {
       border-top: 1px solid #f59e0b; padding-top: 2mm; margin-top: auto;
       text-align: center; color: #64748b; font-size: 6pt;
     }
 
-    .list-row button { background: #143e3b; color: #a7f3d0; border: 1px solid #1b4d49; border-radius: 10px; padding: 7px 9px; font-weight: 800; }
+    .list-row button { background: #1f2937; color: #fde68a; border: 1px solid #374151; border-radius: 10px; padding: 7px 9px; font-weight: 800; }
   </style>
 </head>
 
@@ -302,7 +301,7 @@
         <input id="c-email" class="input" placeholder="Email">
         <input id="c-address" class="input" placeholder="Dirección">
         <button class="btn" onclick="saveClient()">Guardar cliente</button>
-        <button class="btn small" style="background:#1b4d49;color:white" onclick="clearClientForm()">Cancelar edición</button>
+        <button class="btn small" style="background:#374151;color:white" onclick="clearClientForm()">Cancelar edición</button>
       </div>
       <div id="clients-list" class="stack"></div>
     </div>
@@ -334,12 +333,12 @@
   });
 
   onSnapshot(collection(db, "rps_clientes"), snap => {
-    window.clientes = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
     if(typeof updateClientsUI === 'function') updateClientsUI();
   });
 
   onSnapshot(collection(db, "rps_cotizaciones"), snap => {
-    window.historial = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
+    window.historial = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
     if(typeof renderHistory === 'function') renderHistory();
   });
 </script>
@@ -613,7 +612,7 @@ Entregables:
     const box = document.getElementById('items-list');
     box.innerHTML = items.map((it,i)=>`<div class="item-row flex justify-between gap-3 items-center">
       <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
-      <small class="text-emerald-300 font-bold">${amount(it.total,currentQuote().currency)}</small>
+      <small class="text-amber-400 font-bold">${amount(it.total,currentQuote().currency)}</small>
       <div class="flex gap-2">
          <button onclick="editItem(${i})">✏️</button>
          <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; renderPreview();">✕</button>
@@ -755,7 +754,6 @@ Entregables:
       </div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
   }
 
-  /* HISTORIAL RESTAURADO COMPLETO: Con botones de acción Ver, Editar, PDF y Eliminar operativos */
   function renderHistory(){
     const q = document.getElementById('search-hist').value.toLowerCase();
     const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
@@ -828,7 +826,6 @@ Entregables:
 </script>
 
 <script>
-  // MÓDULO JS-PDF PREMIUM UNIFICADO: Diseño Titanium & Obsidian Gold limpio y verificado contra errores
   async function generateAndSharePDF(historyId=null, quoteOverride=null){
     const JsPDF = window.jspdf?.jsPDF;
     if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -953,7 +950,7 @@ Entregables:
       font(6.5,'bold',[245,158,11]); pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);
       let yy=top+14;
       function r(label,val,total=false){
-        font(total?8:7.5,total?'bold':'normal',total?[180,83,9]:S);
+        font(total?8:7.2,total?'bold':'normal',total?[180,83,9]:S);
         pdf.text(label,tx+3,yy);
         font(total?11:8,total?'bold':'normal',total?[180,83,9]:G);
         pdf.text(amount(val,q.currency),tx+totalW-3,yy,{align:'right'});

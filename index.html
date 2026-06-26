@@ -23,7 +23,15 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-text-size-adjust: 100%;
+    }
 
     body {
       margin: 0;
@@ -31,7 +39,6 @@
       background:
         radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.08), transparent 35%),
         linear-gradient(145deg, #090d16, #111827 50%, #030712);
-      color: var(--text);
     }
 
     .topnav {
@@ -64,15 +71,20 @@
       background: rgba(245, 158, 11, 0.05);
     }
 
-    .tab { display: none; padding: 18px; }
-    .tab.active { display: block; }
+    .tab {
+      display: none;
+      padding: 18px;
+    }
+
+    .tab.active {
+      display: block;
+    }
 
     .layout {
-      width: 100%;
-      max-width: 1420px;
+      width: min(100%, 1420px);
       margin: 0 auto;
       display: grid;
-      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
       gap: 28px;
       align-items: start;
     }
@@ -107,7 +119,9 @@
       white-space: pre-wrap;
     }
 
-    .input::placeholder { color: rgba(148, 163, 184, 0.5); }
+    .input::placeholder {
+      color: rgba(148, 163, 184, 0.5);
+    }
 
     .input:focus {
       border-color: var(--amber);
@@ -154,31 +168,32 @@
 
     #previewBox {
       width: 100%;
+      max-width: 100%;
       height: calc(100vh - 118px);
       min-height: 620px;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
       background: linear-gradient(180deg, rgba(17, 24, 39, 0.85), rgba(7, 10, 18, 0.85));
       border: 1px solid rgba(245, 158, 11, 0.2);
       border-radius: 26px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
       padding: 20px;
-      touch-action: pan-x pan-y pinch-zoom;
-      -webkit-overflow-scrolling: touch;
+      display: block;
+      touch-action: pan-x pan-y;
     }
 
     #pdf-canvas {
-      width: 100%;
-      max-width: 210mm;
+      width: max-content;
+      min-width: max-content;
+      display: block;
       margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      touch-action: pan-x pan-y pinch-zoom;
     }
 
     .a4 {
-      width: 100%;
+      width: 210mm;
       height: 297mm;
+      min-height: 297mm;
+      max-height: 297mm;
       background: white;
       color: #1e293b;
       padding: 16mm 14mm;
@@ -188,7 +203,7 @@
       justify-content: space-between;
       font-family: Arial, sans-serif;
       box-sizing: border-box;
-      overflow: hidden;
+      transform-origin: top left;
     }
 
     .pdf-header {
@@ -204,7 +219,7 @@
       font-size: 14pt;
       font-weight: 800;
       color: #111827;
-      letter-spacing: -0.02em;
+      tracking: -0.02em;
     }
 
     .brand p {
@@ -252,10 +267,7 @@
       border-radius: 6px;
       overflow: hidden;
       background: white;
-      margin-top: 4mm;
     }
-
-    .grid2 .pdf-card { margin-top: 0; }
 
     .bar {
       background: #111827;
@@ -295,7 +307,10 @@
       color: #334155;
     }
 
-    .desc p { white-space: pre-wrap; margin: 0; }
+    .desc p, .service-body p {
+      white-space: pre-wrap;
+      margin: 0;
+    }
 
     .service-body h4 {
       margin: 0 0 1.5mm;
@@ -305,18 +320,12 @@
       text-transform: uppercase;
     }
 
-    .service-body p {
-      white-space: pre-wrap;
-      margin: 0;
-    }
-
     .deliverables {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1mm 4mm;
       font-size: 8pt;
       color: #334155;
-      margin-top: 1mm;
     }
 
     .payment {
@@ -326,13 +335,11 @@
       margin-top: 4mm;
     }
 
-    .payment .pdf-card { margin-top: 0; }
-
     .paymentCols {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 3mm;
-      padding: 3mm;
+      padding: 1mm;
     }
 
     .paymentCols h4 {
@@ -346,7 +353,6 @@
     .paymentCols p {
       margin: 0 0 0.8mm;
       font-size: 7.5pt;
-      line-height: 1.25;
       color: #475569;
     }
 
@@ -357,19 +363,9 @@
       overflow: hidden;
     }
 
-    .economic .head {
-      background: #111827;
-      color: #f59e0b;
-      padding: 2mm 3mm;
-      font-size: 7pt;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
     .econRow {
       display: flex;
       justify-content: space-between;
-      gap: 3mm;
       padding: 2mm 3mm 0;
       font-size: 8pt;
       color: #475569;
@@ -381,12 +377,6 @@
       border: 0;
       border-top: 1px solid #cbd5e1;
       margin: 2mm 3mm 1.5mm;
-    }
-
-    .grand span {
-      color: #111827;
-      font-weight: 800;
-      text-transform: uppercase;
     }
 
     .grand strong {
@@ -427,30 +417,35 @@
       font-weight: 800;
     }
 
-    @media (max-width: 900px) {
-      .tab { padding: 12px; }
-
+    @media (max-width: 1100px) {
       .layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 18px;
       }
 
       #previewBox {
-        height: auto;
-        min-height: 70vh;
-        overflow: auto;
-        padding: 14px;
+        height: min(72vh, 720px);
+        min-height: 430px;
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .tab { padding: 12px; }
+
+      .topnav button {
+        padding: 14px 6px;
+        font-size: 11px;
       }
 
-      #pdf-canvas {
-        width: max-content;
-        max-width: none;
-        margin: 0;
+      .card {
+        padding: 16px;
+        border-radius: 18px;
       }
 
-      .a4 {
-        width: 210mm;
-        min-width: 210mm;
+      .input {
+        font-size: 15px;
+        padding: 13px 14px;
       }
     }
   </style>
@@ -471,17 +466,14 @@
             <input id="q-date" type="date" class="input" oninput="renderPreview()">
             <input id="q-ref" type="text" class="input" placeholder="AER-1000" oninput="renderPreview()">
           </div>
-
           <select id="q-currency" class="input" onchange="renderPreview()">
             <option value="CLP">Pesos chilenos (CLP)</option>
             <option value="UF">Unidad de Fomento (UF)</option>
           </select>
-
           <select id="q-client" class="input" onchange="handleClientSelect()">
             <option value="">Seleccionar cliente</option>
             <option value="NEW">➕ Nuevo cliente</option>
           </select>
-
           <input id="q-project" class="input" placeholder="Proyecto / referencia del servicio" oninput="renderPreview()">
           <input id="q-location" class="input" placeholder="Ubicación / comuna del proyecto" oninput="renderPreview()">
           <textarea id="q-desc" class="input" oninput="renderPreview()"></textarea>
@@ -490,8 +482,8 @@
         <div class="card stack">
           <textarea id="i-name" class="input" placeholder="Detalle técnico del servicio"></textarea>
           <div class="grid grid-cols-[80px_1fr] gap-3">
-            <input id="i-qty" type="number" class="input text-center" value="1">
-            <input id="i-price" type="number" class="input" placeholder="Precio neto">
+            <input id="i-qty" type="number" class="input text-center" value="1" oninput="updateLivePrice()">
+            <input id="i-price" type="number" class="input" placeholder="Precio neto" oninput="updateLivePrice()">
           </div>
           <button class="btn small" onclick="addItem()">Agregar / Actualizar ítem</button>
         </div>
@@ -556,6 +548,38 @@
   const db = getFirestore(app);
 
   window.fb = { db, collection, addDoc, setDoc, deleteDoc, doc, runTransaction };
+  window.clientes = [];
+  window.historial = [];
+  window.nextFolio = 1000;
+
+  onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
+    window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
+
+    // Mantiene visible el próximo folio real mientras se crea una cotización nueva.
+    // No toca cotizaciones cargadas desde historial/edición.
+    const refEl = document.getElementById('q-ref');
+    let isEditingQuote = false;
+    try { isEditingQuote = !!editingId; } catch(e) { isEditingQuote = false; }
+
+    if (refEl && !isEditingQuote && (!refEl.value || /^AER-\d+$/.test(refEl.value))) {
+      refEl.value = 'AER-' + window.nextFolio;
+      if (typeof renderPreview === 'function') renderPreview();
+    }
+  });
+
+  onSnapshot(collection(db, "rps_clientes"), snap => {
+    window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    if(typeof updateClientsUI === 'function') updateClientsUI();
+  });
+
+  onSnapshot(collection(db, "rps_cotizaciones"), snap => {
+    window.historial = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
+    if(typeof renderHistory === 'function') renderHistory();
+  });
+</script>
+
+<script>
+  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
@@ -572,55 +596,33 @@
 
   const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
 
-  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.
-
-Se considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.
-
-Incluye planificación de vuelo dron, captura aerofotogramétrica y postproceso de información técnica.
-
-Entregables:
-• Plano topográfico
-• Informe técnico
-• Nube de puntos densa
-• Ortomosaico`;
-
-  window.clientes = [];
-  window.historial = [];
-  window.nextFolio = 1000;
-  window.currentFolio = null;
+  const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.\n\nSe considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.\n\nIncluye planificación de vuelo dron, captura aerofotogramétrica and postproceso de información técnica.\n\nEntregables:\n• Plano topográfico\n• Informe técnico\n• Nube de puntos densa\n• Ortomosaico`;
 
   let items = [defaultItem()];
   let editingId = null;
   let editingClientId = null;
   let editingItemIdx = null;
+  let previewZoom = 1;
+  let suppressPriceSync = false;
+  let editorDirty = false;
 
   function defaultItem(){
     return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true};
   }
 
   function esc(v){
-    return String(v ?? '').replace(/[&<>"']/g, m => ({
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#39;'
-    }[m]));
-  }
-
-  function money(n){
-    return '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL');
+    return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
 
   function amount(n,currency='CLP'){
-    return currency === 'UF'
-      ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2}) + ' UF'
-      : money(n);
+    return currency==='UF'
+      ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2})+' UF'
+      : '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL');
   }
 
   function fmtDate(d){
     if(!d) return '';
-    const [y,m,day] = String(d).split('-');
+    const [y,m,day]=String(d).split('-');
     return `${day}-${m}-${y}`;
   }
 
@@ -636,11 +638,103 @@ Entregables:
     });
   }
 
+  function cloneData(obj){
+    return JSON.parse(JSON.stringify(obj || {}));
+  }
+
+  function recalcQuoteTotals(q){
+    q.items = normalizeItems(q.items && q.items.length ? q.items : [defaultItem()]);
+    q.neto = q.items.reduce((s, it) => s + Number(it.total || 0), 0);
+    q.iva = Math.round(q.neto * 0.19);
+    q.total = q.neto + q.iva;
+    return q;
+  }
+
+  function forceVisibleSingleItemPrice(q){
+    q = cloneData(q);
+
+    const priceEl = document.getElementById('i-price');
+    const qtyEl = document.getElementById('i-qty');
+    const nameEl = document.getElementById('i-name');
+
+    q.items = normalizeItems(q.items && q.items.length ? q.items : [defaultItem()]);
+
+    /*
+      Regla blindada contra el precio pegado:
+      Si la cotización que se está guardando/generando tiene UN SOLO ítem,
+      el PDF y Firebase toman sí o sí el precio visible del editor.
+      Así ningún objeto antiguo de Firebase puede arrastrar un precio anterior.
+    */
+    if(q.items.length === 1 && priceEl && qtyEl && String(priceEl.value || '').trim() !== ''){
+      const visiblePrice = Math.max(0, Number(priceEl.value || 0));
+      const visibleQty = Math.max(1, Number(qtyEl.value || 1));
+      q.items[0].name = (nameEl?.value || q.items[0].name || DEFAULT_ITEM_TEXT).trim();
+      q.items[0].qty = visibleQty;
+      q.items[0].price = visiblePrice;
+      q.items[0].total = Math.round(visiblePrice * visibleQty * 100) / 100;
+    }
+
+    return recalcQuoteTotals(q);
+  }
+
+  function makePdfSafeQuote(baseQuote, forceVisiblePrice = false){
+    let q = cloneData(baseQuote || currentQuote());
+    q.items = normalizeItems(q.items && q.items.length ? q.items : [defaultItem()]);
+
+    if(forceVisiblePrice){
+      q = forceVisibleSingleItemPrice(q);
+    } else {
+      q = recalcQuoteTotals(q);
+    }
+
+    return q;
+  }
+
+  function syncPriceFromEditor(){
+    if(suppressPriceSync) return;
+
+    const priceEl = document.getElementById('i-price');
+    const qtyEl = document.getElementById('i-qty');
+    const nameEl = document.getElementById('i-name');
+    if(!priceEl || !qtyEl) return;
+
+    const priceFieldHasValue = String(priceEl.value || '').trim() !== '';
+    const qty = Math.max(1, Number(qtyEl.value || 1));
+    const price = Math.max(0, Number(priceEl.value || 0));
+
+    /*
+      Regla definitiva del precio:
+      - Si estás editando un ítem, el campo visible actualiza ese ítem.
+      - Si solo existe un ítem y el campo precio tiene valor visible, ese valor manda.
+      - Si el campo quedó vacío después de Agregar ítem, NO se pisa el precio guardado.
+      - Si ya hay varios ítems y no estás editando, el campo visible NO pisa los ítems existentes.
+    */
+    if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
+      items[editingItemIdx].name = (nameEl?.value || items[editingItemIdx].name || DEFAULT_ITEM_TEXT).trim();
+      items[editingItemIdx].qty = qty;
+      items[editingItemIdx].price = price;
+      items[editingItemIdx].total = Math.round(qty * price * 100) / 100;
+      return;
+    }
+
+    if(items.length === 1 && items[0] && priceFieldHasValue){
+      items[0].name = (nameEl?.value || items[0].name || DEFAULT_ITEM_TEXT).trim();
+      items[0].qty = qty;
+      items[0].price = price;
+      items[0].total = Math.round(qty * price * 100) / 100;
+      return;
+    }
+  }
+
   function captureFormState() {
     return {
       editingId,
       currentFolio: window.currentFolio,
       items: JSON.parse(JSON.stringify(items)),
+      editingItemIdx,
+      priceInput: document.getElementById('i-price').value,
+      qtyInput: document.getElementById('i-qty').value,
+      itemNameInput: document.getElementById('i-name').value,
       date: document.getElementById('q-date').value,
       ref: document.getElementById('q-ref').value,
       currency: document.getElementById('q-currency').value,
@@ -655,8 +749,33 @@ Entregables:
     };
   }
 
+  function restoreFormState(state) {
+    editingId = state.editingId;
+    window.currentFolio = state.currentFolio;
+    items = state.items;
+    editingItemIdx = state.editingItemIdx;
+
+    document.getElementById('q-date').value = state.date;
+    document.getElementById('q-ref').value = state.ref;
+    document.getElementById('q-currency').value = state.currency;
+    document.getElementById('q-client').value = state.client;
+    document.getElementById('q-project').value = state.project;
+    document.getElementById('q-location').value = state.location;
+    document.getElementById('q-desc').value = state.desc;
+    document.getElementById('q-validity').value = state.validity;
+    document.getElementById('q-delivery').value = state.delivery;
+    document.getElementById('q-conditions').value = state.conditions;
+    document.getElementById('q-notes').value = state.notes;
+
+    document.getElementById('i-price').value = state.priceInput;
+    document.getElementById('i-qty').value = state.qtyInput;
+    document.getElementById('i-name').value = state.itemNameInput;
+  }
+
   function applyQuoteToForm(h, triggerRender = true) {
     if(!h) return;
+
+    suppressPriceSync = true;
 
     editingId = h.id || null;
     window.currentFolio = Number(h.folio || 1000);
@@ -674,49 +793,26 @@ Entregables:
     document.getElementById('q-conditions').value = h.conditions || '';
     document.getElementById('q-notes').value = h.notes || '';
 
+    editingItemIdx = null;
+    document.getElementById('i-name').value = items[0]?.name || DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = items[0]?.qty || 1;
+    document.getElementById('i-price').value = Number(items[0]?.price || 0) ? items[0].price : '';
+
+    suppressPriceSync = false;
+    editorDirty = false;
+
     if (triggerRender) renderPreview();
   }
 
-  function restoreFormState(state) {
-    editingId = state.editingId;
-    window.currentFolio = state.currentFolio;
-    items = state.items;
-
-    document.getElementById('q-date').value = state.date;
-    document.getElementById('q-ref').value = state.ref;
-    document.getElementById('q-currency').value = state.currency;
-    document.getElementById('q-client').value = state.client;
-    document.getElementById('q-project').value = state.project;
-    document.getElementById('q-location').value = state.location;
-    document.getElementById('q-desc').value = state.desc;
-    document.getElementById('q-validity').value = state.validity;
-    document.getElementById('q-delivery').value = state.delivery;
-    document.getElementById('q-conditions').value = state.conditions;
-    document.getElementById('q-notes').value = state.notes;
-  }
-
   function currentQuote(){
-    let normalized = normalizeItems(items);
+    // Si hay un solo ítem, el editor visible manda siempre.
+    // Si hay varios ítems, solo se sincroniza cuando se está editando un ítem concreto.
+    syncPriceFromEditor();
+    items = normalizeItems(items);
 
-    const manualPriceInput = document.getElementById('i-price');
-    if (
-      manualPriceInput &&
-      manualPriceInput.value !== "" &&
-      normalized.length === 1 &&
-      normalized[0].isDefault
-    ) {
-      const mQty = Number(document.getElementById('i-qty').value || 1);
-      const mPrice = Number(manualPriceInput.value || 0);
-      normalized = [{
-        ...normalized[0],
-        qty: mQty,
-        price: mPrice,
-        total: Math.round(mQty * mPrice * 100) / 100
-      }];
-    }
-
+    const normalized = items;
     const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
-    const iva = Math.round(neto * .19);
+    const iva = Math.round(neto*.19);
 
     return {
       folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
@@ -731,7 +827,7 @@ Entregables:
       delivery: document.getElementById('q-delivery').value,
       conditions: document.getElementById('q-conditions').value,
       notes: document.getElementById('q-notes').value,
-      items: normalized,
+      items: JSON.parse(JSON.stringify(normalized)),
       neto,
       iva,
       total: neto + iva
@@ -747,13 +843,10 @@ Entregables:
     const raw = String(txt||'').trim();
     const parts = raw.split(/Entregables\s*:/i);
     const scope = (parts[0] || raw).trim();
-    let deliverables = [];
 
+    let deliverables = [];
     if(parts[1]) {
-      deliverables = parts[1]
-        .split(/\n|•|-/)
-        .map(x=>x.trim())
-        .filter(Boolean);
+      deliverables = parts[1].split(/\n|•|-/).map(x=>x.trim()).filter(Boolean);
     }
 
     if(!deliverables.length) {
@@ -761,6 +854,40 @@ Entregables:
     }
 
     return {scope, deliverables};
+  }
+
+  function itemTitle(it, index){
+    const firstLine = String(it?.name || '').split('\n').map(x => x.trim()).find(Boolean) || '';
+    if(!firstLine) return `Ítem ${index + 1}`;
+    if(firstLine.length > 70) return `Ítem ${index + 1}`;
+    return firstLine;
+  }
+
+  function previewItemsHTML(list, currency){
+    return (list || []).map((it, idx) => {
+      const parsed = parseService(it.name || '');
+      const deliverables = parsed.deliverables || [];
+      const title = itemTitle(it, idx);
+      const showTitle = title !== `Ítem ${idx + 1}`;
+      return `
+        <div class="pdf-card">
+          <div class="bar">Servicio profesional · ítem ${idx + 1}</div>
+          <div class="service-body">
+            ${showTitle ? `<h4>${esc(title)}</h4>` : ''}
+            <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
+            ${deliverables.length ? `<h4 style="margin-top:2mm">Entregables</h4><div class="deliverables">${deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>` : ''}
+            <p style="margin-top:2mm"><b>Cantidad:</b> ${Number(it.qty || 1).toLocaleString('es-CL')} · <b>Valor neto:</b> ${amount(it.total || 0, currency)}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+
+  function updateLivePrice() {
+    editorDirty = true;
+    syncPriceFromEditor();
+    renderPreview();
   }
 
   function renderPreview(){
@@ -772,21 +899,7 @@ Entregables:
     canvas.innerHTML = '';
 
     function headerHTML(){
-      return `
-        <header class="pdf-header">
-          <div class="brand">
-            <div>
-              <h1>${COMPANY.name}</h1>
-              <p>Servicios topográficos y geodésicos</p>
-              <p>${COMPANY.email} · Fono: ${COMPANY.phone}</p>
-            </div>
-          </div>
-          <div class="quoteBox">
-            <div class="quoteTag">Cotización técnica</div>
-            <div class="quoteNum">N° ${esc(quoteCode(q))}</div>
-            <div class="quoteDate">Fecha: ${fmtDate(q.date)}</div>
-          </div>
-        </header>`;
+      return `<header class="pdf-header"><div class="brand"><div><h1>${COMPANY.name}</h1><p>Servicios topográficos y geodésicos</p><p>${COMPANY.email} · Fono: ${COMPANY.phone}</p></div></div><div class="quoteBox"><div class="quoteTag">Cotización técnica</div><div class="quoteNum">N° ${esc(quoteCode(q))}</div><div class="quoteDate">Fecha: ${fmtDate(q.date)}</div></div></header>`;
     }
 
     function footerHTML(){
@@ -797,113 +910,79 @@ Entregables:
     page.className = 'a4';
 
     const quoteItems = q.items.length ? q.items : [defaultItem()];
-    const it = quoteItems[0];
-    const parsed = parseService(it.name);
+    const parsed = parseService(quoteItems[0].name);
 
     page.innerHTML = `
       ${headerHTML()}
-
-      <main>
-        <div class="grid2">
-          <div class="pdf-card">
-            <div class="bar">En atención a</div>
-            <div class="pdf-card-body">
-              <h3>${esc((c.name||'---').toUpperCase())}</h3>
-              <p>RUT: ${esc(c.rut||'—')}</p>
-              <p>Dirección: ${esc(c.address||'—')}</p>
-              <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
-            </div>
-          </div>
-
-          <div class="pdf-card">
-            <div class="bar blue">Antecedentes del proyecto</div>
-            <div class="pdf-card-body">
-              <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
-              <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
-              <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
-              <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
-              <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
-            </div>
-          </div>
-        </div>
-
+      <div class="grid2">
         <div class="pdf-card">
-          <div class="bar blue">Descripción del servicio</div>
-          <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
+          <div class="bar">En atención a</div>
+          <div class="pdf-card-body">
+            <h3>${esc((c.name||'---').toUpperCase())}</h3>
+            <p>RUT: ${esc(c.rut||'—')}</p>
+            <p>Dirección: ${esc(c.address||'—')}</p>
+            <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
+          </div>
         </div>
-
         <div class="pdf-card">
-          <div class="bar">Servicio profesional</div>
-          <div class="service-body">
-            <h4>Alcance técnico</h4>
-            <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
+          <div class="bar blue">Antecedentes del proyecto</div>
+          <div class="pdf-card-body">
+            <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
+            <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
+            <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
+            <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
+            <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
           </div>
         </div>
-
+      </div>
+      <div class="pdf-card">
+        <div class="bar blue">Descripción del servicio</div>
+        <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
+      </div>
+      ${previewItemsHTML(quoteItems, q.currency)}
+      <div class="payment">
         <div class="pdf-card">
-          <div class="bar">Servicio profesional · entregables</div>
-          <div class="service-body">
-            <h4>Entregables</h4>
-            <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
+          <div class="bar blue">Condiciones y datos de pago</div>
+          <div class="paymentCols">
+            <div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div>
+            <div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div>
           </div>
         </div>
-
-        <div class="payment">
-          <div class="pdf-card">
-            <div class="bar blue">Condiciones y datos de pago</div>
-            <div class="paymentCols">
-              <div>
-                <h4>Condiciones comerciales</h4>
-                <p>${esc(q.conditions).replace(/\n/g,'<br>')}</p>
-              </div>
-              <div>
-                <h4>Transferencia bancaria</h4>
-                <p><b>${COMPANY.holder}</b></p>
-                <p>RUT: ${COMPANY.rut}</p>
-                <p>${COMPANY.bank}</p>
-                <p>${COMPANY.account}</p>
-                <p>${COMPANY.email}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="economic">
-            <div class="head">Resumen económico</div>
-            <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
-            <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
-            <hr>
-            <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
-          </div>
+        <div class="economic">
+          <div class="bar">Resumen económico</div>
+          <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
+          <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
+          <hr>
+          <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
         </div>
-
-        <div class="signature">
-          <div>Atentamente,</div>
-          <div class="sigLine"></div>
-          <b>ROBIN PINTO SERRANO</b><br>
-          <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
-        </div>
-      </main>
-
+      </div>
+      <div class="signature">
+        <div>Atentamente,</div>
+        <div class="sigLine"></div>
+        <b>ROBIN PINTO SERRANO</b><br>
+        <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
+      </div>
       ${footerHTML()}
     `;
 
     canvas.appendChild(page);
     renderItems();
+    requestAnimationFrame(() => fitPreviewToScreen(false));
   }
 
   function renderItems(){
-    const box = document.getElementById('items-list');
-    if(!box) return;
+    const currency = document.getElementById('q-currency').value || 'CLP';
 
-    box.innerHTML = items.map((it,i)=>`
+    document.getElementById('items-list').innerHTML = items.map((it,i)=>`
       <div class="item-row flex justify-between gap-3 items-center">
         <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
-        <small class="text-amber-400 font-bold">${amount(it.total,currentQuote().currency)}</small>
+        <small class="text-amber-400 font-bold">${amount(it.total,currency)}</small>
         <div class="flex gap-2">
           <button onclick="editItem(${i})">✏️</button>
-          <button onclick="deleteItem(${i})">✕</button>
+          <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; editingItemIdx=null; renderPreview();">✕</button>
         </div>
-      </div>`).join('');
+      </div>
+    `).join('');
   }
 
   function addItem(){
@@ -913,27 +992,21 @@ Entregables:
 
     if(!name) return alert('Ingresa el detalle técnico del servicio.');
 
-    const newItem = {
-      name,
-      qty,
-      price,
-      total: Math.round(qty * price * 100) / 100,
-      isDefault:false
-    };
+    const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
 
     if(editingItemIdx !== null && editingItemIdx >= 0) {
       items[editingItemIdx] = newItem;
       editingItemIdx = null;
     } else {
-      const onlyDefault = items.length === 1 && items[0].isDefault;
-      if(onlyDefault) items[0] = newItem;
+      const onlyDefault = items.length===1 && items[0].isDefault;
+      if(onlyDefault) items[0]=newItem;
       else items.push(newItem);
     }
 
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
     document.getElementById('i-qty').value = 1;
     document.getElementById('i-price').value = '';
-
+    editorDirty = false;
     renderPreview();
   }
 
@@ -941,16 +1014,14 @@ Entregables:
     const it = items[i];
     if(!it) return;
 
-    document.getElementById('i-name').value = it.name;
-    document.getElementById('i-qty').value = it.qty;
-    document.getElementById('i-price').value = it.price;
-    editingItemIdx = i;
-  }
+    suppressPriceSync = true;
+    document.getElementById('i-name').value = it.name || DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = it.qty || 1;
+    document.getElementById('i-price').value = Number(it.price || 0) ? it.price : '';
+    suppressPriceSync = false;
+    editorDirty = false;
 
-  function deleteItem(i){
-    items.splice(i,1);
-    if(!items.length) items = [defaultItem()];
-    renderPreview();
+    editingItemIdx = i;
   }
 
   function navTo(tab){
@@ -961,11 +1032,11 @@ Entregables:
 
     if(tab==='clients') updateClientsUI();
     if(tab==='hist') renderHistory();
-    if(tab==='edit') renderPreview();
+    if(tab==='edit') requestAnimationFrame(() => fitPreviewToScreen(true));
   }
 
   function handleClientSelect(){
-    if(document.getElementById('q-client').value === 'NEW') navTo('clients');
+    if(document.getElementById('q-client').value==='NEW') navTo('clients');
     renderPreview();
   }
 
@@ -974,87 +1045,65 @@ Entregables:
 
     const data = {
       id: id || ('local_'+Date.now()),
-      name: document.getElementById('c-name').value.trim().toUpperCase(),
-      rut: document.getElementById('c-rut').value.trim(),
-      phone: document.getElementById('c-phone').value.trim(),
-      email: document.getElementById('c-email').value.trim(),
-      address: document.getElementById('c-address').value.trim()
+      name:document.getElementById('c-name').value.trim().toUpperCase(),
+      rut:document.getElementById('c-rut').value.trim(),
+      phone:document.getElementById('c-phone').value.trim(),
+      email:document.getElementById('c-email').value.trim(),
+      address:document.getElementById('c-address').value.trim()
     };
 
     if(!data.name) return alert('Ingresa el nombre del cliente.');
 
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]')
-      .filter(c=>c.id!==data.id && c.name!==data.name);
-
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name);
     local.push(data);
     localStorage.setItem('rps_clientes_local',JSON.stringify(local));
 
-    window.clientes = [
-      ...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),
-      data
-    ];
+    window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
 
     try{
       if(window.fb?.db){
-        if(id && !String(id).startsWith('local_')) {
-          await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
-        } else {
-          await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
-        }
+        if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
+        else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
       }
-    }catch(e){
-      console.warn(e);
-    }
+    }catch(e){ console.error(e); }
 
     clearClientForm();
     updateClientsUI();
     navTo('edit');
-
-    document.getElementById('q-client').value = data.name;
+    document.getElementById('q-client').value=data.name;
     renderPreview();
   }
 
   function clearClientForm(){
     editingClientId = null;
-    ['c-id','c-name','c-rut','c-phone','c-email','c-address']
-      .forEach(id=>document.getElementById(id).value='');
+    ['c-id','c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value='');
   }
 
-  function editClient(id){
+  function editClient(id) {
     const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
     if(!c) return;
 
     editingClientId = c.id;
-    document.getElementById('c-id').value = c.id || '';
-    document.getElementById('c-name').value = c.name || '';
-    document.getElementById('c-rut').value = c.rut || '';
-    document.getElementById('c-phone').value = c.phone || '';
-    document.getElementById('c-email').value = c.email || '';
-    document.getElementById('c-address').value = c.address || '';
-
+    document.getElementById('c-id').value = c.id||'';
+    document.getElementById('c-name').value = c.name||'';
+    document.getElementById('c-rut').value = c.rut||'';
+    document.getElementById('c-phone').value = c.phone||'';
+    document.getElementById('c-email').value = c.email||'';
+    document.getElementById('c-address').value = c.address||'';
     navTo('clients');
   }
 
   async function deleteClient(id){
     const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
-    if(!c) return;
-    if(!confirm('¿Eliminar este cliente?')) return;
+    if(!c || !confirm('¿Eliminar cliente?')) return;
 
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]')
-      .filter(x=>String(x.id)!==String(id) && x.name!==c.name);
-
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id));
     localStorage.setItem('rps_clientes_local',JSON.stringify(local));
-
-    window.clientes = (window.clientes||[])
-      .filter(x=>String(x.id)!==String(id) && x.name!==c.name);
+    window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id));
 
     try{
-      if(window.fb?.db && !String(id).startsWith('local_')) {
-        await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
-      }
-    }catch(e){
-      console.warn(e);
-    }
+      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
+    }catch(e){ console.error(e); }
 
     updateClientsUI();
     renderPreview();
@@ -1062,39 +1111,30 @@ Entregables:
 
   function updateClientsUI(){
     const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]');
-
-    const merged = [...(window.clientes||[]), ...local]
+    const merged = [...(window.clientes||[]),...local]
       .filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i)
       .sort((a,b)=>a.name.localeCompare(b.name));
 
     window.clientes = merged;
 
     const sel = document.getElementById('q-client');
-    const cur = sel.value;
-
-    sel.innerHTML =
-      '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' +
-      merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-
-    if(cur) sel.value = cur;
+    if(sel){
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
 
     const list = document.getElementById('clients-list');
-    if(!list) return;
-
-    list.innerHTML = merged.length ? merged.map(c=>`
-      <div class="list-row">
-        <div class="flex justify-between gap-3 items-start">
-          <div class="min-w-0">
-            <b>${esc(c.name)}</b><br>
-            <small>${esc(c.rut||'')} · ${esc(c.phone||c.email||'')}</small><br>
-            <small>${esc(c.address||'')}</small>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button title="Editar" onclick="editClient('${c.id}')">✏️</button>
-            <button title="Eliminar" onclick="deleteClient('${c.id}')">🗑️</button>
+    if(list){
+      list.innerHTML = merged.map(c=>`
+        <div class="list-row">
+          <div class="flex justify-between gap-3 items-start">
+            <div><b>${esc(c.name)}</b><br><small>${esc(c.rut||'')} · ${esc(c.phone||'')}</small></div>
+            <div class="flex gap-2"><button onclick="editClient('${c.id}')">✏️</button><button onclick="deleteClient('${c.id}')">🗑️</button></div>
           </div>
         </div>
-      </div>`).join('') : '<div class="list-row text-slate-400">Sin clientes guardados.</div>';
+      `).join('');
+    }
   }
 
   function renderHistory(){
@@ -1103,26 +1143,21 @@ Entregables:
     if(!input || !list) return;
 
     const q = input.value.toLowerCase();
+    const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
 
-    const data = (window.historial||[])
-      .filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
-
-    list.innerHTML = data.length ? data.map(h=>`
+    list.innerHTML = data.map(h=>`
       <div class="list-row">
         <div class="flex justify-between gap-3 items-start">
-          <div class="min-w-0">
-            <b class="text-amber-500">${esc(h.ref||('AER-'+h.folio))}</b><br>
-            <small>${esc(h.client||'Sin cliente')} · ${amount(h.total,h.currency)}</small><br>
-            <small>${esc(h.project||'Servicio técnico')}</small>
-          </div>
-          <div class="flex gap-2 shrink-0">
-            <button title="Ver" onclick="viewQuote('${h.id}')">🔍</button>
-            <button title="Editar" onclick="editQuote('${h.id}')">✏️</button>
-            <button title="PDF" onclick="downloadHist('${h.id}')">PDF</button>
-            <button title="Eliminar" onclick="deleteQuote('${h.id}')">🗑️</button>
+          <div><b class="text-amber-500">${esc(h.ref||('AER-'+h.folio))}</b><br><small>${esc(h.client||'—')} · ${amount(h.total,h.currency)}</small></div>
+          <div class="flex gap-2">
+            <button onclick="viewQuote('${h.id}')">🔍</button>
+            <button onclick="editQuote('${h.id}')">✏️</button>
+            <button onclick="downloadHist('${h.id}')">PDF</button>
+            <button onclick="deleteQuote('${h.id}')">🗑️</button>
           </div>
         </div>
-      </div>`).join('') : '<div class="list-row text-slate-400">Sin cotizaciones guardadas.</div>';
+      </div>
+    `).join('');
   }
 
   function quoteById(id){
@@ -1140,60 +1175,143 @@ Entregables:
   }
 
   async function deleteQuote(id){
-    if(!confirm('¿Eliminar esta cotización del historial?')) return;
+    if(!confirm('¿Eliminar cotización?')) return;
 
     try{
       if(window.fb?.db) await fb.deleteDoc(fb.doc(fb.db,'rps_cotizaciones',id));
       window.historial = (window.historial||[]).filter(h=>h.id!==id);
       renderHistory();
-    }catch(e){
-      console.error(e);
-      alert('No se pudo eliminar: ' + (e.message || e));
-    }
+    }catch(e){ console.error(e); }
   }
 
   async function saveAndSend(){
-    const q = currentQuote();
+    // Sincroniza el precio visible antes de guardar.
+    // IMPORTANTE: el PDF NO recibirá el objeto guardado en Firebase, porque ahí puede venir
+    // un valor viejo arrastrado. El PDF se generará desde currentQuote(), igual que el preliminar.
+    syncPriceFromEditor();
 
-    if(!q.client) return alert('Falta seleccionar o crear cliente.');
+    const q = forceVisibleSingleItemPrice(currentQuote());
+    if(!q.client) return alert('Falta seleccionar cliente.');
 
-    let f = editingId
-      ? Number(window.currentFolio || q.folio || 1000)
-      : (window.nextFolio || 1000);
+    let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
 
     try {
       if(!editingId && window.fb?.runTransaction){
         await fb.runTransaction(fb.db, async (t) => {
           const r = fb.doc(fb.db, 'config', 'rps_cotizador_v1');
           const s = await t.get(r);
-
-          f = s.exists()
-            ? Math.max(1000, Number(s.data().lastFolio || 1000))
-            : 1000;
-
+          f = s.exists() ? Math.max(1000, Number(s.data().lastFolio || 1000)) : 1000;
           if (s.exists()) t.update(r, {lastFolio: f + 1});
           else t.set(r, {lastFolio: f + 1});
         });
       }
 
+      const finalQuote = forceVisibleSingleItemPrice(currentQuote());
+      const finalRef = editingId ? (finalQuote.ref || ('AER-' + f)) : ('AER-' + f);
+
       const data = {
-        ...q,
+        ...finalQuote,
         folio: f,
-        ref: q.ref || ('AER-' + f),
+        ref: finalRef,
         createdAt: new Date().toISOString()
       };
 
+      // Deja el folio/ref definitivo visible en el formulario antes de crear el PDF.
+      window.currentFolio = f;
+      document.getElementById('q-ref').value = data.ref;
+
       if(window.fb?.db){
-        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
-        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+        if(editingId) {
+          await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
+        } else {
+          const createdDoc = await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+          editingId = createdDoc?.id || null;
+        }
       }
 
+      // AQUÍ ESTABA EL ERROR: antes se pasaba "data" al PDF, y ese objeto podía arrastrar
+      // el valor viejo. Ahora el PDF se genera sin quoteOverride: usa currentQuote() vivo,
+      // exactamente igual que el preliminar.
       await generateAndSharePDF();
-
     } catch(e) {
       console.error(e);
-      alert('No se pudo guardar/enviar: ' + (e.message || e));
+      alert('Error al procesar la transacción.');
     }
+  }
+
+  function fitPreviewToScreen(force=false) {
+    const box = document.getElementById('previewBox');
+    const canvas = document.getElementById('pdf-canvas');
+    const page = canvas ? canvas.querySelector('.a4') : null;
+
+    if(!box || !canvas || !page) return;
+    if(!force && box.dataset.userZoom === '1') return;
+
+    page.style.transform = 'scale(1)';
+    page.style.transformOrigin = 'top left';
+
+    const naturalW = page.offsetWidth || 794;
+    const naturalH = page.offsetHeight || 1123;
+    const available = Math.max(260, box.clientWidth - 28);
+
+    previewZoom = Math.min(1, Math.max(0.30, available / naturalW));
+
+    page.style.transform = `scale(${previewZoom})`;
+    canvas.style.width = `${Math.ceil(naturalW * previewZoom)}px`;
+    canvas.style.height = `${Math.ceil(naturalH * previewZoom)}px`;
+    canvas.style.marginLeft = previewZoom < 1 ? 'auto' : '0';
+    canvas.style.marginRight = previewZoom < 1 ? 'auto' : '0';
+  }
+
+  function setupPreviewTouchZoom() {
+    const box = document.getElementById('previewBox');
+    const canvas = document.getElementById('pdf-canvas');
+
+    if (!box || !canvas) return;
+
+    let startDist = 0;
+    let startZoom = 1;
+
+    function dist(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    box.addEventListener('touchstart', e => {
+      if (e.touches.length === 2) {
+        const page = canvas.querySelector('.a4');
+        if(!page) return;
+        box.dataset.userZoom = '1';
+        startDist = dist(e.touches);
+        startZoom = previewZoom;
+      }
+    }, { passive: false });
+
+    box.addEventListener('touchmove', e => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+
+        const page = canvas.querySelector('.a4');
+        if(!page) return;
+
+        const newDist = dist(e.touches);
+        previewZoom = Math.min(2.4, Math.max(0.32, startZoom * (newDist / startDist)));
+
+        page.style.transformOrigin = 'top left';
+        page.style.transform = `scale(${previewZoom})`;
+        canvas.style.width = `${Math.ceil(page.offsetWidth * previewZoom)}px`;
+        canvas.style.height = `${Math.ceil(page.offsetHeight * previewZoom)}px`;
+        canvas.style.marginLeft = '0';
+        canvas.style.marginRight = '0';
+
+        // Asegura que, al hacer zoom, el contenido sea realmente desplazable
+        // en horizontal dentro del preliminar.
+        if (canvas.offsetWidth > box.clientWidth && box.scrollLeft === 0) {
+          box.scrollLeft = Math.max(0, (canvas.offsetWidth - box.clientWidth) / 2);
+        }
+      }
+    }, { passive: false });
   }
 
   async function generateAndSharePDF(historyId=null, quoteOverride=null){
@@ -1202,304 +1320,311 @@ Entregables:
 
     let originalState = null;
 
-    if(quoteOverride){
-      originalState = captureFormState();
-      applyQuoteToForm(quoteOverride, false);
-      renderPreview();
-      await new Promise(r=>setTimeout(r,80));
-    } else if(historyId){
-      const h = quoteById(historyId);
-      if(!h) return alert('No se encontró la cotización.');
+    try {
+      let q;
 
-      originalState = captureFormState();
-      applyQuoteToForm(h, false);
-      renderPreview();
-      await new Promise(r=>setTimeout(r,80));
-    } else {
-      renderPreview();
-      await new Promise(r=>setTimeout(r,50));
-    }
+      if(historyId){
+        const h = quoteById(historyId);
+        if(!h) return alert('No se encontró la cotización.');
 
-    const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
-    const c = selectedClient();
-
-    const pdf = new JsPDF({
-      orientation:'portrait',
-      unit:'mm',
-      format:'a4',
-      compress:true
-    });
-
-    const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
-    const G=[30,41,59], B=[245,158,11], S=[100,116,139], L=[203,213,225];
-
-    let y = MT;
-
-    function font(size, style='normal', color=G){
-      pdf.setFont('helvetica', style);
-      pdf.setFontSize(size);
-      pdf.setTextColor(...color);
-    }
-
-    function lines(text, w){
-      return pdf.splitTextToSize(String(text ?? ''), w);
-    }
-
-    function ensureSpace(needed){
-      if(y + needed > H - MB - 14){
-        foot();
-        pdf.addPage();
-        head();
-      }
-    }
-
-    function foot(){
-      pdf.setDrawColor(...B);
-      pdf.setLineWidth(.3);
-      pdf.line(ML,H-9,W-MR,H-9);
-
-      font(6,'normal',S);
-      pdf.text(
-        `${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`,
-        W/2,
-        H-5,
-        {align:'center', maxWidth:CW}
-      );
-    }
-
-    function head(){
-      y = MT;
-
-      font(14,'bold',[22,30,46]);
-      pdf.text(COMPANY.name,ML,y+5);
-
-      font(7.5,'normal',S);
-      pdf.text('Servicios topográficos y geodésicos',ML,y+10);
-      pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML,y+14);
-
-      pdf.setFillColor(22,30,46);
-      pdf.roundedRect(W-MR-48,y,48,10,1,1,'F');
-
-      font(7,'bold',[245,158,11]);
-      pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,y+6.5,{align:'center'});
-
-      font(15,'bold',[22,30,46]);
-      pdf.text(`N° ${quoteCode(q)}`,W-MR,y+21,{align:'right'});
-
-      font(7.5,'normal',S);
-      pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,y+26,{align:'right'});
-
-      y += 32;
-
-      pdf.setDrawColor(...B);
-      pdf.setLineWidth(.6);
-      pdf.line(ML,y,W-MR,y);
-
-      y += 6;
-    }
-
-    function sectionBar(title, fillDark=true){
-      ensureSpace(12);
-
-      if(fillDark) {
-        pdf.setFillColor(22,30,46);
-        font(6.5,'bold',[245,158,11]);
+        originalState = captureFormState();
+        applyQuoteToForm(h, false);
+        await new Promise(r=>setTimeout(r,50));
+        q = makePdfSafeQuote(h, false);
       } else {
-        pdf.setFillColor(...B);
-        font(6.5,'bold',[22,30,46]);
+        // RUTA NORMAL: Guardar/enviar o descargar la cotización actual.
+        // El PDF usa la misma fuente que el preliminar: el formulario vivo + items actuales.
+        // No usa quoteOverride, no usa Firebase y no usa historial para items/neto/iva/total.
+        syncPriceFromEditor();
+        q = forceVisibleSingleItemPrice(currentQuote());
       }
 
-      pdf.roundedRect(ML,y,CW,6,1,1,'F');
-      pdf.text(title,ML+3,y+4.2);
-      y += 8;
-    }
+      const c = (window.clientes || []).find(cli => cli.name === q.client) || selectedClient() || {name:q.client};
 
-    function para(text, size=8.5, lh=4.2, x=ML+3, maxW=CW-6){
-      const arr = lines(text, maxW);
+      const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
+      const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
+      const G=[30,41,59], B=[245,158,11], S=[100,116,139], L=[203,213,225];
+      let pdfY=MT;
 
-      for(const ln of arr){
-        ensureSpace(lh + 3);
-        font(size,'normal',G);
-        pdf.text(ln,x,y);
-        y += lh;
+      function pdfFont(size, style='normal', color=G){
+        pdf.setFont('helvetica', style);
+        pdf.setFontSize(size);
+        pdf.setTextColor(...color);
       }
 
-      y += 2;
-    }
+      function pdfLines(text, w){
+        return pdf.splitTextToSize(String(text ?? ''), w);
+      }
 
-    function info(){
-      const h=34, leftW=88, gap=6, rx=ML+leftW+gap, rw=CW-leftW-gap;
+      function pdfFoot(){
+        pdf.setDrawColor(...B);
+        pdf.setLineWidth(.3);
+        pdf.line(ML,H-9,W-MR,H-9);
+        pdfFont(6,'normal',S);
+        pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW});
+      }
 
-      ensureSpace(h+8);
+      function pdfHead(){
+        pdfY = MT;
+
+        pdfFont(14,'bold',[22,30,46]);
+        pdf.text(COMPANY.name,ML,pdfY+5);
+
+        pdfFont(7.5,'normal',S);
+        pdf.text('Servicios topográficos y geodésicos',ML,pdfY+10);
+        pdf.text(`${COMPANY.email} · Fono: ${COMPANY.phone}`,ML,pdfY+14);
+
+        pdf.setFillColor(22,30,46);
+        pdf.roundedRect(W-MR-48,pdfY,48,10,1,1,'F');
+
+        pdfFont(7,'bold',[245,158,11]);
+        pdf.text('COTIZACIÓN TÉCNICA',W-MR-24,pdfY+6.5,{align:'center'});
+
+        pdfFont(15,'bold',[22,30,46]);
+        pdf.text(`N° ${quoteCode(q)}`,W-MR,pdfY+21,{align:'right'});
+
+        pdfFont(7.5,'normal',S);
+        pdf.text(`Fecha: ${fmtDate(q.date)}`,W-MR,pdfY+26,{align:'right'});
+
+        pdfY+=32;
+        pdf.setDrawColor(...B);
+        pdf.setLineWidth(.6);
+        pdf.line(ML,pdfY,W-MR,pdfY);
+        pdfY+=6;
+      }
+
+      function newPage(){
+        pdfFoot();
+        pdf.addPage();
+        pdfHead();
+      }
+
+      function ensureSpace(mm){
+        if(pdfY + mm > H - MB - 8) newPage();
+      }
+
+      function sectionTitle(title, amber=false){
+        ensureSpace(12);
+
+        if(amber){
+          pdf.setFillColor(...B);
+          pdfFont(6.5,'bold',[22,30,46]);
+        } else {
+          pdf.setFillColor(22,30,46);
+          pdfFont(6.5,'bold',[245,158,11]);
+        }
+
+        pdf.roundedRect(ML,pdfY,CW,6,1,1,'F');
+        pdf.text(title,ML+3,pdfY+4.2);
+        pdfY+=8;
+      }
+
+      function pdfPara(text, size=8.5, lh=4.2, x=ML+3, w=CW-6){
+        const arr = pdfLines(text,w);
+
+        for(const ln of arr){
+          ensureSpace(lh + 2);
+          pdfFont(size,'normal',G);
+          pdf.text(ln,x,pdfY);
+          pdfY+=lh;
+        }
+
+        pdfY+=2;
+      }
+
+      pdfHead();
+
+      const hBox=34, leftW=88, gapBox=6, rx=ML+leftW+gapBox, rw=CW-leftW-gapBox;
+
+      ensureSpace(hBox+8);
 
       pdf.setDrawColor(...L);
       pdf.setFillColor(255,255,255);
-      pdf.roundedRect(ML,y,leftW,h,1,1,'FD');
-      pdf.roundedRect(rx,y,rw,h,1,1,'FD');
+      pdf.roundedRect(ML,pdfY,leftW,hBox,1,1,'FD');
+      pdf.roundedRect(rx,pdfY,rw,hBox,1,1,'FD');
 
       pdf.setFillColor(22,30,46);
-      pdf.roundedRect(ML,y,leftW,6,1,1,'F');
+      pdf.roundedRect(ML,pdfY,leftW,6,1,1,'F');
 
       pdf.setFillColor(...B);
-      pdf.roundedRect(rx,y,rw,6,1,1,'F');
+      pdf.roundedRect(rx,pdfY,rw,6,1,1,'F');
 
-      font(6.5,'bold',[245,158,11]);
-      pdf.text('EN ATENCIÓN A',ML+3,y+4.2);
+      pdfFont(6.5,'bold',[245,158,11]);
+      pdf.text('EN ATENCIÓN A',ML+3,pdfY+4.2);
 
-      font(6.5,'bold',[22,30,46]);
-      pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,y+4.2);
+      pdfFont(6.5,'bold',[22,30,46]);
+      pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,pdfY+4.2);
 
-      font(8,'bold',[22,30,46]);
-      pdf.text(lines((c.name||'---').toUpperCase(),leftW-6),ML+3,y+12);
+      pdfFont(8,'bold',[22,30,46]);
+      pdf.text(pdfLines((c.name||'---').toUpperCase(),leftW-6),ML+3,pdfY+12);
 
-      font(7.5,'normal',G);
-      pdf.text(`RUT: ${c.rut||'—'}`,ML+3,y+19);
-      pdf.text(lines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,y+24);
-      pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,y+30);
+      pdfFont(7.5,'normal',G);
+      pdf.text(`RUT: ${c.rut||'—'}`,ML+3,pdfY+19);
+      pdf.text(pdfLines(`Dirección: ${c.address||'—'}`,leftW-6),ML+3,pdfY+24);
+      pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,pdfY+30);
 
-      let yy = y + 12;
+      let yy=pdfY+12;
 
-      function row(label,val){
-        font(7,'bold',S);
+      function rowPDF(label,val){
+        pdfFont(7,'bold',S);
         pdf.text(label,rx+3,yy);
 
-        font(7.5,'normal',G);
-        pdf.text(lines(val||'—',rw-24),rx+24,yy);
-
-        yy += 4.5;
+        pdfFont(7.5,'normal',G);
+        pdf.text(pdfLines(val||'—',rw-24),rx+24,yy);
+        yy+=4.5;
       }
 
-      row('Proyecto:',q.project||'Servicio técnico');
-      row('Ubicación:',q.location||'Por definir');
-      row('Validez:',q.validity||'15 días');
-      row('Entrega:',q.delivery||'Según coordinación');
-      row('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
+      rowPDF('Proyecto:',q.project||'Servicio técnico');
+      rowPDF('Ubicación:',q.location||'Por definir');
+      rowPDF('Validez:',q.validity||'15 días');
+      rowPDF('Entrega:',q.delivery||'Según coordinación');
+      rowPDF('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
 
-      y += h + 6;
-    }
+      pdfY+=hBox+6;
 
-    function payment(){
-      ensureSpace(50);
+      sectionTitle('DESCRIPCIÓN DEL SERVICIO', true);
+      pdfPara(q.serviceDesc||DEFAULT_SERVICE_DESC,8.5,4.2);
 
-      const top=y, h=42, gap=6, totalW=68, infoW=CW-totalW-gap;
+      const quoteItems = q.items.length ? q.items : [defaultItem()];
+
+      for(const [idx, it] of quoteItems.entries()){
+        const parsed = parseService(it.name);
+        sectionTitle(`SERVICIO PROFESIONAL · ÍTEM ${idx + 1}`);
+
+        const pTitle = itemTitle(it, idx);
+        if(pTitle !== `Ítem ${idx + 1}`){
+          const titleLines = pdfLines(pTitle.toUpperCase(), CW-6);
+          for(const tl of titleLines){
+            ensureSpace(5);
+            pdfFont(7.5,'bold',[180,83,9]);
+            pdf.text(tl, ML+3, pdfY);
+            pdfY += 4.2;
+          }
+          pdfY += 1;
+        }
+
+        pdfPara(parsed.scope,8.5,4.2);
+
+        if(parsed.deliverables && parsed.deliverables.length){
+          ensureSpace(8);
+          pdfFont(7.5,'bold',[180,83,9]);
+          pdf.text('ENTREGABLES', ML+3, pdfY);
+          pdfY += 4.5;
+          for(const d of parsed.deliverables){
+            const dLines = pdfLines(`• ${d}`, CW-10);
+            for(const dl of dLines){
+              ensureSpace(5);
+              pdfFont(8,'normal',G);
+              pdf.text(dl,ML+5,pdfY);
+              pdfY+=4;
+            }
+          }
+        }
+
+        ensureSpace(7);
+        pdfFont(8,'bold',G);
+        const itemAmountLines = pdfLines(`Cantidad: ${Number(it.qty || 1).toLocaleString('es-CL')} · Valor neto: ${amount(it.total || 0, q.currency)}`, CW-6);
+        for(const il of itemAmountLines){
+          ensureSpace(5);
+          pdf.text(il, ML+3, pdfY);
+          pdfY += 4.5;
+        }
+        pdfY += 1.5;
+      }
+
+      pdfY+=2;
+
+      if(String(q.notes || '').trim()){
+        sectionTitle('OBSERVACIONES', true);
+        pdfPara(q.notes, 8.2, 4.1);
+      }
+
+      const hPay=44, totalW=68, infoW=CW-totalW-gapBox;
+
+      ensureSpace(hPay+8);
+
+      const top=pdfY;
+      const txBox=ML+infoW+gapBox;
 
       pdf.setDrawColor(...L);
       pdf.setFillColor(255,255,255);
-      pdf.roundedRect(ML,top,infoW,h,1,1,'FD');
+      pdf.roundedRect(ML,top,infoW,hPay,1,1,'FD');
+      pdf.roundedRect(txBox,top,totalW,hPay,1,1,'FD');
 
-      pdf.setFillColor(255,253,245);
+      pdf.setFillColor(240,253,244);
       pdf.roundedRect(ML,top,infoW,6,1,1,'F');
 
-      font(6.5,'bold',[22,30,46]);
+      pdfFont(6.5,'bold',[22,30,46]);
       pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2);
 
       const colW=(infoW-8)/2;
       const x2=ML+4+colW+2;
 
-      font(7,'bold',[180,83,9]);
+      pdfFont(7,'bold',[180,83,9]);
       pdf.text('Condiciones comerciales',ML+3,top+13);
 
-      font(7.5,'normal',G);
-      pdf.text(lines(q.conditions||'',colW),ML+3,top+18);
+      pdfFont(7.5,'normal',G);
+      pdf.text(pdfLines(q.conditions||'',colW),ML+3,top+18);
 
-      font(7,'bold',[180,83,9]);
+      pdfFont(7,'bold',[180,83,9]);
       pdf.text('Transferencia bancaria',x2,top+13);
 
-      font(7,'normal',G);
-      pdf.text(
-        lines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),
-        x2,
-        top+18
-      );
-
-      const tx=ML+infoW+gap;
-
-      pdf.setDrawColor(253,230,138);
-      pdf.setFillColor(255,253,245);
-      pdf.roundedRect(tx,top,totalW,h,1,1,'FD');
+      pdfFont(7,'normal',G);
+      pdf.text(pdfLines(`${COMPANY.holder}\nRUT: ${COMPANY.rut}\n${COMPANY.bank}\n${COMPANY.account}\n${COMPANY.email}`,colW),x2,top+18);
 
       pdf.setFillColor(22,30,46);
-      pdf.roundedRect(tx,top,totalW,6,1,1,'F');
+      pdf.roundedRect(txBox,top,totalW,6,1,1,'F');
 
-      font(6.5,'bold',[245,158,11]);
-      pdf.text('RESUMEN ECONÓMICO',tx+3,top+4.2);
+      pdfFont(6.5,'bold',[245,158,11]);
+      pdf.text('RESUMEN ECONÓMICO',txBox+3,top+4.2);
 
-      let yy=top+14;
+      let yyy=top+14;
 
-      function r(label,val,total=false){
-        font(total?8:7.2,total?'bold':'normal',total?[180,83,9]:S);
-        pdf.text(label,tx+3,yy);
+      function rE(label,val,total=false){
+        pdfFont(total?8:7.2,total?'bold':'normal',total?[180,83,9]:S);
+        pdf.text(label,txBox+3,yyy);
 
-        font(total?11:8,total?'bold':'normal',total?[180,83,9]:G);
-        pdf.text(amount(val,q.currency),tx+totalW-3,yy,{align:'right'});
-
-        yy += total ? 7 : 5.5;
+        pdfFont(total?11:8,total?'bold':'normal',total?[180,83,9]:G);
+        pdf.text(amount(val,q.currency),txBox+totalW-3,yyy,{align:'right'});
+        yyy+=total?7:5.5;
       }
 
-      r('Valor neto',q.neto);
-      r('IVA 19%',q.iva);
+      rE('Valor neto',q.neto);
+      rE('IVA 19%',q.iva);
 
+      yyy += 2;
       pdf.setDrawColor(...L);
-      pdf.line(tx+3,yy-2,tx+totalW-3,yy-2);
+      pdf.line(txBox+3,yyy,txBox+totalW-3,yyy);
+      yyy += 5;
 
-      r('TOTAL SERVICIO',q.total,true);
+      rE('TOTAL SERVICIO',q.total,true);
 
-      y = top + h + 6;
+      pdfY=top+hPay+8;
+
+      ensureSpace(24);
+
+      pdfFont(7.5,'normal',G);
+      pdf.text('Atentamente,',W/2,pdfY,{align:'center'});
+      pdfY+=6;
+
+      pdf.setDrawColor(22,30,46);
+      pdf.line(W/2-25,pdfY,W/2+25,pdfY);
+      pdfY+=4;
+
+      pdfFont(8,'bold',G);
+      pdf.text('ROBIN PINTO SERRANO',W/2,pdfY,{align:'center'});
+
+      pdfFont(6.5,'normal',S);
+      pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,pdfY+4,{align:'center'});
+
+      pdfFoot();
+
+      pdf.save(`COT_${quoteCode(q)}.pdf`);
+
+    } catch(e) {
+      console.error(e);
+      alert('No se pudo generar el PDF. Revisa la consola para más detalle.');
     }
-
-    head();
-    info();
-
-    sectionBar('DESCRIPCIÓN DEL SERVICIO', false);
-    para(q.serviceDesc || DEFAULT_SERVICE_DESC, 8.5, 4.2);
-    y += 2;
-
-    const quoteItems = q.items.length ? q.items : [defaultItem()];
-    const parsed = parseService(quoteItems[0].name);
-
-    sectionBar('SERVICIO PROFESIONAL', true);
-
-    ensureSpace(10);
-    font(7.5,'bold',[180,83,9]);
-    pdf.text('ALCANCE TÉCNICO',ML+3,y);
-    y += 4.5;
-
-    para(parsed.scope,8.5,4.2);
-    y += 2;
-
-    sectionBar('SERVICIO PROFESIONAL · ENTREGABLES', true);
-
-    for(const d of parsed.deliverables){
-      ensureSpace(6);
-      font(8,'normal',G);
-      pdf.text(`• ${d}`,ML+5,y);
-      y += 4;
-    }
-
-    y += 4;
-
-    payment();
-
-    ensureSpace(24);
-
-    font(7.5,'normal',G);
-    pdf.text('Atentamente,',W/2,y,{align:'center'});
-    y += 6;
-
-    pdf.setDrawColor(22,30,46);
-    pdf.line(W/2-25,y,W/2+25,y);
-    y += 4;
-
-    font(8,'bold',G);
-    pdf.text('ROBIN PINTO SERRANO',W/2,y,{align:'center'});
-    y += 3.5;
-
-    font(6.5,'normal',S);
-    pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,y,{align:'center'});
-
-    foot();
-
-    pdf.save(`COT_${quoteCode(q)}.pdf`);
 
     if(originalState){
       restoreFormState(originalState);
@@ -1508,78 +1633,26 @@ Entregables:
   }
 
   window.downloadHist = (id) => {
-    const h = window.historial.find(x => x.id === id);
-    generateAndSharePDF(null, h);
+    generateAndSharePDF(id, null);
   };
 
-  Object.assign(window, {
-    navTo,
-    renderPreview,
-    handleClientSelect,
-    addItem,
-    editItem,
-    deleteItem,
-    saveClient,
-    clearClientForm,
-    editClient,
-    deleteClient,
-    updateClientsUI,
-    renderHistory,
-    editQuote,
-    viewQuote,
-    deleteQuote,
-    saveAndSend,
-    generateAndSharePDF,
-    captureFormState,
-    applyQuoteToForm,
-    restoreFormState,
-    currentQuote,
-    selectedClient,
-    quoteById,
-    defaultItem,
-    parseService,
-    quoteCode,
-    fmtDate,
-    amount,
-    COMPANY
-  });
-
-  onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
-    window.nextFolio = snap.exists()
-      ? Math.max(1000, Number(snap.data().lastFolio || 1000))
-      : 1000;
-
-    if(!editingId && !document.getElementById('q-ref').value) {
-      document.getElementById('q-ref').value = 'AER-' + window.nextFolio;
-    }
-  });
-
-  onSnapshot(collection(db, "rps_clientes"), snap => {
-    window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    updateClientsUI();
-    renderPreview();
-  });
-
-  onSnapshot(collection(db, "rps_cotizaciones"), snap => {
-    window.historial = snap.docs
-      .map(d => ({id: d.id, ...d.data()}))
-      .sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
-
-    renderHistory();
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
+  function initApp(){
     document.getElementById('q-date').valueAsDate = new Date();
-    document.getElementById('q-ref').value = 'AER-1000';
+    document.getElementById('q-ref').value = 'AER-' + (window.nextFolio || 1000);
     document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
-
-    document.getElementById('i-price').addEventListener('input', renderPreview);
-    document.getElementById('i-qty').addEventListener('input', renderPreview);
+    document.getElementById('i-qty').value = 1;
+    document.getElementById('i-price').value = '';
 
     updateClientsUI();
     renderPreview();
-  });
+    setupPreviewTouchZoom();
+
+    window.addEventListener('resize', () => fitPreviewToScreen(true));
+    window.addEventListener('orientationchange', () => setTimeout(() => fitPreviewToScreen(true), 250));
+  }
+
+  window.onload = initApp;
 </script>
 </body>
 </html>

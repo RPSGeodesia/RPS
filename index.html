@@ -796,7 +796,7 @@ Entregables:
     try{
       if(!editingId && window.fb?.runTransaction){
         await fb.runTransaction(fb.db,async(t)=>{
-          const r=fb.doc(fb.db,'config','rps_cotizador_v1');
+          const r=fb.doc(fb.doc(fb.db,'config','rps_cotizador_v1');
           const s=await t.get(r);
           f=s.exists()?Math.max(1000,Number(s.data().lastFolio||1000)):1000;
           s.exists()?t.update(r,{lastFolio:f+1}):t.set(r,{lastFolio:f+1});

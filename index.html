@@ -106,7 +106,6 @@
       padding:14px;
     }
 
-    /* Caja de preview modificada para permitir scroll y zoom pellizcando con los dedos de manera nativa */
     #previewBox {
       width: 100%;
       height: calc(100vh - 118px);
@@ -287,7 +286,7 @@
         <div class="card stack">
           <div class="grid grid-cols-2 gap-3">
             <input id="q-validity" class="input" value="15 días" oninput="renderPreview()">
-            <input id="q-delivery" class="input" value="Según coordinación" oninput="renderPreview()">
+            <input id="q-delivery" class="input" value="Según coordination" oninput="renderPreview()">
           </div>
           <textarea id="q-conditions" class="input" oninput="renderPreview()">50% de anticipo para iniciar los trabajos. 50% contra entrega de antecedentes finales.</textarea>
           <textarea id="q-notes" class="input" placeholder="Observaciones adicionales" oninput="renderPreview()"></textarea>
@@ -743,7 +742,7 @@ Entregables:
     window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id) && x.name!==c.name);
 
     try{
-      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.doc(fb.db,'rps_clientes',id));
+      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
     }catch(e){ console.warn(e); }
 
     updateClientsUI();
@@ -841,7 +840,6 @@ Entregables:
 </script>
 
 <script>
-/* Módulo de generación jsPDF completamente aislado y verificado */
 async function generateAndSharePDF(historyId=null, quoteOverride=null){
   const JsPDF = window.jspdf?.jsPDF;
   if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -913,7 +911,7 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
   function para(text, size=8.6, lh=4.0){
     const arr=lines(text,CW-8);
     for(const ln of arr){
-      font(size,'normal',G);
+      font(size='normal',G);
       pdf.text(ln,ML+4,y);
       y+=lh;
     }

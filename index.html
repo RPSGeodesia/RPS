@@ -144,18 +144,17 @@
     }
 
     #pdf-canvas {
-      width: 210mm;
-      max-width: none;
+      width: var(--preview-width, 100%);
+      max-width: 210mm;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      zoom: var(--preview-zoom, 1);
-      touch-action: pan-x pan-y;
     }
 
     .a4 {
-      width: 210mm;
-      height: 297mm;
+      width: 100%;
+      aspect-ratio: 210 / 297;
+      min-height: 297mm;
       background: white;
       color: #1e293b;
       padding: 16mm 14mm;
@@ -261,14 +260,15 @@
       }
 
       #pdf-canvas {
-        width: 210mm;
-        max-width: none;
+        width: var(--preview-width, 100%);
+        max-width: 210mm;
         margin: 0 auto;
       }
 
       .a4 {
-        width: 210mm;
-        min-width: 210mm;
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
       }
     }
   </style>
@@ -327,9 +327,9 @@
 
       <div id="previewBox">
         <div id="previewTools">
-          <button type="button" onclick="zoomPreview(-0.1)">−</button>
+          <button type="button" onclick="zoomPreview(-10)">−</button>
           <button type="button" onclick="resetPreviewZoom()">Ajustar</button>
-          <button type="button" onclick="zoomPreview(0.1)">+</button>
+          <button type="button" onclick="zoomPreview(10)">+</button>
         </div>
         <div id="pdf-canvas"></div>
       </div>
@@ -437,8 +437,7 @@ Entregables:
     if (
       manualPriceInput &&
       manualPriceInput.value !== "" &&
-      normalized.length === 1 &&
-      normalized[0].isDefault
+      normalized.length === 1
     ) {
       const mQty = Number(document.getElementById('i-qty').value || 1);
       const mPrice = Number(manualPriceInput.value || 0);
@@ -1089,81 +1088,20 @@ Entregables:
   }
 
 
-  let previewZoom = 1;
-  const previewPointers = new Map();
-  let pinchStartDistance = 0;
-  let pinchStartZoom = 1;
+  let previewWidthPercent = 100;
 
-  function clampPreviewZoom(v){
-    return Math.max(0.35, Math.min(2.4, Number(v || 1)));
-  }
-
-  function setPreviewZoom(v){
-    previewZoom = clampPreviewZoom(v);
+  function setPreviewWidthPercent(v){
+    previewWidthPercent = Math.max(45, Math.min(180, Number(v || 100)));
     const canvas = document.getElementById('pdf-canvas');
-    if(canvas) canvas.style.setProperty('--preview-zoom', previewZoom);
-  }
-
-  function fitPreviewToBox(){
-    const box = document.getElementById('previewBox');
-    if(!box) return;
-
-    const paperWidthPx = 210 * 96 / 25.4;
-    const available = Math.max(240, box.clientWidth - 44);
-    setPreviewZoom(Math.min(1, available / paperWidthPx));
+    if(canvas) canvas.style.setProperty('--preview-width', previewWidthPercent + '%');
   }
 
   function zoomPreview(delta){
-    setPreviewZoom(previewZoom + delta);
+    setPreviewWidthPercent(previewWidthPercent + delta);
   }
 
   function resetPreviewZoom(){
-    fitPreviewToBox();
-  }
-
-  function previewPointerDistance(){
-    const pts = Array.from(previewPointers.values());
-    if(pts.length < 2) return 0;
-    const dx = pts[0].clientX - pts[1].clientX;
-    const dy = pts[0].clientY - pts[1].clientY;
-    return Math.sqrt(dx*dx + dy*dy);
-  }
-
-  function setupPreviewZoom(){
-    const box = document.getElementById('previewBox');
-    if(!box) return;
-
-    box.addEventListener('pointerdown', (ev) => {
-      if(ev.target.closest('#previewTools')) return;
-      previewPointers.set(ev.pointerId, ev);
-
-      if(previewPointers.size === 2){
-        pinchStartDistance = previewPointerDistance();
-        pinchStartZoom = previewZoom;
-      }
-    }, {passive:false});
-
-    box.addEventListener('pointermove', (ev) => {
-      if(!previewPointers.has(ev.pointerId)) return;
-      previewPointers.set(ev.pointerId, ev);
-
-      if(previewPointers.size === 2){
-        ev.preventDefault();
-        const d = previewPointerDistance();
-        if(pinchStartDistance > 0){
-          setPreviewZoom(pinchStartZoom * (d / pinchStartDistance));
-        }
-      }
-    }, {passive:false});
-
-    ['pointerup','pointercancel','pointerleave'].forEach(type => {
-      box.addEventListener(type, (ev) => {
-        previewPointers.delete(ev.pointerId);
-        if(previewPointers.size < 2) pinchStartDistance = 0;
-      }, {passive:false});
-    });
-
-    window.addEventListener('resize', fitPreviewToBox);
+    setPreviewWidthPercent(100);
   }
 
   window.downloadHist = (id) => {
@@ -1191,8 +1129,6 @@ Entregables:
     generateAndSharePDF,
     zoomPreview,
     resetPreviewZoom,
-    fitPreviewToBox,
-    syncPriceFromInputs,
     captureFormState,
     applyQuoteToForm,
     restoreFormState,
@@ -1227,14 +1163,11 @@ Entregables:
     document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
     document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
 
-    document.getElementById('i-price').addEventListener('input', () => { syncPriceFromInputs(); renderPreview(); });
-    document.getElementById('i-qty').addEventListener('input', () => { syncPriceFromInputs(); renderPreview(); });
-    document.getElementById('i-name').addEventListener('input', () => { if(document.getElementById('i-price').value !== '') syncPriceFromInputs(); renderPreview(); });
+    document.getElementById('i-price').addEventListener('input', renderPreview);
+    document.getElementById('i-qty').addEventListener('input', renderPreview);
 
     updateClientsUI();
     renderPreview();
-    setupPreviewZoom();
-    setTimeout(fitPreviewToBox, 80);
   });
 </script>
 </body>

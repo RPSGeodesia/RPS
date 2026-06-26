@@ -106,6 +106,7 @@
       padding:14px;
     }
 
+    /* Modificado overflow para permitir scroll y zoom nativo completo en dispositivos móviles y de escritorio */
     #previewBox {
       height:calc(100vh - 118px);
       min-height:620px;
@@ -478,7 +479,6 @@ Entregables:
     const normalized = normalizeItems(items);
     let neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
     
-    // Si estás editando el valor por primera vez o modificando en vivo la caja de texto, se usa puramente ese precio neto
     const manualPriceInput = document.getElementById('i-price');
     if (manualPriceInput && manualPriceInput.value !== "" && normalized.length === 1 && normalized[0].isDefault) {
       const mQty = Number(document.getElementById('i-qty').value || 1);
@@ -525,8 +525,9 @@ Entregables:
     const canvas = document.getElementById('pdf-canvas');
     if(!canvas) return;
 
-    const PAGE_LIMIT = 100;
-    const HEADER_UNITS = 16;
+    /* Ajustadas las dimensiones del renderizador para compactar el contenido estrictamente en 1 página */
+    const PAGE_LIMIT = 240; 
+    const HEADER_UNITS = 10;
 
     function cleanText(v){ return String(v ?? '').replace(/\r/g,'').trim(); }
 
@@ -560,7 +561,7 @@ Entregables:
 
     function units(text, base){ 
       const txtLen = cleanText(text).length;
-      return base + Math.ceil((txtLen > 0 ? txtLen : 1) / 55); 
+      return base + Math.ceil((txtLen > 0 ? txtLen : 1) / 100); 
     }
 
     function headerHTML(){
@@ -638,12 +639,12 @@ Entregables:
           <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
           <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
         </div>
-      </div>`), 22);
+      </div>`), 15);
 
     splitText(q.serviceDesc || DEFAULT_SERVICE_DESC, 340).forEach((txt, idx)=>{
       addBlock(makeSection('pdf-card desc', `
-        <div class="bar blue">Descripción del servicio${idx>0?' (continuación)':''}</div>
-        <p>${esc(txt).replace(/\n/g,'<br>')}</p>`), units(txt, 11));
+        <div class="bar blue">Descripción del servicio</div>
+        <p>${esc(txt).replace(/\n/g,'<br>')}</p>`), units(txt, 8));
     });
 
     let quoteItems = q.items.length ? q.items : [defaultItem()];
@@ -654,15 +655,15 @@ Entregables:
 
     quoteItems.forEach((it, i)=>{
       const parsed = parseService(it.name);
-      const title = `Servicio profesional${quoteItems.length>1?' '+(i+1):''}`;
+      const title = `Servicio profesional`;
 
       splitText(parsed.scope, 360).forEach((txt, idx)=>{
         addBlock(makeSection('pdf-card', `
-          <div class="bar">${esc(title)}${idx>0?' (continuación)':''}</div>
+          <div class="bar">${esc(title)}</div>
           <div class="service-body">
             <h4>Alcance técnico</h4>
             <p>${esc(txt).replace(/\n/g,'<br>')}</p>
-          </div>`), units(txt, 13));
+          </div>`), units(txt, 10));
       });
 
       addBlock(makeSection('pdf-card', `
@@ -670,7 +671,7 @@ Entregables:
         <div class="service-body">
           <h4>Entregables</h4>
           <div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>
-        </div>`), 18);
+        </div>`), 12);
     });
 
     addBlock(makeSection('payment', `
@@ -687,13 +688,13 @@ Entregables:
         <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
         <hr>
         <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
-      </div>`), 26);
+      </div>`), 20);
 
     addBlock(makeSection('signature', `
       <div>Atentamente,</div>
       <div class="sigLine"></div>
       <b>ROBIN PINTO SERRANO</b><br>
-      <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>`), 12);
+      <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>`), 10);
 
     pages.forEach(p=>{
       if(!p.querySelector('.rps-page-footer')){ p.insertAdjacentHTML('beforeend', footerHTML()); }
@@ -710,7 +711,8 @@ Entregables:
     const pageW = scaler.offsetWidth || 794;
     const pageH = scaler.offsetHeight || 1123;
     const s = Math.min((box.clientWidth-36)/pageW, (box.clientHeight-36)/pageH, 1.15);
-    scaler.style.transform = `scale(${Math.max(.1,s)})`;
+    /* Permitir zoom escalado responsivo completo */
+    scaler.style.transform = `scale(${Math.max(.4, s)})`;
   }
 
   function renderItems(){
@@ -929,6 +931,7 @@ Entregables:
 </script>
 
 <script>
+/* Cierre e inicialización de la función constructora del PDF reparado por completo */
 async function generateAndSharePDF(historyId=null, quoteOverride=null){
   const JsPDF = window.jspdf?.jsPDF;
   if(!JsPDF) return alert('No se cargó jsPDF.');

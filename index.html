@@ -23,7 +23,15 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { width: 100%; max-width: 100%; overflow-x: hidden; background: var(--bg); color: var(--text); }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+    }
+
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -33,30 +41,49 @@
     }
 
     .topnav {
-      position: sticky; top: 0; z-index: 20;
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       background: rgba(10, 15, 26, 0.95);
       border-bottom: 1px solid rgba(245, 158, 11, 0.25);
       backdrop-filter: blur(12px);
     }
+
     .topnav button {
-      border: 0; background: transparent; color: rgba(249, 250, 251, 0.5);
-      font-weight: 900; text-transform: uppercase; letter-spacing: .05em;
-      padding: 18px 10px; font-size: 13px;
+      border: 0;
+      background: transparent;
+      color: rgba(249, 250, 251, 0.5);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 18px 10px;
+      font-size: 13px;
       border-bottom: 3px solid transparent;
       transition: all 0.3s ease;
     }
-    .topnav button.active { color: var(--amber); border-color: var(--amber); background: rgba(245, 158, 11, 0.05); }
 
-    .tab { display: none; padding: 18px; }
-    .tab.active { display: block; }
+    .topnav button.active {
+      color: var(--amber);
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .tab {
+      display: none;
+      padding: 18px;
+    }
+
+    .tab.active {
+      display: block;
+    }
 
     .layout {
-      width: 100%;
-      max-width: 1420px;
+      width: min(100%, 1420px);
       margin: 0 auto;
       display: grid;
-      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
       gap: 28px;
       align-items: start;
     }
@@ -68,10 +95,12 @@
       padding: 22px;
       box-shadow: 0 24px 70px rgba(0,0,0,0.5);
     }
+
     .stack > * + * { margin-top: 16px; }
 
     .input {
-      width: 100%; min-width: 0;
+      width: 100%;
+      min-width: 0;
       background: #070a12;
       border: 1px solid rgba(245, 158, 11, 0.2);
       color: #fff;
@@ -82,24 +111,52 @@
       outline: none;
       transition: all 0.25s ease;
     }
-    textarea.input { min-height: 145px; resize: vertical; white-space: pre-wrap; }
-    .input::placeholder { color: rgba(148, 163, 184, 0.5); }
+
+    textarea.input {
+      min-height: 145px;
+      resize: vertical;
+      white-space: pre-wrap;
+    }
+
+    .input::placeholder {
+      color: rgba(148, 163, 184, 0.5);
+    }
+
     .input:focus {
       border-color: var(--amber);
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
     }
 
     .btn {
-      width: 100%; border: 0; border-radius: 18px; padding: 17px 20px;
-      font-weight: 900; text-transform: uppercase; cursor: pointer;
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 17px 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
       background: linear-gradient(135deg, #f59e0b, #d97706);
       color: #050b14;
       box-shadow: 0 12px 35px rgba(245, 158, 11, 0.25);
       transition: all 0.25s ease;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(245, 158, 11, 0.35); }
-    .btn.green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 12px 35px rgba(16, 185, 129, 0.25); }
-    .btn.small { padding: 12px 14px; border-radius: 14px; font-size: 12px; }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 40px rgba(245, 158, 11, 0.35);
+    }
+
+    .btn.green {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn.small {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+    }
 
     .item-row, .list-row {
       background: rgba(10, 15, 26, 0.7);
@@ -110,6 +167,7 @@
 
     #previewBox {
       width: 100%;
+      max-width: 100%;
       height: calc(100vh - 118px);
       min-height: 620px;
       overflow: auto;
@@ -128,6 +186,7 @@
       width: auto;
       min-width: 0;
       display: block;
+      margin: 0 auto;
     }
 
     .a4 {
@@ -144,6 +203,7 @@
       justify-content: space-between;
       font-family: Arial, sans-serif;
       box-sizing: border-box;
+      transform-origin: top left;
     }
 
     .pdf-header {
@@ -153,57 +213,240 @@
       border-bottom: 2px solid #f59e0b;
       padding-bottom: 4mm;
     }
-    .brand h1 { margin: 0; font-size: 14pt; font-weight: 800; color: #111827; tracking: -0.02em; }
-    .brand p { margin: 1mm 0 0; font-size: 7.5pt; color: #475569; line-height: 1.3; }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 14pt;
+      font-weight: 800;
+      color: #111827;
+      tracking: -0.02em;
+    }
+
+    .brand p {
+      margin: 1mm 0 0;
+      font-size: 7.5pt;
+      color: #475569;
+      line-height: 1.3;
+    }
 
     .quoteBox { text-align: right; }
-    .quoteTag {
-      display: inline-block; background: #111827; color: #f59e0b;
-      padding: 1.5mm 3mm; border-radius: 4px; font-size: 7pt; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .quoteNum { margin-top: 2mm; font-size: 15pt; font-weight: 800; color: #111827; }
-    .quoteDate { font-size: 7.5pt; color: #64748b; }
 
-    .blueLine { border-top: .55mm solid #f59e0b; }
+    .quoteTag {
+      display: inline-block;
+      background: #111827;
+      color: #f59e0b;
+      padding: 1.5mm 3mm;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quoteNum {
+      margin-top: 2mm;
+      font-size: 15pt;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .quoteDate {
+      font-size: 7.5pt;
+      color: #64748b;
+    }
 
     .grid2 {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-top: 4mm;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5mm;
+      margin-top: 4mm;
     }
+
     .pdf-card {
-      border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+      background: white;
     }
+
     .bar {
-      background: #111827; color: #f59e0b; font-size: 7pt; font-weight: 800;
-      text-transform: uppercase; padding: 2mm 3mm; letter-spacing: 0.5px;
+      background: #111827;
+      color: #f59e0b;
+      font-size: 7pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2mm 3mm;
+      letter-spacing: 0.5px;
     }
-    .bar.blue { background: #f59e0b; color: #111827; }
-    .pdf-card-body { padding: 3mm; font-size: 8pt; line-height: 1.35; color: #334155; }
-    .pdf-card-body h3 { margin: 0 0 1.5mm; font-size: 8.5pt; font-weight: 800; color: #111827; }
+
+    .bar.blue {
+      background: #f59e0b;
+      color: #111827;
+    }
+
+    .pdf-card-body {
+      padding: 3mm;
+      font-size: 8pt;
+      line-height: 1.35;
+      color: #334155;
+    }
+
+    .pdf-card-body h3 {
+      margin: 0 0 1.5mm;
+      font-size: 8.5pt;
+      font-weight: 800;
+      color: #111827;
+    }
+
     .pdf-card-body p { margin: 0 0 1mm; }
 
-    .desc, .service-body { padding: 3mm; font-size: 8.5pt; line-height: 1.4; color: #334155; }
-    .desc p, .service-body p { white-space: pre-wrap; margin: 0; }
-    .service-body h4 { margin: 0 0 1.5mm; color: #b45309; font-size: 8pt; font-weight: 800; text-transform: uppercase; }
-    .deliverables { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 4mm; font-size: 8pt; color: #334155; }
-    .payment { display: grid; grid-template-columns: 1.2fr 1fr; gap: 5mm; margin-top: 4mm; }
-    .paymentCols { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; padding: 1mm; }
-    .paymentCols h4 { margin: 0 0 1.2mm; font-size: 7pt; color: #b45309; font-weight: 800; text-transform: uppercase; }
-    .paymentCols p { margin: 0 0 0.8mm; font-size: 7.5pt; color: #475569; }
-    .economic { border: 1px solid #fde68a; border-radius: 6px; background: #fffdf5; overflow: hidden; }
-    .econRow { display: flex; justify-content: space-between; padding: 2mm 3mm 0; font-size: 8pt; color: #475569; }
+    .desc, .service-body {
+      padding: 3mm;
+      font-size: 8.5pt;
+      line-height: 1.4;
+      color: #334155;
+    }
+
+    .desc p, .service-body p {
+      white-space: pre-wrap;
+      margin: 0;
+    }
+
+    .service-body h4 {
+      margin: 0 0 1.5mm;
+      color: #b45309;
+      font-size: 8pt;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .deliverables {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1mm 4mm;
+      font-size: 8pt;
+      color: #334155;
+    }
+
+    .payment {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 5mm;
+      margin-top: 4mm;
+    }
+
+    .paymentCols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3mm;
+      padding: 1mm;
+    }
+
+    .paymentCols h4 {
+      margin: 0 0 1.2mm;
+      font-size: 7pt;
+      color: #b45309;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .paymentCols p {
+      margin: 0 0 0.8mm;
+      font-size: 7.5pt;
+      color: #475569;
+    }
+
+    .economic {
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      background: #fffdf5;
+      overflow: hidden;
+    }
+
+    .econRow {
+      display: flex;
+      justify-content: space-between;
+      padding: 2mm 3mm 0;
+      font-size: 8pt;
+      color: #475569;
+    }
+
     .econRow strong { color: #111827; }
-    .economic hr { border: 0; border-top: 1px solid #cbd5e1; margin: 2mm 3mm 1.5mm; }
-    .grand strong { font-size: 13pt; color: #b45309; font-weight: 800; }
-    .signature { text-align: center; font-size: 7.5pt; color: #334155; margin-top: 4mm; }
-    .sigLine { width: 45mm; margin: 5mm auto 1mm; border-top: 1px solid #111827; }
-    .footer { border-top: 1px solid #f59e0b; padding-top: 2mm; margin-top: auto; text-align: center; color: #64748b; font-size: 6pt; }
 
-    .list-row button { background: #1f2937; color: #fde68a; border: 1px solid #374151; border-radius: 10px; padding: 7px 9px; font-weight: 800; }
+    .economic hr {
+      border: 0;
+      border-top: 1px solid #cbd5e1;
+      margin: 2mm 3mm 1.5mm;
+    }
 
-    @media (max-width: 980px) {
-      .layout { grid-template-columns: 1fr; }
-      #previewBox { min-height: 520px; justify-content: flex-start; }
+    .grand strong {
+      font-size: 13pt;
+      color: #b45309;
+      font-weight: 800;
+    }
+
+    .signature {
+      text-align: center;
+      font-size: 7.5pt;
+      color: #334155;
+      margin-top: 4mm;
+    }
+
+    .sigLine {
+      width: 45mm;
+      margin: 5mm auto 1mm;
+      border-top: 1px solid #111827;
+    }
+
+    .footer {
+      border-top: 1px solid #f59e0b;
+      padding-top: 2mm;
+      margin-top: auto;
+      text-align: center;
+      color: #64748b;
+      font-size: 6pt;
+    }
+
+    .list-row button,
+    .item-row button {
+      background: #1f2937;
+      color: #fde68a;
+      border: 1px solid #374151;
+      border-radius: 10px;
+      padding: 7px 9px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      #previewBox {
+        height: min(72vh, 720px);
+        min-height: 430px;
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .tab { padding: 12px; }
+
+      .topnav button {
+        padding: 14px 6px;
+        font-size: 11px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 18px;
+      }
+
+      .input {
+        font-size: 15px;
+        padding: 13px 14px;
+      }
     }
   </style>
 </head>
@@ -293,26 +536,31 @@
   import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-      apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
-      authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
-      projectId: "registro-de-gastos-a21e8",
-      storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
-      messagingSenderId: "947355933583",
-      appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
-    };
+    apiKey: "AIzaSyCtlfBJ0QHOMhEDPRAXHL9nRFswnr49rik",
+    authDomain: "registro-de-gastos-a21e8.firebaseapp.com",
+    projectId: "registro-de-gastos-a21e8",
+    storageBucket: "registro-de-gastos-a21e8.firebasestorage.app",
+    messagingSenderId: "947355933583",
+    appId: "1:947355933583:web:0231b493d8b794cc3b49fa"
+  };
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
   window.fb = { db, collection, addDoc, setDoc, deleteDoc, doc, runTransaction };
-  window.clientes = []; window.historial = []; window.nextFolio = 1000;
+  window.clientes = [];
+  window.historial = [];
+  window.nextFolio = 1000;
 
   onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
     window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
   });
+
   onSnapshot(collection(db, "rps_clientes"), snap => {
     window.clientes = snap.docs.map(d => ({id: d.id, ...d.data()}));
     if(typeof updateClientsUI === 'function') updateClientsUI();
   });
+
   onSnapshot(collection(db, "rps_cotizaciones"), snap => {
     window.historial = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
     if(typeof renderHistory === 'function') renderHistory();
@@ -321,57 +569,142 @@
 
 <script>
   const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
     legalName:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.',
-    rut:'77.444.231-6', address:'Av. Jaime Guzmán 659 - A3, Isla de Maipo', comuna:'Isla de Maipo',
-    email:'contacto@rpsgeodesia.com', phone:'949207665', bank:'Banco Estado', account:'Cta Vista Banco Estado N° 36772581224', holder:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.'
+    rut:'77.444.231-6',
+    address:'Av. Jaime Guzmán 659 - A3, Isla de Maipo',
+    comuna:'Isla de Maipo',
+    email:'contacto@rpsgeodesia.com',
+    phone:'949207665',
+    bank:'Banco Estado',
+    account:'Cta Vista Banco Estado N° 36772581224',
+    holder:'ROBIN PINTO SERRANO SERVICIOS DE TOPOGRAFÍA Y GEODESIA E.I.R.L.'
   };
+
   const DEFAULT_SERVICE_DESC = `Junto con saludar, por medio de la presente se cotiza el servicio de levantamiento topográfico georreferenciado para terreno de aproximadamente 5.000 m², ubicado en sector por definir, considerando trabajos de terreno, procesamiento de información técnica y entrega de antecedentes conforme al alcance indicado.`;
+
   const DEFAULT_ITEM_TEXT = `Levantamiento topográfico georreferenciado de todos los elementos relevantes del terreno mediante sistema GNSS de alta precisión, considerando bordes de calzada, líneas de cierre, líneas de edificación, líneas prediales, postes, cámaras y demás elementos existentes en terreno.\n\nSe considera además postproceso de datos crudos GNSS (GPS) para obtención de coordenadas UTM Datum SIRGAS (WGS84) Huso 19 Sur, vinculadas a punto de control SIRGAS-IGM.\n\nIncluye planificación de vuelo dron, captura aerofotogramétrica and postproceso de información técnica.\n\nEntregables:\n• Plano topográfico\n• Informe técnico\n• Nube de puntos densa\n• Ortomosaico`;
 
-  let items = [defaultItem()]; let editingId = null; let editingClientId = null; let editingItemIdx = null;
+  let items = [defaultItem()];
+  let editingId = null;
+  let editingClientId = null;
+  let editingItemIdx = null;
   let previewZoom = 1;
+  let suppressPriceSync = false;
 
-  function defaultItem(){ return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true}; }
-  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  function amount(n,currency='CLP'){ return currency==='UF' ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2})+' UF' : '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL'); }
-  function fmtDate(d){ if(!d) return ''; const [y,m,day]=String(d).split('-'); return `${day}-${m}-${y}`; }
-  function quoteCode(q){ return q?.ref || ('AER-' + (q?.folio || window.nextFolio || 1000)); }
+  function defaultItem(){
+    return {name:DEFAULT_ITEM_TEXT, qty:1, price:0, total:0, isDefault:true};
+  }
+
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function amount(n,currency='CLP'){
+    return currency==='UF'
+      ? Number(n||0).toLocaleString('es-CL',{maximumFractionDigits:2})+' UF'
+      : '$ ' + Math.round(Number(n||0)).toLocaleString('es-CL');
+  }
+
+  function fmtDate(d){
+    if(!d) return '';
+    const [y,m,day]=String(d).split('-');
+    return `${day}-${m}-${y}`;
+  }
+
+  function quoteCode(q){
+    return q?.ref || ('AER-' + (q?.folio || window.nextFolio || 1000));
+  }
 
   function normalizeItems(arr){
     return (arr || []).map(it => {
-      const qty = Number(it?.qty || 1); const price = Number(it?.price || 0);
-      return {...it, qty, price, total: Math.round(price*qty*100)/100};
+      const qty = Number(it?.qty || 1);
+      const price = Number(it?.price || 0);
+      return {...it, qty, price, total: Math.round(price * qty * 100) / 100};
     });
+  }
+
+  function syncPriceFromEditor(){
+    if(suppressPriceSync) return;
+
+    const priceEl = document.getElementById('i-price');
+    const qtyEl = document.getElementById('i-qty');
+    if(!priceEl || !qtyEl) return;
+
+    const qty = Number(qtyEl.value || 1);
+    const price = Number(priceEl.value || 0);
+
+    if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
+      items[editingItemIdx].qty = qty;
+      items[editingItemIdx].price = price;
+      items[editingItemIdx].total = Math.round(qty * price * 100) / 100;
+      return;
+    }
+
+    if(items.length === 1){
+      items[0].qty = qty;
+      items[0].price = price;
+      items[0].total = Math.round(qty * price * 100) / 100;
+    }
   }
 
   function captureFormState() {
     return {
-      editingId, currentFolio: window.currentFolio, items: JSON.parse(JSON.stringify(items)),
-      date: document.getElementById('q-date').value, ref: document.getElementById('q-ref').value,
-      currency: document.getElementById('q-currency').value, client: document.getElementById('q-client').value,
-      project: document.getElementById('q-project').value, location: document.getElementById('q-location').value,
-      desc: document.getElementById('q-desc').value, validity: document.getElementById('q-validity').value,
-      delivery: document.getElementById('q-delivery').value, conditions: document.getElementById('q-conditions').value,
+      editingId,
+      currentFolio: window.currentFolio,
+      items: JSON.parse(JSON.stringify(items)),
+      editingItemIdx,
+      priceInput: document.getElementById('i-price').value,
+      qtyInput: document.getElementById('i-qty').value,
+      itemNameInput: document.getElementById('i-name').value,
+      date: document.getElementById('q-date').value,
+      ref: document.getElementById('q-ref').value,
+      currency: document.getElementById('q-currency').value,
+      client: document.getElementById('q-client').value,
+      project: document.getElementById('q-project').value,
+      location: document.getElementById('q-location').value,
+      desc: document.getElementById('q-desc').value,
+      validity: document.getElementById('q-validity').value,
+      delivery: document.getElementById('q-delivery').value,
+      conditions: document.getElementById('q-conditions').value,
       notes: document.getElementById('q-notes').value
     };
   }
 
   function restoreFormState(state) {
-    editingId = state.editingId; window.currentFolio = state.currentFolio; items = state.items;
-    document.getElementById('q-date').value = state.date; document.getElementById('q-ref').value = state.ref;
-    document.getElementById('q-currency').value = state.currency; document.getElementById('q-client').value = state.client;
-    document.getElementById('q-project').value = state.project; document.getElementById('q-location').value = state.location;
-    document.getElementById('q-desc').value = state.desc; document.getElementById('q-validity').value = state.validity;
-    document.getElementById('q-delivery').value = state.delivery; document.getElementById('q-conditions').value = state.conditions;
+    editingId = state.editingId;
+    window.currentFolio = state.currentFolio;
+    items = state.items;
+    editingItemIdx = state.editingItemIdx;
+
+    document.getElementById('q-date').value = state.date;
+    document.getElementById('q-ref').value = state.ref;
+    document.getElementById('q-currency').value = state.currency;
+    document.getElementById('q-client').value = state.client;
+    document.getElementById('q-project').value = state.project;
+    document.getElementById('q-location').value = state.location;
+    document.getElementById('q-desc').value = state.desc;
+    document.getElementById('q-validity').value = state.validity;
+    document.getElementById('q-delivery').value = state.delivery;
+    document.getElementById('q-conditions').value = state.conditions;
     document.getElementById('q-notes').value = state.notes;
+
+    document.getElementById('i-price').value = state.priceInput;
+    document.getElementById('i-qty').value = state.qtyInput;
+    document.getElementById('i-name').value = state.itemNameInput;
   }
 
   function applyQuoteToForm(h, triggerRender = true) {
     if(!h) return;
-    editingId = h.id; window.currentFolio = Number(h.folio || 1000);
+
+    suppressPriceSync = true;
+
+    editingId = h.id || null;
+    window.currentFolio = Number(h.folio || 1000);
     items = normalizeItems((h.items && h.items.length) ? h.items : [defaultItem()]);
+
     document.getElementById('q-date').value = h.date || '';
     document.getElementById('q-ref').value = h.ref || ('AER-' + (h.folio || 1000));
     document.getElementById('q-currency').value = h.currency || 'CLP';
@@ -383,178 +716,409 @@
     document.getElementById('q-delivery').value = h.delivery || 'Según coordinación';
     document.getElementById('q-conditions').value = h.conditions || '';
     document.getElementById('q-notes').value = h.notes || '';
-    if(items.length === 1){
-      document.getElementById('i-name').value = items[0].name || DEFAULT_ITEM_TEXT;
-      document.getElementById('i-qty').value = items[0].qty || 1;
-      document.getElementById('i-price').value = Number(items[0].price || 0) ? items[0].price : '';
-    }
+
+    editingItemIdx = null;
+    document.getElementById('i-name').value = items[0]?.name || DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = items[0]?.qty || 1;
+    document.getElementById('i-price').value = Number(items[0]?.price || 0) ? items[0].price : '';
+
+    suppressPriceSync = false;
+
     if (triggerRender) renderPreview();
   }
 
   function currentQuote(){
-    setBasePriceFromInput();
-    const normalized = normalizeItems(items);
-    let neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
+    syncPriceFromEditor();
+    items = normalizeItems(items);
+
+    const normalized = items;
+    const neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
     const iva = Math.round(neto*.19);
+
     return {
       folio: editingId ? window.currentFolio : (window.nextFolio || 1000),
-      date: document.getElementById('q-date').value, ref: document.getElementById('q-ref').value,
-      currency: document.getElementById('q-currency').value, client: document.getElementById('q-client').value,
-      project: document.getElementById('q-project').value, location: document.getElementById('q-location').value,
-      serviceDesc: document.getElementById('q-desc').value || DEFAULT_SERVICE_DESC, validity: document.getElementById('q-validity').value,
-      delivery: document.getElementById('q-delivery').value, conditions: document.getElementById('q-conditions').value,
-      notes: document.getElementById('q-notes').value, items: normalized, neto, iva, total: neto+iva
+      date: document.getElementById('q-date').value,
+      ref: document.getElementById('q-ref').value,
+      currency: document.getElementById('q-currency').value,
+      client: document.getElementById('q-client').value,
+      project: document.getElementById('q-project').value,
+      location: document.getElementById('q-location').value,
+      serviceDesc: document.getElementById('q-desc').value || DEFAULT_SERVICE_DESC,
+      validity: document.getElementById('q-validity').value,
+      delivery: document.getElementById('q-delivery').value,
+      conditions: document.getElementById('q-conditions').value,
+      notes: document.getElementById('q-notes').value,
+      items: JSON.parse(JSON.stringify(normalized)),
+      neto,
+      iva,
+      total: neto + iva
     };
   }
 
-  function selectedClient(){ const name = document.getElementById('q-client').value; return (window.clientes || []).find(c=>c.name===name) || {name}; }
+  function selectedClient(){
+    const name = document.getElementById('q-client').value;
+    return (window.clientes || []).find(c=>c.name===name) || {name};
+  }
+
   function parseService(txt){
-    const raw = String(txt||'').trim(); const parts = raw.split(/Entregables\s*:/i); const scope = (parts[0] || raw).trim();
-    let deliverables = []; if(parts[1]) deliverables = parts[1].split(/\n|•|-/).map(x=>x.trim()).filter(Boolean);
-    if(!deliverables.length) deliverables = ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
+    const raw = String(txt||'').trim();
+    const parts = raw.split(/Entregables\s*:/i);
+    const scope = (parts[0] || raw).trim();
+
+    let deliverables = [];
+    if(parts[1]) {
+      deliverables = parts[1].split(/\n|•|-/).map(x=>x.trim()).filter(Boolean);
+    }
+
+    if(!deliverables.length) {
+      deliverables = ['Plano topográfico','Informe técnico','Nube de puntos densa','Ortomosaico'];
+    }
+
     return {scope, deliverables};
   }
 
-  function setBasePriceFromInput(){
-    const priceEl = document.getElementById('i-price');
-    const qtyEl = document.getElementById('i-qty');
-    if(!priceEl || !qtyEl) return;
-
-    const price = Number(priceEl.value || 0);
-    const qty = Number(qtyEl.value || 1);
-
-    if(editingItemIdx !== null && editingItemIdx >= 0 && items[editingItemIdx]){
-      items[editingItemIdx].qty = qty;
-      items[editingItemIdx].price = price;
-      items[editingItemIdx].total = Math.round(price * qty * 100) / 100;
-      return;
-    }
-
-    if(items.length === 1){
-      items[0].qty = qty;
-      items[0].price = price;
-      items[0].total = Math.round(price * qty * 100) / 100;
-    }
-  }
-
   function updateLivePrice() {
-    setBasePriceFromInput();
+    syncPriceFromEditor();
     renderPreview();
   }
 
   function renderPreview(){
-    const q = currentQuote(); const c = selectedClient(); const canvas = document.getElementById('pdf-canvas'); if(!canvas) return;
+    const q = currentQuote();
+    const c = selectedClient();
+    const canvas = document.getElementById('pdf-canvas');
+    if(!canvas) return;
+
     canvas.innerHTML = '';
 
     function headerHTML(){
       return `<header class="pdf-header"><div class="brand"><div><h1>${COMPANY.name}</h1><p>Servicios topográficos y geodésicos</p><p>${COMPANY.email} · Fono: ${COMPANY.phone}</p></div></div><div class="quoteBox"><div class="quoteTag">Cotización técnica</div><div class="quoteNum">N° ${esc(quoteCode(q))}</div><div class="quoteDate">Fecha: ${fmtDate(q.date)}</div></div></header>`;
     }
-    function footerHTML(){ return `<footer class="footer rps-page-footer">${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}</footer>`; }
 
-    const page = document.createElement('div'); page.className = 'a4';
-    let quoteItems = q.items.length ? q.items : [defaultItem()];
-    if (quoteItems.length === 1 && document.getElementById('i-price').value !== "") {
-      quoteItems[0].price = Number(document.getElementById('i-price').value || 0);
-      quoteItems[0].qty = Number(document.getElementById('i-qty').value || 1);
-      quoteItems[0].total = quoteItems[0].price * quoteItems[0].qty;
+    function footerHTML(){
+      return `<footer class="footer rps-page-footer">${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}</footer>`;
     }
+
+    const page = document.createElement('div');
+    page.className = 'a4';
+
+    const quoteItems = q.items.length ? q.items : [defaultItem()];
     const parsed = parseService(quoteItems[0].name);
 
     page.innerHTML = `
       ${headerHTML()}
       <div class="grid2">
-        <div class="pdf-card"><div class="bar">En atención a</div><div class="pdf-card-body"><h3>${esc((c.name||'---').toUpperCase())}</h3><p>RUT: ${esc(c.rut||'—')}</p><p>Dirección: ${esc(c.address||'—')}</p><p>Contacto: ${esc(c.phone||c.email||'—')}</p></div></div>
-        <div class="pdf-card"><div class="bar blue">Antecedentes del proyecto</div><div class="pdf-card-body"><p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p><p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p><p><b>Validez:</b> ${esc(q.validity||'15 días')}</p><p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p><p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p></div></div>
+        <div class="pdf-card">
+          <div class="bar">En atención a</div>
+          <div class="pdf-card-body">
+            <h3>${esc((c.name||'---').toUpperCase())}</h3>
+            <p>RUT: ${esc(c.rut||'—')}</p>
+            <p>Dirección: ${esc(c.address||'—')}</p>
+            <p>Contacto: ${esc(c.phone||c.email||'—')}</p>
+          </div>
+        </div>
+        <div class="pdf-card">
+          <div class="bar blue">Antecedentes del proyecto</div>
+          <div class="pdf-card-body">
+            <p><b>Proyecto:</b> ${esc(q.project||'Servicio técnico')}</p>
+            <p><b>Ubicación:</b> ${esc(q.location||'Por definir')}</p>
+            <p><b>Validez:</b> ${esc(q.validity||'15 días')}</p>
+            <p><b>Entrega:</b> ${esc(q.delivery||'Según coordinación')}</p>
+            <p><b>Moneda:</b> ${q.currency==='UF'?'UF':'Pesos chilenos (CLP)'}</p>
+          </div>
+        </div>
       </div>
-      <div class="pdf-card"><div class="bar blue">Descripción del servicio</div><div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div></div>
-      <div class="pdf-card"><div class="bar">Servicio profesional</div><div class="service-body"><h4>Alcance técnico</h4><p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p></div></div>
-      <div class="pdf-card"><div class="bar">Servicio profesional · entregables</div><div class="service-body"><h4>Entregables</h4><div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div></div></div>
+      <div class="pdf-card">
+        <div class="bar blue">Descripción del servicio</div>
+        <div class="desc"><p>${esc(q.serviceDesc || DEFAULT_SERVICE_DESC).replace(/\n/g,'<br>')}</p></div>
+      </div>
+      <div class="pdf-card">
+        <div class="bar">Servicio profesional</div>
+        <div class="service-body"><h4>Alcance técnico</h4><p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p></div>
+      </div>
+      <div class="pdf-card">
+        <div class="bar">Servicio profesional · entregables</div>
+        <div class="service-body"><h4>Entregables</h4><div class="deliverables">${parsed.deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div></div>
+      </div>
       <div class="payment">
-        <div class="pdf-card"><div class="bar blue">Condiciones y datos de pago</div><div class="paymentCols"><div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div><div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div></div></div>
-        <div class="economic"><div class="bar">Resumen económico</div><div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div><div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div><hr><div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div></div>
+        <div class="pdf-card">
+          <div class="bar blue">Condiciones y datos de pago</div>
+          <div class="paymentCols">
+            <div><h4>Condiciones comerciales</h4><p>${esc(q.conditions).replace(/\n/g,'<br>')}</p></div>
+            <div><h4>Transferencia bancaria</h4><p><b>${COMPANY.holder}</b></p><p>RUT: ${COMPANY.rut}</p><p>${COMPANY.bank}</p><p>${COMPANY.account}</p><p>${COMPANY.email}</p></div>
+          </div>
+        </div>
+        <div class="economic">
+          <div class="bar">Resumen económico</div>
+          <div class="econRow"><span>Valor neto</span><strong>${amount(q.neto,q.currency)}</strong></div>
+          <div class="econRow"><span>IVA 19%</span><strong>${amount(q.iva,q.currency)}</strong></div>
+          <hr>
+          <div class="econRow grand"><span>Total servicio</span><strong>${amount(q.total,q.currency)}</strong></div>
+        </div>
       </div>
-      <div class="signature"><div>Atentamente,</div><div class="sigLine"></div><b>ROBIN PINTO SERRANO</b><br><span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span></div>
+      <div class="signature">
+        <div>Atentamente,</div>
+        <div class="sigLine"></div>
+        <b>ROBIN PINTO SERRANO</b><br>
+        <span>Ingeniero Industrial / Topógrafo · ${COMPANY.name}</span>
+      </div>
       ${footerHTML()}
     `;
+
     canvas.appendChild(page);
-    fitPreviewToScreen(false);
     renderItems();
+    requestAnimationFrame(() => fitPreviewToScreen(false));
   }
 
   function renderItems(){
-    document.getElementById('items-list').innerHTML = items.map((it,i)=>`<div class="item-row flex justify-between gap-3 items-center"><span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span><small class="text-amber-400 font-bold">${amount(it.total,currentQuote().currency)}</small><div class="flex gap-2"><button onclick="editItem(${i})">✏️</button><button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; renderPreview();">✕</button></div></div>`).join('');
+    const currency = document.getElementById('q-currency').value || 'CLP';
+
+    document.getElementById('items-list').innerHTML = items.map((it,i)=>`
+      <div class="item-row flex justify-between gap-3 items-center">
+        <span class="truncate font-bold">${esc((it.name||'').split('\n')[0])}</span>
+        <small class="text-amber-400 font-bold">${amount(it.total,currency)}</small>
+        <div class="flex gap-2">
+          <button onclick="editItem(${i})">✏️</button>
+          <button onclick="items.splice(${i},1); if(!items.length) items=[defaultItem()]; editingItemIdx=null; renderPreview();">✕</button>
+        </div>
+      </div>
+    `).join('');
   }
 
   function addItem(){
-    const name = document.getElementById('i-name').value.trim(); const qty = Number(document.getElementById('i-qty').value||1); const price = Number(document.getElementById('i-price').value||0);
+    const name = document.getElementById('i-name').value.trim();
+    const qty = Number(document.getElementById('i-qty').value||1);
+    const price = Number(document.getElementById('i-price').value||0);
+
     if(!name) return alert('Ingresa el detalle técnico del servicio.');
+
     const newItem = {name, qty, price, total:Math.round(qty*price*100)/100, isDefault:false};
-    if(editingItemIdx !== null && editingItemIdx >= 0) { items[editingItemIdx] = newItem; editingItemIdx = null; }
-    else { const onlyDefault = items.length===1 && items[0].isDefault; if(onlyDefault) items[0]=newItem; else items.push(newItem); }
-    document.getElementById('i-name').value = DEFAULT_ITEM_TEXT; document.getElementById('i-qty').value = 1; document.getElementById('i-price').value = '';
+
+    if(editingItemIdx !== null && editingItemIdx >= 0) {
+      items[editingItemIdx] = newItem;
+      editingItemIdx = null;
+    } else {
+      const onlyDefault = items.length===1 && items[0].isDefault;
+      if(onlyDefault) items[0]=newItem;
+      else items.push(newItem);
+    }
+
+    document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = 1;
+    document.getElementById('i-price').value = '';
     renderPreview();
   }
 
-  function editItem(i){ const it = items[i]; document.getElementById('i-name').value = it.name; document.getElementById('i-qty').value = it.qty; document.getElementById('i-price').value = it.price; editingItemIdx = i; }
-  function navTo(tab){
-    ['edit','hist','clients'].forEach(t=>{ document.getElementById('tab-'+t).classList.toggle('active',t===tab); document.getElementById('tab-'+t+'-btn').classList.toggle('active',t===tab); });
-    if(tab==='clients') updateClientsUI(); if(tab==='hist') renderHistory();
+  function editItem(i){
+    const it = items[i];
+    if(!it) return;
+
+    suppressPriceSync = true;
+    document.getElementById('i-name').value = it.name || DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = it.qty || 1;
+    document.getElementById('i-price').value = Number(it.price || 0) ? it.price : '';
+    suppressPriceSync = false;
+
+    editingItemIdx = i;
   }
-  function handleClientSelect(){ if(document.getElementById('q-client').value==='NEW') navTo('clients'); renderPreview(); }
+
+  function navTo(tab){
+    ['edit','hist','clients'].forEach(t=>{
+      document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+      document.getElementById('tab-'+t+'-btn').classList.toggle('active',t===tab);
+    });
+
+    if(tab==='clients') updateClientsUI();
+    if(tab==='hist') renderHistory();
+    if(tab==='edit') requestAnimationFrame(() => fitPreviewToScreen(true));
+  }
+
+  function handleClientSelect(){
+    if(document.getElementById('q-client').value==='NEW') navTo('clients');
+    renderPreview();
+  }
 
   async function saveClient(){
     const id = document.getElementById('c-id').value || editingClientId;
-    const data = { id: id || ('local_'+Date.now()), name:document.getElementById('c-name').value.trim().toUpperCase(), rut:document.getElementById('c-rut').value.trim(), phone:document.getElementById('c-phone').value.trim(), email:document.getElementById('c-email').value.trim(), address:document.getElementById('c-address').value.trim() };
+
+    const data = {
+      id: id || ('local_'+Date.now()),
+      name:document.getElementById('c-name').value.trim().toUpperCase(),
+      rut:document.getElementById('c-rut').value.trim(),
+      phone:document.getElementById('c-phone').value.trim(),
+      email:document.getElementById('c-email').value.trim(),
+      address:document.getElementById('c-address').value.trim()
+    };
+
     if(!data.name) return alert('Ingresa el nombre del cliente.');
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name); local.push(data);
-    localStorage.setItem('rps_clientes_local',JSON.stringify(local)); window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
-    try{ if(window.fb?.db){ if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data); else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data); } }catch(e){}
-    clearClientForm(); updateClientsUI(); navTo('edit'); document.getElementById('q-client').value=data.name; renderPreview();
+
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(c=>c.id!==data.id && c.name!==data.name);
+    local.push(data);
+    localStorage.setItem('rps_clientes_local',JSON.stringify(local));
+
+    window.clientes = [...(window.clientes||[]).filter(c=>c.id!==data.id && c.name!==data.name),data];
+
+    try{
+      if(window.fb?.db){
+        if(id && !String(id).startsWith('local_')) await fb.setDoc(fb.doc(fb.db,'rps_clientes',id),data);
+        else await fb.addDoc(fb.collection(fb.db,'rps_clientes'),data);
+      }
+    }catch(e){ console.error(e); }
+
+    clearClientForm();
+    updateClientsUI();
+    navTo('edit');
+    document.getElementById('q-client').value=data.name;
+    renderPreview();
   }
 
-  function clearClientForm(){ editingClientId = null; ['c-id','c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value=''); }
-  function editClient(id) { const c = (window.clientes||[]).find(x=>String(x.id)===String(id)); if(!c) return; editingClientId = c.id; document.getElementById('c-id').value = c.id||''; document.getElementById('c-name').value = c.name||''; document.getElementById('c-rut').value = c.rut||''; document.getElementById('c-phone').value = c.phone||''; document.getElementById('c-email').value = c.email||''; document.getElementById('c-address').value = c.address||''; navTo('clients'); }
-  async function deleteClient(id){ const c = (window.clientes||[]).find(x=>String(x.id)===String(id)); if(!c || !confirm('¿Eliminar cliente?')) return; const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id)); localStorage.setItem('rps_clientes_local',JSON.stringify(local)); window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id)); try{ if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id)); }catch(e){} updateClientsUI(); renderPreview(); }
+  function clearClientForm(){
+    editingClientId = null;
+    ['c-id','c-name','c-rut','c-phone','c-email','c-address'].forEach(id=>document.getElementById(id).value='');
+  }
+
+  function editClient(id) {
+    const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
+    if(!c) return;
+
+    editingClientId = c.id;
+    document.getElementById('c-id').value = c.id||'';
+    document.getElementById('c-name').value = c.name||'';
+    document.getElementById('c-rut').value = c.rut||'';
+    document.getElementById('c-phone').value = c.phone||'';
+    document.getElementById('c-email').value = c.email||'';
+    document.getElementById('c-address').value = c.address||'';
+    navTo('clients');
+  }
+
+  async function deleteClient(id){
+    const c = (window.clientes||[]).find(x=>String(x.id)===String(id));
+    if(!c || !confirm('¿Eliminar cliente?')) return;
+
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]').filter(x=>String(x.id)!==String(id));
+    localStorage.setItem('rps_clientes_local',JSON.stringify(local));
+    window.clientes = (window.clientes||[]).filter(x=>String(x.id)!==String(id));
+
+    try{
+      if(window.fb?.db && !String(id).startsWith('local_')) await fb.deleteDoc(fb.doc(fb.db,'rps_clientes',id));
+    }catch(e){ console.error(e); }
+
+    updateClientsUI();
+    renderPreview();
+  }
 
   function updateClientsUI(){
-    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]'); const merged = [...(window.clientes||[]),...local].filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i).sort((a,b)=>a.name.localeCompare(b.name)); window.clientes = merged;
-    const sel = document.getElementById('q-client'); const cur = sel.value; sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
-    if(cur) sel.value=cur;
-    document.getElementById('clients-list').innerHTML = merged.map(c=>`<div class="list-row"><div class="flex justify-between gap-3 items-start"><div><b>${esc(c.name)}</b><br><small>${esc(c.rut||'')} · ${esc(c.phone||'')}</small></div><div class="flex gap-2"><button onclick="editClient('${c.id}')">✏️</button><button onclick="deleteClient('${c.id}')">🗑️</button></div></div></div>`).join('');
+    const local = JSON.parse(localStorage.getItem('rps_clientes_local')||'[]');
+    const merged = [...(window.clientes||[]),...local]
+      .filter((c,i,a)=>c?.name && a.findIndex(x=>x.name===c.name)===i)
+      .sort((a,b)=>a.name.localeCompare(b.name));
+
+    window.clientes = merged;
+
+    const sel = document.getElementById('q-client');
+    if(sel){
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Seleccionar cliente</option><option value="NEW">➕ Nuevo cliente</option>' + merged.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
+
+    const list = document.getElementById('clients-list');
+    if(list){
+      list.innerHTML = merged.map(c=>`
+        <div class="list-row">
+          <div class="flex justify-between gap-3 items-start">
+            <div><b>${esc(c.name)}</b><br><small>${esc(c.rut||'')} · ${esc(c.phone||'')}</small></div>
+            <div class="flex gap-2"><button onclick="editClient('${c.id}')">✏️</button><button onclick="deleteClient('${c.id}')">🗑️</button></div>
+          </div>
+        </div>
+      `).join('');
+    }
   }
 
   function renderHistory(){
-    const q = document.getElementById('search-hist').value.toLowerCase(); const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
-    document.getElementById('history-list').innerHTML = data.map(h=>`<div class="list-row"><div class="flex justify-between gap-3 items-start"><div><b class="text-amber-500">${esc(h.ref||('AER-'+h.folio))}</b><br><small>${esc(h.client||'—')} · ${amount(h.total,h.currency)}</small></div><div class="flex gap-2"><button onclick="viewQuote('${h.id}')">🔍</button><button onclick="editQuote('${h.id}')">✏️</button><button onclick="downloadHist('${h.id}')">PDF</button><button onclick="deleteQuote('${h.id}')">🗑️</button></div></div></div>`).join('');
+    const input = document.getElementById('search-hist');
+    const list = document.getElementById('history-list');
+    if(!input || !list) return;
+
+    const q = input.value.toLowerCase();
+    const data = (window.historial||[]).filter(h=>`${h.ref||''} ${h.client||''} ${h.project||''}`.toLowerCase().includes(q));
+
+    list.innerHTML = data.map(h=>`
+      <div class="list-row">
+        <div class="flex justify-between gap-3 items-start">
+          <div><b class="text-amber-500">${esc(h.ref||('AER-'+h.folio))}</b><br><small>${esc(h.client||'—')} · ${amount(h.total,h.currency)}</small></div>
+          <div class="flex gap-2">
+            <button onclick="viewQuote('${h.id}')">🔍</button>
+            <button onclick="editQuote('${h.id}')">✏️</button>
+            <button onclick="downloadHist('${h.id}')">PDF</button>
+            <button onclick="deleteQuote('${h.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
   }
 
-  function quoteById(id){ return (window.historial||[]).find(h=>h.id===id); }
-  function editQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
-  function viewQuote(id){ applyQuoteToForm(quoteById(id)); navTo('edit'); }
-  async function deleteQuote(id){ if(!confirm('¿Eliminar cotización?')) return; try{ if(window.fb?.db) await fb.deleteDoc(fb.doc(fb.db,'rps_cotizaciones',id)); window.historial = (window.historial||[]).filter(h=>h.id!==id); renderHistory(); }catch(e){} }
+  function quoteById(id){
+    return (window.historial||[]).find(h=>h.id===id);
+  }
+
+  function editQuote(id){
+    applyQuoteToForm(quoteById(id));
+    navTo('edit');
+  }
+
+  function viewQuote(id){
+    applyQuoteToForm(quoteById(id));
+    navTo('edit');
+  }
+
+  async function deleteQuote(id){
+    if(!confirm('¿Eliminar cotización?')) return;
+
+    try{
+      if(window.fb?.db) await fb.deleteDoc(fb.doc(fb.db,'rps_cotizaciones',id));
+      window.historial = (window.historial||[]).filter(h=>h.id!==id);
+      renderHistory();
+    }catch(e){ console.error(e); }
+  }
 
   async function saveAndSend(){
-    setBasePriceFromInput();
-    const q = currentQuote(); if(!q.client) return alert('Falta seleccionar cliente.');
+    syncPriceFromEditor();
+
+    const q = currentQuote();
+    if(!q.client) return alert('Falta seleccionar cliente.');
+
     let f = editingId ? Number(window.currentFolio || q.folio || 1000) : (window.nextFolio || 1000);
+
     try {
       if(!editingId && window.fb?.runTransaction){
         await fb.runTransaction(fb.db, async (t) => {
-          const r = fb.doc(fb.db, 'config', 'rps_cotizador_v1'); const s = await t.get(r);
+          const r = fb.doc(fb.db, 'config', 'rps_cotizador_v1');
+          const s = await t.get(r);
           f = s.exists() ? Math.max(1000, Number(s.data().lastFolio || 1000)) : 1000;
-          if (s.exists()) { t.update(r, {lastFolio: f + 1}); } else { t.set(r, {lastFolio: f + 1}); }
+          if (s.exists()) t.update(r, {lastFolio: f + 1});
+          else t.set(r, {lastFolio: f + 1});
         });
       }
-      const data={...q, folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
-      if(window.fb?.db){ if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data); else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data); }
+
+      const data={...currentQuote(), folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
+
+      if(window.fb?.db){
+        if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
+        else await fb.addDoc(fb.collection(fb.db,'rps_cotizaciones'),data);
+      }
+
       await generateAndSharePDF(null, data);
-    } catch(e) { console.error(e); alert('Error al procesar la transacción.'); }
+    } catch(e) {
+      console.error(e);
+      alert('Error al procesar la transacción.');
+    }
   }
 
   function fitPreviewToScreen(force=false) {
     const box = document.getElementById('previewBox');
     const canvas = document.getElementById('pdf-canvas');
     const page = canvas ? canvas.querySelector('.a4') : null;
+
     if(!box || !canvas || !page) return;
     if(!force && box.dataset.userZoom === '1') return;
 
@@ -564,7 +1128,8 @@
     const available = Math.max(260, box.clientWidth - 24);
     const naturalW = page.offsetWidth || 794;
     const naturalH = page.offsetHeight || 1123;
-    previewZoom = Math.min(1, Math.max(0.38, available / naturalW));
+
+    previewZoom = Math.min(1, Math.max(0.32, available / naturalW));
 
     page.style.transform = `scale(${previewZoom})`;
     canvas.style.width = `${naturalW * previewZoom}px`;
@@ -574,6 +1139,7 @@
   function setupPreviewTouchZoom() {
     const box = document.getElementById('previewBox');
     const canvas = document.getElementById('pdf-canvas');
+
     if (!box || !canvas) return;
 
     let startDist = 0;
@@ -587,6 +1153,9 @@
 
     box.addEventListener('touchstart', e => {
       if (e.touches.length === 2) {
+        const page = canvas.querySelector('.a4');
+        if(!page) return;
+        box.dataset.userZoom = '1';
         startDist = dist(e.touches);
         startZoom = previewZoom;
       }
@@ -595,15 +1164,17 @@
     box.addEventListener('touchmove', e => {
       if (e.touches.length === 2) {
         e.preventDefault();
-        const newDist = dist(e.touches);
-        previewZoom = Math.min(2.4, Math.max(0.45, startZoom * (newDist / startDist)));
+
         const page = canvas.querySelector('.a4');
-        if(page){
-          page.style.transformOrigin = 'top left';
-          page.style.transform = `scale(${previewZoom})`;
-          canvas.style.width = `${page.offsetWidth * previewZoom}px`;
-          canvas.style.height = `${page.offsetHeight * previewZoom}px`;
-        }
+        if(!page) return;
+
+        const newDist = dist(e.touches);
+        previewZoom = Math.min(2.4, Math.max(0.32, startZoom * (newDist / startDist)));
+
+        page.style.transformOrigin = 'top left';
+        page.style.transform = `scale(${previewZoom})`;
+        canvas.style.width = `${page.offsetWidth * previewZoom}px`;
+        canvas.style.height = `${page.offsetHeight * previewZoom}px`;
       }
     }, { passive: false });
   }
@@ -618,17 +1189,13 @@
       if(quoteOverride){
         originalState = captureFormState();
         applyQuoteToForm(quoteOverride, false);
-        renderPreview();
-        await new Promise(r=>setTimeout(r,100));
+        await new Promise(r=>setTimeout(r,50));
       } else if(historyId){
         const h = quoteById(historyId);
         if(!h) return alert('No se encontró la cotización.');
+
         originalState = captureFormState();
         applyQuoteToForm(h, false);
-        renderPreview();
-        await new Promise(r=>setTimeout(r,100));
-      } else {
-        renderPreview();
         await new Promise(r=>setTimeout(r,50));
       }
 
@@ -636,7 +1203,6 @@
       const c = selectedClient();
 
       const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
-
       const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;
       const G=[30,41,59], B=[245,158,11], S=[100,116,139], L=[203,213,225];
       let pdfY=MT;
@@ -661,6 +1227,7 @@
 
       function pdfHead(){
         pdfY = MT;
+
         pdfFont(14,'bold',[22,30,46]);
         pdf.text(COMPANY.name,ML,pdfY+5);
 
@@ -699,6 +1266,7 @@
 
       function sectionTitle(title, amber=false){
         ensureSpace(12);
+
         if(amber){
           pdf.setFillColor(...B);
           pdfFont(6.5,'bold',[22,30,46]);
@@ -706,6 +1274,7 @@
           pdf.setFillColor(22,30,46);
           pdfFont(6.5,'bold',[245,158,11]);
         }
+
         pdf.roundedRect(ML,pdfY,CW,6,1,1,'F');
         pdf.text(title,ML+3,pdfY+4.2);
         pdfY+=8;
@@ -713,12 +1282,14 @@
 
       function pdfPara(text, size=8.5, lh=4.2, x=ML+3, w=CW-6){
         const arr = pdfLines(text,w);
+
         for(const ln of arr){
           ensureSpace(lh + 2);
           pdfFont(size,'normal',G);
           pdf.text(ln,x,pdfY);
           pdfY+=lh;
         }
+
         pdfY+=2;
       }
 
@@ -727,6 +1298,7 @@
       const hBox=34, leftW=88, gapBox=6, rx=ML+leftW+gapBox, rw=CW-leftW-gapBox;
 
       ensureSpace(hBox+8);
+
       pdf.setDrawColor(...L);
       pdf.setFillColor(255,255,255);
       pdf.roundedRect(ML,pdfY,leftW,hBox,1,1,'FD');
@@ -753,9 +1325,11 @@
       pdf.text(`Contacto: ${c.phone||c.email||'—'}`,ML+3,pdfY+30);
 
       let yy=pdfY+12;
+
       function rowPDF(label,val){
         pdfFont(7,'bold',S);
         pdf.text(label,rx+3,yy);
+
         pdfFont(7.5,'normal',G);
         pdf.text(pdfLines(val||'—',rw-24),rx+24,yy);
         yy+=4.5;
@@ -766,6 +1340,7 @@
       rowPDF('Validez:',q.validity||'15 días');
       rowPDF('Entrega:',q.delivery||'Según coordinación');
       rowPDF('Moneda:',q.currency==='UF'?'UF':'Pesos chilenos (CLP)');
+
       pdfY+=hBox+6;
 
       sectionTitle('DESCRIPCIÓN DEL SERVICIO', true);
@@ -775,22 +1350,28 @@
       const parsed = parseService(quoteItems[0].name);
 
       sectionTitle('SERVICIO PROFESIONAL');
+
       pdfFont(7.5,'bold',[180,83,9]);
       pdf.text('ALCANCE TÉCNICO',ML+3,pdfY);
       pdfY+=4.5;
+
       pdfPara(parsed.scope,8.5,4.2);
 
       sectionTitle('SERVICIO PROFESIONAL · ENTREGABLES');
+
       for(const d of parsed.deliverables){
         ensureSpace(5);
         pdfFont(8,'normal',G);
         pdf.text(`• ${d}`,ML+5,pdfY);
         pdfY+=4;
       }
+
       pdfY+=4;
 
       const hPay=42, totalW=68, infoW=CW-totalW-gapBox;
+
       ensureSpace(hPay+8);
+
       const top=pdfY;
       const txBox=ML+infoW+gapBox;
 
@@ -831,6 +1412,7 @@
       function rE(label,val,total=false){
         pdfFont(total?8:7.2,total?'bold':'normal',total?[180,83,9]:S);
         pdf.text(label,txBox+3,yyy);
+
         pdfFont(total?11:8,total?'bold':'normal',total?[180,83,9]:G);
         pdf.text(amount(val,q.currency),txBox+totalW-3,yyy,{align:'right'});
         yyy+=total?7:5.5;
@@ -838,13 +1420,16 @@
 
       rE('Valor neto',q.neto);
       rE('IVA 19%',q.iva);
+
       pdf.setDrawColor(...L);
       pdf.line(txBox+3,yyy-2,txBox+totalW-3,yyy-2);
+
       rE('TOTAL SERVICIO',q.total,true);
 
       pdfY=top+hPay+8;
 
       ensureSpace(24);
+
       pdfFont(7.5,'normal',G);
       pdf.text('Atentamente,',W/2,pdfY,{align:'center'});
       pdfY+=6;
@@ -861,8 +1446,7 @@
 
       pdfFoot();
 
-      const fileName = `COT_${quoteCode(q)}.pdf`;
-      pdf.save(fileName);
+      pdf.save(`COT_${quoteCode(q)}.pdf`);
 
     } catch(e) {
       console.error(e);
@@ -875,19 +1459,27 @@
     }
   }
 
-  window.downloadHist = (id) => { generateAndSharePDF(id, null); };
+  window.downloadHist = (id) => {
+    generateAndSharePDF(id, null);
+  };
 
-  document.getElementById('q-date').valueAsDate = new Date();
-  document.getElementById('q-ref').value = 'AER-1000';
-  document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
-  document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
+  function initApp(){
+    document.getElementById('q-date').valueAsDate = new Date();
+    document.getElementById('q-ref').value = 'AER-1000';
+    document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
+    document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
+    document.getElementById('i-qty').value = 1;
+    document.getElementById('i-price').value = '';
 
-  window.onload = function() {
     updateClientsUI();
     renderPreview();
     setupPreviewTouchZoom();
-    window.addEventListener('resize', () => fitPreviewToScreen(false));
-  };
+
+    window.addEventListener('resize', () => fitPreviewToScreen(true));
+    window.addEventListener('orientationchange', () => setTimeout(() => fitPreviewToScreen(true), 250));
+  }
+
+  window.onload = initApp;
 </script>
 </body>
 </html>

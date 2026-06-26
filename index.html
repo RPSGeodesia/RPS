@@ -357,7 +357,6 @@
 
   onSnapshot(doc(db, "config", "rps_cotizador_v1"), snap => {
     window.nextFolio = snap.exists() ? Math.max(1000, Number(snap.data().lastFolio || 1000)) : 1000;
-    // Removido renderPreview automático aquí para que la configuración de Firebase no pise el precio en vivo.
   });
 
   onSnapshot(collection(db, "rps_clientes"), snap => {
@@ -368,7 +367,8 @@
   onSnapshot(collection(db, "rps_cotizaciones"), snap => {
     window.historial = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b)=>Number(b.folio||0)-Number(a.folio||0));
     if(typeof renderHistory === 'function') renderHistory();
-  </script>
+  });
+</script>
 
 <script>
   const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
@@ -474,12 +474,11 @@ Entregables:
     document.getElementById('q-notes').value = state.notes;
   }
 
-  // ANTIDOTO FINAL: Se recalculan los totales forzando a leer el valor de la caja de texto numérico si el usuario está editándolo.
   function currentQuote(){
     const normalized = normalizeItems(items);
     let neto = normalized.reduce((s,i)=>s+Number(i.total||0),0);
     
-    // Si la caja de texto tiene un precio ingresado manualmente en este instante, forzamos que use ese valor.
+    // Si estás editando el valor por primera vez o modificando en vivo la caja de texto, se usa puramente ese precio neto
     const manualPriceInput = document.getElementById('i-price');
     if (manualPriceInput && manualPriceInput.value !== "" && normalized.length === 1 && normalized[0].isDefault) {
       const mQty = Number(document.getElementById('i-qty').value || 1);
@@ -647,7 +646,6 @@ Entregables:
         <p>${esc(txt).replace(/\n/g,'<br>')}</p>`), units(txt, 11));
     });
 
-    // Sincronización del ítem reflejado en la hoja A4
     let quoteItems = q.items.length ? q.items : [defaultItem()];
     if (quoteItems.length === 1 && quoteItems[0].isDefault && document.getElementById('i-price').value !== "") {
       quoteItems[0].price = Number(document.getElementById('i-price').value || 0);
@@ -924,7 +922,6 @@ Entregables:
   document.getElementById('q-desc').value = DEFAULT_SERVICE_DESC;
   document.getElementById('i-name').value = DEFAULT_ITEM_TEXT;
   
-  // Escuchadores manuales para asegurar renderizado inmediato al escribir en el precio o cantidad
   document.getElementById('i-price').addEventListener('input', renderPreview);
   document.getElementById('i-qty').addEventListener('input', renderPreview);
   
@@ -1121,8 +1118,6 @@ async function generateAndSharePDF(historyId=null, quoteOverride=null){
   payment();
   sign();
   foot();
-
-  pdf.save(`COT_${quoteCode(q)}.pdf`);
 
   if(originalState){
     restoreFormState(originalState);

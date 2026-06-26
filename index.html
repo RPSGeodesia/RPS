@@ -653,11 +653,15 @@
       return;
     }
 
-    if(items.length === 1 && items[0]?.isDefault){
+    // Regla crítica: si existe UN SOLO ítem, el precio visible manda siempre.
+    // Esto evita que una cotización cargada desde Firebase, aunque venga con isDefault:false,
+    // arrastre un precio antiguo al generar el PDF.
+    if(items.length === 1 && items[0]){
       items[0].name = (nameEl?.value || items[0].name || DEFAULT_ITEM_TEXT).trim();
       items[0].qty = qty;
       items[0].price = price;
       items[0].total = Math.round(qty * price * 100) / 100;
+      return;
     }
   }
 
@@ -1137,7 +1141,10 @@
         });
       }
 
-      const data={...currentQuote(), folio:f, ref:q.ref||('AER-'+f), createdAt:new Date().toISOString()};
+      // Se congela una única versión de la cotización ya sincronizada.
+      // Esta misma copia se guarda en Firebase y también se usa para dibujar el PDF.
+      const freshQuote = currentQuote();
+      const data={...freshQuote, folio:f, ref:freshQuote.ref||('AER-'+f), createdAt:new Date().toISOString()};
 
       if(window.fb?.db){
         if(editingId) await fb.setDoc(fb.doc(fb.db,'rps_cotizaciones',editingId),data);
@@ -1228,9 +1235,9 @@
 
     try {
       if(quoteOverride){
-        originalState = captureFormState();
-        applyQuoteToForm(quoteOverride, false);
-        await new Promise(r=>setTimeout(r,50));
+        // IMPORTANTE: cuando se genera desde Guardar y enviar, NO se vuelve a aplicar
+        // la cotización al formulario. El PDF debe usar exactamente la copia congelada
+        // que viene desde saveAndSend(), no datos viejos del historial/Firebase.
       } else if(historyId){
         const h = quoteById(historyId);
         if(!h) return alert('No se encontró la cotización.');
@@ -1241,7 +1248,7 @@
       }
 
       const q = quoteOverride || (historyId ? quoteById(historyId) : currentQuote());
-      const c = selectedClient();
+      const c = (window.clientes || []).find(cli => cli.name === q.client) || selectedClient() || {name:q.client};
 
       const pdf = new JsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
       const W=210, H=297, ML=14, MR=14, MT=16, MB=16, CW=W-ML-MR;

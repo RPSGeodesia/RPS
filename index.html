@@ -232,7 +232,7 @@
     .brandRow {
       display: flex;
       align-items: center;
-      gap: 4mm;
+      gap: 5mm;
       min-width: 0;
     }
 
@@ -1409,8 +1409,8 @@
 
         const logoX = ML;
         const logoY = pdfY;
-        const logoW = 25;
-        const logoH = 16;
+        const logoW = 22;
+        const logoH = 14;
         const textX = logoDataURL ? (ML + logoW + 5) : ML;
         const quoteLeft = W - MR - 52;
         const headerTextW = Math.max(45, quoteLeft - textX - 4);
@@ -1592,7 +1592,7 @@
 
       if(String(q.notes || '').trim()){
         sectionTitle('OBSERVACIONES', true);
-        pdfPara(q.notes, singleItemMode ? 7.2 : 7.7, singleItemMode ? 3.35 : 3.75, ML+3, CW-24);
+        pdfPara(q.notes, singleItemMode ? 7.8 : 8.2, singleItemMode ? 3.6 : 4.1);
       }
 
       const hPay = singleItemMode ? 39 : 44, totalW=68, infoW=CW-totalW-gapBox;

@@ -1539,7 +1539,7 @@
       pdfY+=hBox+6;
 
       sectionTitle('DESCRIPCIÓN DEL SERVICIO', true);
-      pdfPara(q.serviceDesc||DEFAULT_SERVICE_DESC, singleItemMode ? 8.0 : 8.5, singleItemMode ? 3.75 : 4.2);
+      pdfPara(q.serviceDesc||DEFAULT_SERVICE_DESC, singleItemMode ? 7.6 : 8.0, singleItemMode ? 3.55 : 3.9, ML+3, CW-18);
 
       const quoteItems = q.items.length ? q.items : [defaultItem()];
 
@@ -1559,7 +1559,7 @@
           pdfY += 1;
         }
 
-        pdfPara(parsed.scope, singleItemMode ? 7.9 : 8.5, singleItemMode ? 3.65 : 4.2);
+        pdfPara(parsed.scope, singleItemMode ? 7.4 : 8.0, singleItemMode ? 3.45 : 3.9, ML+3, CW-18);
 
         if(parsed.deliverables && parsed.deliverables.length){
           ensureSpace(singleItemMode ? 6 : 8);

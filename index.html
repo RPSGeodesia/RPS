@@ -237,18 +237,10 @@
     }
 
     .brandLogo {
-      width: 18mm;
-      height: 13mm;
-      border-radius: 3mm;
-      background: #111827;
-      color: #f59e0b;
-      border: 0.6mm solid #f59e0b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13pt;
-      font-weight: 900;
-      letter-spacing: 0.08em;
+      width: 22mm;
+      height: 14mm;
+      object-fit: contain;
+      display: block;
       flex: 0 0 auto;
     }
 
@@ -602,7 +594,7 @@
 </script>
 
 <script>
-  const RPS_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+  const RPS_LOGO_SRC = 'logo.PNG';
 
   const COMPANY = {
     name:'RPS TOPOGRAFÍA & GEODESIA',
@@ -922,7 +914,7 @@
     canvas.innerHTML = '';
 
     function headerHTML(){
-      return `<header class="pdf-header"><div class="brand"><div class="brandRow"><div class="brandLogo">RPS</div><div><h1>${COMPANY.name}</h1><p>Servicios topográficos y geodésicos</p><p>${COMPANY.email} · Fono: ${COMPANY.phone}</p></div></div></div><div class="quoteBox"><div class="quoteTag">Cotización técnica</div><div class="quoteNum">N° ${esc(quoteCode(q))}</div><div class="quoteDate">Fecha: ${fmtDate(q.date)}</div></div></header>`;
+      return `<header class="pdf-header"><div class="brand"><div class="brandRow"><img class="brandLogo" src="${RPS_LOGO_SRC}" alt="Logo RPS" onerror="this.style.display='none'"><div><h1>${COMPANY.name}</h1><p>Servicios topográficos y geodésicos</p><p>${COMPANY.email} · Fono: ${COMPANY.phone}</p></div></div></div><div class="quoteBox"><div class="quoteTag">Cotización técnica</div><div class="quoteNum">N° ${esc(quoteCode(q))}</div><div class="quoteDate">Fecha: ${fmtDate(q.date)}</div></div></header>`;
     }
 
     function footerHTML(){
@@ -1337,6 +1329,28 @@
     }, { passive: false });
   }
 
+  function loadLogoAsDataURL(src = RPS_LOGO_SRC){
+    return new Promise(resolve => {
+      if(!src) return resolve(null);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        } catch(e) {
+          console.warn('No se pudo preparar el logo para PDF:', e);
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+
   async function generateAndSharePDF(historyId=null, quoteOverride=null){
     const JsPDF = window.jspdf?.jsPDF;
     if(!JsPDF) return alert('No se cargó jsPDF.');
@@ -1370,6 +1384,7 @@
       const W=210, H=297, ML=14, MR=14, MT=13, MB=10, CW=W-ML-MR;
       const G=[30,41,59], B=[245,158,11], S=[100,116,139], L=[203,213,225];
       let pdfY=MT;
+      const logoDataURL = await loadLogoAsDataURL(RPS_LOGO_SRC);
 
       function pdfFont(size, style='normal', color=G){
         pdf.setFont('helvetica', style);
@@ -1386,7 +1401,7 @@
         pdf.setLineWidth(.3);
         pdf.line(ML,H-9,W-MR,H-9);
         pdfFont(6,'normal',S);
-        pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW-8});
+        pdf.text(`${COMPANY.name} · ${COMPANY.address} · ${COMPANY.comuna} · ${COMPANY.email} · Fono: ${COMPANY.phone}`, W/2, H-5, {align:'center', maxWidth:CW-12});
       }
 
       function pdfHead(){
@@ -1394,24 +1409,26 @@
 
         const logoX = ML;
         const logoY = pdfY;
-        const logoW = 18;
-        const logoH = 13;
-        const textX = ML + logoW + 5;
+        const logoW = 22;
+        const logoH = 14;
+        const textX = logoDataURL ? (ML + logoW + 5) : ML;
+        const quoteLeft = W - MR - 52;
+        const headerTextW = Math.max(45, quoteLeft - textX - 4);
 
-        pdf.setFillColor(22,30,46);
-        pdf.roundedRect(logoX, logoY, logoW, logoH, 2, 2, 'F');
-        pdf.setDrawColor(...B);
-        pdf.setLineWidth(.5);
-        pdf.roundedRect(logoX, logoY, logoW, logoH, 2, 2, 'S');
-        pdfFont(12,'bold',[245,158,11]);
-        pdf.text('RPS', logoX + logoW / 2, logoY + 8.5, {align:'center'});
+        if(logoDataURL){
+          try {
+            pdf.addImage(logoDataURL, 'PNG', logoX, logoY, logoW, logoH);
+          } catch(e) {
+            console.warn('No se pudo insertar el logo en el PDF:', e);
+          }
+        }
 
         pdfFont(14,'bold',[22,30,46]);
-        pdf.text(pdfLines(COMPANY.name, CW-82),textX,pdfY+5);
+        pdf.text(pdfLines(COMPANY.name, headerTextW),textX,pdfY+5);
 
         pdfFont(7.5,'normal',S);
-        pdf.text('Servicios topográficos y geodésicos',textX,pdfY+10);
-        pdf.text(pdfLines(`${COMPANY.email} · Fono: ${COMPANY.phone}`, CW-92),textX,pdfY+14);
+        pdf.text(pdfLines('Servicios topográficos y geodésicos', headerTextW),textX,pdfY+10);
+        pdf.text(pdfLines(`${COMPANY.email} · Fono: ${COMPANY.phone}`, headerTextW),textX,pdfY+14);
 
         pdf.setFillColor(22,30,46);
         pdf.roundedRect(W-MR-48,pdfY,48,10,1,1,'F');
@@ -1458,7 +1475,7 @@
         pdfY+=8;
       }
 
-      function pdfPara(text, size=8.5, lh=4.2, x=ML+3, w=CW-10){
+      function pdfPara(text, size=8.5, lh=4.2, x=ML+3, w=CW-14){
         const arr = pdfLines(text,w);
 
         for(const ln of arr){
@@ -1495,12 +1512,12 @@
       pdf.text('ANTECEDENTES DEL PROYECTO',rx+3,pdfY+4.2);
 
       pdfFont(8,'bold',[22,30,46]);
-      pdf.text(pdfLines((c.name||'---').toUpperCase(),leftW-10),ML+3,pdfY+12);
+      pdf.text(pdfLines((c.name||'---').toUpperCase(),leftW-12),ML+3,pdfY+12);
 
       pdfFont(7.5,'normal',G);
       pdf.text(`RUT: ${c.rut||'—'}`,ML+3,pdfY+19);
-      pdf.text(pdfLines(`Dirección: ${c.address||'—'}`,leftW-10),ML+3,pdfY+24);
-      pdf.text(pdfLines(`Contacto: ${c.phone||c.email||'—'}`,leftW-10),ML+3,pdfY+30);
+      pdf.text(pdfLines(`Dirección: ${c.address||'—'}`,leftW-12),ML+3,pdfY+24);
+      pdf.text(pdfLines(`Contacto: ${c.phone||c.email||'—'}`,leftW-12),ML+3,pdfY+30);
 
       let yy=pdfY+12;
 
@@ -1509,7 +1526,7 @@
         pdf.text(label,rx+3,yy);
 
         pdfFont(7.5,'normal',G);
-        pdf.text(pdfLines(val||'—',rw-30),rx+24,yy);
+        pdf.text(pdfLines(val||'—',rw-34),rx+24,yy);
         yy+=4.5;
       }
 
@@ -1532,7 +1549,7 @@
 
         const pTitle = itemTitle(it, idx);
         if(!singleItemMode && pTitle !== `Ítem ${idx + 1}`){
-          const titleLines = pdfLines(pTitle.toUpperCase(), CW-10);
+          const titleLines = pdfLines(pTitle.toUpperCase(), CW-14);
           for(const tl of titleLines){
             ensureSpace(5);
             pdfFont(7.5,'bold',[180,83,9]);
@@ -1550,7 +1567,7 @@
           pdf.text('ENTREGABLES', ML+3, pdfY);
           pdfY += singleItemMode ? 3.8 : 4.5;
           for(const d of parsed.deliverables){
-            const dLines = pdfLines(`• ${d}`, CW-14);
+            const dLines = pdfLines(`• ${d}`, CW-18);
             for(const dl of dLines){
               ensureSpace(4.5);
               pdfFont(singleItemMode ? 7.7 : 8,'normal',G);
@@ -1562,7 +1579,7 @@
 
         ensureSpace(6);
         pdfFont(singleItemMode ? 7.6 : 8,'bold',G);
-        const itemAmountLines = pdfLines(`Cantidad: ${Number(it.qty || 1).toLocaleString('es-CL')} · Valor neto: ${amount(it.total || 0, q.currency)}`, CW-10);
+        const itemAmountLines = pdfLines(`Cantidad: ${Number(it.qty || 1).toLocaleString('es-CL')} · Valor neto: ${amount(it.total || 0, q.currency)}`, CW-14);
         for(const il of itemAmountLines){
           ensureSpace(4.5);
           pdf.text(il, ML+3, pdfY);
@@ -1596,14 +1613,14 @@
       pdfFont(6.5,'bold',[22,30,46]);
       pdf.text('CONDICIONES Y DATOS DE PAGO',ML+3,top+4.2);
 
-      const colW=(infoW-10)/2;
+      const colW=(infoW-12)/2;
       const x2=ML+4+colW+4;
 
       pdfFont(7,'bold',[180,83,9]);
       pdf.text('Condiciones comerciales',ML+3,top+13);
 
       pdfFont(7.5,'normal',G);
-      pdf.text(pdfLines(q.conditions||'',colW-2),ML+3,top+18);
+      pdf.text(pdfLines(q.conditions||'',colW-4),ML+3,top+18);
 
       pdfFont(7,'bold',[180,83,9]);
       pdf.text('Transferencia bancaria',x2,top+13);
@@ -1654,7 +1671,7 @@
       pdf.text('ROBIN PINTO SERRANO',W/2,pdfY,{align:'center'});
 
       pdfFont(singleItemMode ? 6.1 : 6.5,'normal',S);
-      pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,pdfY+4,{align:'center', maxWidth:CW-10});
+      pdf.text(`Ingeniero Industrial / Topógrafo · ${COMPANY.name}`,W/2,pdfY+4,{align:'center', maxWidth:CW-14});
 
       pdfFoot();
 

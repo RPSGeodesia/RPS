@@ -237,8 +237,8 @@
     }
 
     .brandLogo {
-      width: 22mm;
-      height: 14mm;
+      width: 26mm;
+      height: 17mm;
       object-fit: contain;
       display: block;
       flex: 0 0 auto;
@@ -1409,9 +1409,9 @@
 
         const logoX = ML;
         const logoY = pdfY;
-        const logoW = 22;
-        const logoH = 14;
-        const textX = logoDataURL ? (ML + logoW + 5) : ML;
+        const logoW = 26;
+        const logoH = 17;
+        const textX = logoDataURL ? (ML + logoW + 6) : ML;
         const quoteLeft = W - MR - 52;
         const headerTextW = Math.max(45, quoteLeft - textX - 4);
 
@@ -1592,7 +1592,7 @@
 
       if(String(q.notes || '').trim()){
         sectionTitle('OBSERVACIONES', true);
-        pdfPara(q.notes, singleItemMode ? 7.8 : 8.2, singleItemMode ? 3.6 : 4.1);
+        pdfPara(q.notes, singleItemMode ? 7.0 : 7.4, singleItemMode ? 3.25 : 3.55, ML+3, CW-30);
       }
 
       const hPay = singleItemMode ? 39 : 44, totalW=68, infoW=CW-totalW-gapBox;

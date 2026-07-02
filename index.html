@@ -232,13 +232,13 @@
     .brandRow {
       display: flex;
       align-items: center;
-      gap: 4mm;
+      gap: 5mm;
       min-width: 0;
     }
 
     .brandLogo {
-      width: 22mm;
-      height: 14mm;
+      width: 26mm;
+      height: 17mm;
       object-fit: contain;
       display: block;
       flex: 0 0 auto;
@@ -891,7 +891,7 @@
             ${showTitle ? `<h4>${esc(title)}</h4>` : ''}
             <p>${esc(parsed.scope).replace(/\n/g,'<br>')}</p>
             ${deliverables.length ? `<h4 style="margin-top:2mm">Entregables</h4><div class="deliverables">${deliverables.map(d=>`<span>• ${esc(d)}</span>`).join('')}</div>` : ''}
-            <p style="margin-top:2mm"><b>Cantidad:</b> ${Number(it.qty || 1).toLocaleString('es-CL')} · <b>Valor neto:</b> ${amount(it.total || 0, currency)}</p>
+
           </div>
         </div>
       `;
@@ -1409,9 +1409,9 @@
 
         const logoX = ML;
         const logoY = pdfY;
-        const logoW = 25;
-        const logoH = 16;
-        const textX = logoDataURL ? (ML + logoW + 5) : ML;
+        const logoW = 26;
+        const logoH = 17;
+        const textX = logoDataURL ? (ML + logoW + 6) : ML;
         const quoteLeft = W - MR - 52;
         const headerTextW = Math.max(45, quoteLeft - textX - 4);
 
@@ -1577,14 +1577,6 @@
           }
         }
 
-        ensureSpace(6);
-        pdfFont(singleItemMode ? 7.6 : 8,'bold',G);
-        const itemAmountLines = pdfLines(`Cantidad: ${Number(it.qty || 1).toLocaleString('es-CL')} · Valor neto: ${amount(it.total || 0, q.currency)}`, CW-14);
-        for(const il of itemAmountLines){
-          ensureSpace(4.5);
-          pdf.text(il, ML+3, pdfY);
-          pdfY += singleItemMode ? 3.9 : 4.5;
-        }
         pdfY += singleItemMode ? 0.5 : 1.5;
       }
 
@@ -1592,7 +1584,7 @@
 
       if(String(q.notes || '').trim()){
         sectionTitle('OBSERVACIONES', true);
-        pdfPara(q.notes, singleItemMode ? 7.2 : 7.7, singleItemMode ? 3.35 : 3.75, ML+3, CW-24);
+        pdfPara(q.notes, singleItemMode ? 7.0 : 7.4, singleItemMode ? 3.25 : 3.55, ML+3, CW-30);
       }
 
       const hPay = singleItemMode ? 39 : 44, totalW=68, infoW=CW-totalW-gapBox;
